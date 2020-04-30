@@ -1,0 +1,78 @@
+--name {{ amq_broker_name }}
+--role {{ amq_broker_admin.role }}
+--require-login
+--user {{ amq_broker_admin.name }}
+--password {{ amq_broker_admin.password }}
+--host {{ ansible_facts.hostname }}
+--http-host {{ ansible_facts.hostname }}
+--data {{ amq_broker_shared_storage_dir }}
+--java-options '{{ amq_broker_java_options }}'
+--force
+--verbose
+
+{{ (amq_broker_paging) | ternary('--paging', '--blocking', omit) }}
+
+{% if amq_broker_cluster %}
+--clustered
+--cluster-user {{ amq_broker_cluster_user }}
+--cluster-password {{ amq_broker_cluster_password }}
+--max-hops {{ amq_broker_cluster_maxhops }}
+--message-load-balancing {{ amq_broker_cluster_load_balancing_policy }}
+--failover-on-shutdown
+{% endif %}
+
+{% if amq_broker_disable_destination_autocreate %}
+--no-autocreate
+{% endif %}
+
+{% if amq_broker_queues | length > 0 %}
+--queues {{ amq_broker_queues }}
+{% endif %}
+
+{% if amq_broker_is_slave %}
+--slave
+{% endif %}
+
+{% if amq_broker_replication_enabled %}
+--replicated
+{% endif %}
+
+{% if amq_broker_shared_storage %}
+--shared-store
+{% endif %}
+
+{% if amq_broker_disable_amqp_protocol %}
+--no-amqp-acceptor
+{% endif %}
+
+{% if amq_broker_disable_hornetq_protocol %}
+--no-hornetq-acceptor
+{% endif %}
+
+{% if amq_broker_disable_mqtt_protocol %}
+--no-mqtt-acceptor
+{% endif %}
+
+{% if amq_broker_nio %}
+--nio
+{% endif %}
+
+{% if amq_broker_disable_stomp_protocol %}
+--no-stomp-acceptor
+{% endif %}
+
+{% if amq_broker_tls
+      and amq_broker_tls_keystore
+      and amq_broker_tls_keystore_password %}
+--ssl-key {{ amq_broker_tls_keystore_path }}
+--ssl-key-password {{ amq_broker_tls_keystore_password }}
+{% endif %}
+
+{% if amq_broker_tls
+      and amq_broker_tls_mutual_authentication
+      and amq_broker_tls_truststore
+      and amq_broker_tls_truststore_password %}
+--ssl-trust {{ amq_broker_tls_truststore_path }}
+--ssl-trust-password {{ amq_broker_tls_truststore_password }}
+--use-client-auth
+{% endif %}

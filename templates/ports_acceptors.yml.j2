@@ -1,0 +1,7 @@
+{% set ns = namespace(acceptors={}) %}
+{% for acceptor in acceptor_names
+                   | zip(amq_acceptor_parsed_urls)
+                   | list %}
+{% set ns.acceptors = ns.acceptors | combine({acceptor.0.name : acceptor.1}) %}
+{% endfor %}
+{{ ns.acceptors }}

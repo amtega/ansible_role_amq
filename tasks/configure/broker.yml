@@ -1,0 +1,173 @@
+---
+# Configure broker tasks
+
+- block:
+    - name: Setup fact with broker cluster node members
+      set_fact:
+        amq_broker_cluster_nodes: >
+          {{ amq_broker_cluster_nodes | default([])
+             + [
+                 {
+                   "name": hostvars[amq_broker_node_item].amq_broker_name,
+                   "address": hostvars[amq_broker_node_item].ansible_facts.fqdn,
+                   "inventory_host": hostvars[amq_broker_node_item]
+                                     .ansible_facts.fqdn,
+                   "value": "tcp://" + hostvars[amq_broker_node_item]
+                                       .ansible_facts.fqdn + ":61616"
+                 }
+              ] }}
+      loop: "{{ ansible_play_hosts_all }}"
+      loop_control:
+        loop_var: amq_broker_node_item
+
+    - name: Setup broker directory
+      file:
+        path: "{{ amq_broker_dir }}"
+        state: directory
+        owner: "{{ amq_user }}"
+        group: "{{ amq_group }}"
+        recurse: yes
+
+    - name: Create broker
+      vars:
+        amq_broker_options: >-
+          {{ lookup('template', 'broker_options.j2').split("\n") | join(' ') }}
+      when: amq_broker_master_slave_flag.flag
+      command: >-
+        {{ amq_install_dir }}/bin/artemis create
+        {{ amq_broker_dir }}/{{ amq_broker_name }}
+        {{ amq_broker_options }}
+      args:
+        creates: "{{ amq_broker_dir }}/{{ amq_broker_name }}"
+      become: yes
+      become_user: "{{ amq_user }}"
+      notify: enable and start amq broker
+      loop:
+        - flag: "{{ not amq_broker_is_slave }}"
+          label: Master turn
+        - flag: "{{ amq_broker_is_slave }}"
+          label: Slave turn
+      loop_control:
+        loop_var: amq_broker_master_slave_flag
+        label: "{{ amq_broker_master_slave_flag.label }}"
+        pause: 5
+      no_log: "{{ amq_no_log | bool }}"
+
+    - name: Setup broker messaging roles
+      xml:
+        path: "{{ amq_broker_dir }}/{{ amq_broker_name }}/etc/broker.xml"
+        xpath: /conf:configuration/core:core/core:security-settings
+        input_type: yaml
+        set_children: >-
+          {{ lookup("template", "messaging_security_settings.xml.j2")
+             | from_yaml }}
+        namespaces:
+          conf: urn:activemq
+          core: urn:activemq:core
+        pretty_print: yes
+        backup: yes
+      changed_when: no
+      no_log: "{{ amq_no_log | bool }}"
+
+    - name: Configure broker redelivery delay
+      xml:
+        path: "{{ amq_broker_dir }}/{{ amq_broker_name }}/etc/broker.xml"
+        xpath: >-
+          {{ "/conf:configuration/core:core/core:address-settings/"
+          + "core:address-setting/core:redelivery-delay" }}
+        namespaces:
+          conf: urn:activemq
+          core: urn:activemq:core
+        value: >-
+          {{ amq_broker_address_setting_redelivery_delay | string | lower }}
+        backup: yes
+
+    - name: Configure broker discovery group
+      when: amq_broker_cluster_discovery
+      block:
+        - name: Configure - jgroups - broker.xml - discovery-group-ref
+          xml:
+            path: "{{ amq_broker_dir }}/{{ amq_broker_name }}/etc/broker.xml"
+            xpath: >-
+              {{ "/conf:configuration/core:core/core:cluster-connections/"
+              + "core:cluster-connection/core:discovery-group-ref" }}
+            namespaces:
+              conf: "urn:activemq"
+              core: "urn:activemq:core"
+            attribute: discovery-group-name
+            pretty_print: yes
+            value: discovery-group-01
+            backup: yes
+
+        - name: Configure broker discovery groups node
+          xml:
+            path: "{{ amq_broker_dir }}/{{ amq_broker_name }}/etc/broker.xml"
+            xpath: "/conf:configuration/core:core/core:discovery-groups"
+            namespaces:
+              conf: "urn:activemq"
+              core: "urn:activemq:core"
+            state: present
+            pretty_print: yes
+            backup: yes
+
+        - name: Configure broker discovery groups content
+          xml:
+            path: "{{ amq_broker_dir }}/{{ amq_broker_name }}/etc/broker.xml"
+            xpath: "/conf:configuration/core:core/core:discovery-groups"
+            namespaces:
+              conf: "urn:activemq"
+              core: "urn:activemq:core"
+            pretty_print: yes
+            set_children:
+              - "discovery-group":
+                  name: discovery-group-01
+                  _:
+                    - "jgroups-file": "{{ amq_jgroups_file }}"
+                    - "jgroups-channel": "{{ amq_jgroups_channel }}"
+                    - "refresh-timeout": "{{ amq_jgroups_refresh_timeout }}"
+            backup: yes
+
+        - name: Configure broker broadcast groups node
+          xml:
+            path: "{{ amq_broker_dir }}/{{ amq_broker_name }}/etc/broker.xml"
+            xpath: "/conf:configuration/core:core/core:broadcast-groups"
+            namespaces:
+              conf: "urn:activemq"
+              core: "urn:activemq:core"
+            state: present
+            pretty_print: yes
+            backup: yes
+
+        - name: Configure broker broadcast groups content
+          xml:
+            path: "{{ amq_broker_dir }}/{{ amq_broker_name }}/etc/broker.xml"
+            xpath: "/conf:configuration/core:core/core:broadcast-groups"
+            namespaces:
+              conf: "urn:activemq"
+              core: "urn:activemq:core"
+            pretty_print: yes
+            set_children:
+              - "broadcast-group":
+                  name: broadcast-group-01
+                  _:
+                    - "broadcast-period": "5000"
+                    - "jgroups-file": "{{ amq_jgroups_file }}"
+                    - "jgroups-channel": "{{ amq_jgroups_channel }}"
+                    - "connector-ref": "{{ amq_jgroups_connector_ref }}"
+            backup: yes
+
+    - name: Configure broker security invalidation interval node
+      xml:
+        path: "{{ amq_broker_dir }}/{{ amq_broker_name }}/etc/broker.xml"
+        xpath: >-
+          /conf:configuration/core:core/core:security-invalidation-interval
+        namespaces:
+          conf: "urn:activemq"
+          core: "urn:activemq:core"
+        value: "{{ amq_broker_security_invalidation_interval | string }}"
+        state: present
+        pretty_print: yes
+        backup: yes
+  tags:
+    - role::amq::configure
+    - role::amq::configure::broker

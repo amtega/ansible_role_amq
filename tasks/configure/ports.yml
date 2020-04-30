@@ -1,0 +1,61 @@
+---
+# Configure ports tasks
+
+- block:
+    - name: Gather ports acceptor names
+      xml:
+        path: "{{ amq_broker_dir }}/{{ amq_broker_name }}/etc/broker.xml"
+        xpath: /conf:configuration/core:core/core:acceptors/core:acceptor
+        content: attribute
+        backup: yes
+        namespaces:
+          conf: urn:activemq
+          core: urn:activemq:core
+      register: amq_acceptor_names_result
+
+    - vars:
+        acceptor_names: >-
+          {{ amq_acceptor_names_result
+          | json_query('matches[*].*')
+          | json_query('[]') }}
+      block:
+        - name: Gather ports acceptor URL's
+          xml:
+            path: "{{ amq_broker_dir }}/{{ amq_broker_name }}/etc/broker.xml"
+            xpath: /conf:configuration/core:core/core:acceptors/core:acceptor
+            content: text
+            backup: yes
+            namespaces:
+              conf: urn:activemq
+              core: urn:activemq:core
+          register: acceptors_urls_result
+
+        - name: Update ports acceptors
+          vars:
+            amq_acceptor_parsed_urls: >-
+              {{ lookup('template', 'ports_parsed_urls.yml.j2') | from_yaml }}
+            amq_acceptors: >-
+              {{ lookup("template", "ports_acceptors.yml.j2")
+                 | from_yaml
+                 | combine(amq_broker_ports, recursive=True) }}
+          xml:
+            path: "{{ amq_broker_dir }}/{{ amq_broker_name }}/etc/broker.xml"
+            xpath: >-
+              /conf:configuration/core:core/core:acceptors/core:acceptor[@name
+              = "{{ amq_acceptor_name_item.name }}"]
+            value: >-
+              {{ amq_acceptors[amq_acceptor_name_item.name]
+                 | urlcombine
+                 | string }}
+            backup: yes
+            namespaces:
+              conf: urn:activemq
+              core: urn:activemq:core
+          loop: "{{ acceptor_names }}"
+          loop_control:
+            loop_var: amq_acceptor_name_item
+            label: "{{ amq_acceptor_name_item.name }}"
+
+  tags:
+    - role::amq::configure
+    - role::amq::configure::ports

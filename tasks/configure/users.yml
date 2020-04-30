@@ -1,0 +1,21 @@
+---
+# Setup users
+
+- name: Setup messaging users
+  shell: >
+    {{ amq_broker_dir }}/{{ amq_broker_name }}/bin/artemis user add
+    --user {{ amq_broker_user_item.name }}
+    --password {{ amq_broker_user_item.password }}
+    --role {{ amq_broker_user_item.role }}
+  changed_when: no
+  become: yes
+  become_user: "{{ amq_user }}"
+  notify: enable and start amq broker
+  loop: "{{ amq_broker_users }}"
+  loop_control:
+    loop_var: amq_broker_user_item
+    label: "{{ amq_broker_user_item.name }}"
+  no_log: "{{ amq_no_log | bool }}"
+  tags:
+    - role::amq::configure
+    - role::amq::configure::users

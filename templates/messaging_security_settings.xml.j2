@@ -1,0 +1,18 @@
+{% set ns = namespace(permissions_roles={}) %}
+{%- for role in amq_broker_roles %}
+{%- for permission in role.permissions %}
+{%- set _ = ns.permissions_roles.__setitem__(
+            permission, ns.permissions_roles.get(permission, [])
+                                                 + [role.name]) %}
+{%- endfor %}
+{%- endfor -%}
+
+
+- security-setting:
+    match: "#"
+    _:
+{% for permission, roles in ns.permissions_roles.items() %}
+      - permission:
+          type: "{{ permission }}"
+          roles: "{{ ','.join(roles) }}"
+{% endfor %}

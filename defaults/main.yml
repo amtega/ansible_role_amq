@@ -1,0 +1,195 @@
+---
+# Role default lower priority variables
+
+# AMQ version to install
+
+amq_version: 7.3.0
+
+# Unix user and group used to run AMQ service
+
+amq_group: amq-broker
+amq_user: amq-broker
+
+# Broker instance name
+
+amq_broker_name: broker
+
+# Aditional java options
+
+amq_broker_java_options: ""
+
+# Base amq directory
+
+amq_base_dir: /opt/redhat/amq-broker
+
+# Install directory
+
+amq_install_dir: "{{ amq_base_dir }}/install/amq-broker-{{ amq_version }}"
+
+# Brokers directory
+
+amq_broker_dir: "{{ amq_base_dir }}/brokers"
+
+# Shared storage directory
+
+amq_broker_shared_storage_dir: "{{ amq_broker_dir }}/data"
+
+# Primary admin user and role for the AMQ broker
+
+amq_broker_admin:
+  name: admin
+  password: password
+  role: admin
+
+# List of dicts with the AMQ broker users. The format of the dicts is the
+# following:
+#
+# - name: <username>
+#   password: <password>
+#   role: <role>
+
+amq_broker_users: []
+
+# List of dicts with the AMQ broker roles. The format of the dicts is the
+# following:
+#
+# -name: <role>
+#  permissions: <permissions>  # List of strings with the permissions. Can be:
+#                                  - createNonDurableQueue
+#                                  - deleteNonDurableQueue
+#                                  - createDurableQueue
+#                                  - deleteDurableQueue
+#                                  - createAddress
+#                                  - deleteAddress
+#                                  - consume
+#                                  - browse
+#                                  - send
+#                                  - manage
+
+amq_broker_roles:
+  - name: admin
+    permissions:
+      - createNonDurableQueue
+      - deleteNonDurableQueue
+      - createDurableQueue
+      - deleteDurableQueue
+      - createAddress
+      - deleteAddress
+      - consume
+      - browse
+      - send
+      - manage
+
+  - name: users
+    permissions:
+      - browse
+      - consume
+      - send
+
+# Clustering settings
+
+amq_broker_cluster: yes
+amq_broker_cluster_user: user_rhamq
+amq_broker_cluster_password: password_rhamq
+amq_broker_cluster_maxhops: 0
+amq_broker_cluster_load_balancing_policy: ON_DEMAND
+amq_broker_cluster_discovery: no
+amq_broker_replication_enabled: no
+amq_broker_is_slave: no
+
+# Jgroups settings
+
+amq_jgroups_channel: active_broadcast_channel
+amq_jgroups_connector_ref: artemis
+amq_jgroups_refresh_timeout: "10000"
+
+# Queues settings
+
+amq_broker_paging: yes
+amq_broker_disable_destination_autocreate: yes
+amq_broker_queues: []
+
+# Nio settings
+
+amq_broker_nio: yes
+
+# TLS settings
+
+amq_broker_tls: no
+amq_broker_tls_keystore:
+amq_broker_tls_keystore_password:
+amq_broker_tls_mutual_authentication: no
+amq_broker_tls_truststore:
+amq_broker_tls_truststore_password:
+
+# Protocol settings
+
+amq_broker_disable_amqp_protocol: no
+amq_broker_disable_hornetq_protocol: yes
+amq_broker_disable_mqtt_protocol: yes
+amq_broker_disable_stomp_protocol: yes
+
+# Port assignments
+
+amq_broker_ports:
+  artemis:
+    port: 61616
+  amqp:
+    port: 5672
+  stomp:
+    port: 61613
+  hornetq:
+    port: 5445
+  mqtt:
+    port: 1833
+
+# Additional broker settings
+
+amq_broker_address_setting_redelivery_delay: 500
+amq_broker_security_invalidation_interval: 60000
+
+# Login settings
+
+amq_login:
+  debug: no
+  connectionURL: ldap://ldap.example.local:389
+  connectionUsername: cn=amqLdapUser,ou=CorporateUsers,dc=example,dc=local
+  connectionPassword: "*******************"
+  connectionProtocol: s
+  authentication: simple
+  userBase: dc=example,dc=local
+  userSearchMatching: "(&(sAMAccountName={0})(objectclass=user))"
+  userSearchSubtree: yes
+  roleBase: dc=example,dc=local
+  roleName: cn
+  roleSearchMatching: "(&(member={0})(objectclass=group))"
+  roleSearchSubtree: yes
+  referral: follow
+  reload: yes
+
+# Install Artifact
+#
+# Point `amq_artifact` to a repository that contains the install artifact.
+#
+# Take a look to `amtega.artifact` role documentation to known about supported
+# types of artifacts, their specific settings and how to configure a proxy if
+# necessary
+#
+# The artifact attributes owner, group, dest, unarchive, unarchive_creates,
+# version state and no_log will be ignored
+
+amq_artifact:
+  id: amq_artifact
+  type: gitlab
+  host: https://gitlab.example.local
+  path: /redhat/amq
+  file: "amq-broker-{{ amq_version }}-bin.zip"
+  project: ansible/dml
+  branch: master
+  password: gitlab_password
+  username: gitlab_user
+  validate_certs: no
+
+# Hide sensitive information
+
+amq_no_log: yes

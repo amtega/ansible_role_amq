@@ -1,0 +1,7 @@
+{% for url in acceptors_urls_result
+              | json_query('matches[*].*')
+              | json_query('[]')  %}
+- {{ url | urlsplit | urlsplit_splitquery }}
+{% else %}
+[]
+{% endfor %}

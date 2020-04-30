@@ -1,0 +1,34 @@
+---
+# Configure management tasks
+
+- block:
+    - name: Configure management role access
+      xml:
+        path: "{{ amq_broker_dir }}/{{ amq_broker_name }}/etc/management.xml"
+        xpath: >-
+          {{ "/activemq:management-context/activemq:authorisation/"
+             + "activemq:role-access/activemq:match/activemq:access" }}
+        namespaces:
+          activemq: "http://activemq.org/schema"
+        pretty_print: yes
+        input_type: xml
+        attribute: roles
+        value: "{{ amq_admin_groups }}"
+        backup: yes
+
+    - name: Configure management default access
+      xml:
+        path: "{{ amq_broker_dir }}/{{ amq_broker_name }}/etc/management.xml"
+        xpath: >-
+          {{ "/activemq:management-context/activemq:authorisation/"
+             + "activemq:default-access/activemq:access" }}
+        namespaces:
+          activemq: "http://activemq.org/schema"
+        pretty_print: yes
+        input_type: xml
+        attribute: roles
+        value: "{{ amq_admin_groups }}"
+        backup: yes
+  tags:
+    - role::amq::configure
+    - role::amq::configure::management

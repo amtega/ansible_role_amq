@@ -1,0 +1,11 @@
+---
+# Setup user tasks
+
+- name: Setup AMQ user
+  user:
+    name: "{{ amq_user }}"
+    group: "{{ amq_group }}"
+    state: present
+  tags:
+    - role::amq::install
+    - role::amq::install::user

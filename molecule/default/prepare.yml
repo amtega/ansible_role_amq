@@ -1,0 +1,79 @@
+---
+
+- name: Prepare
+  hosts:
+    - amq_tests_cluster
+    - amq_tests_cluster_storage
+  gather_facts: no
+  become: yes
+  tasks:
+    - name: Install python for ansible
+      raw: >-
+        test -e /usr/bin/python
+        || (apt -y update && apt install -y python-minimal)
+      changed_when: no
+
+    - name: Match vagrant vm name to inventory
+      hostname:
+        name: "{{ inventory_hostname }}"
+
+    - name: Remove loopback (/etc/hosts)
+      lineinfile:
+        path: /etc/hosts
+        state: absent
+        regexp: '^127\.0\.0\.1'
+        line:
+        owner: root
+        group: root
+        mode: "0644"
+        backup: yes
+
+    - name: Add master and slave to DNS (/etc/hosts) HARDCODED
+      lineinfile:
+        path: /etc/hosts
+        line: "{{ item }}"
+        owner: root
+        group: root
+        mode: "0644"
+        backup: yes
+      loop:
+        - "{{ test_master_ip }} master"
+        - "{{ test_slave_ip }} slave"
+
+- name: Prepare
+  hosts: amq_tests_cluster
+  become: yes
+  tasks:
+    - name: Install - install packages
+      yum:
+        state: present
+        name:
+          - nfs-utils
+          - rpcbind
+          - "{{ amq_java_version }}"
+          - tmux
+          - vim
+          - nmap
+          - tree
+
+    - name: Setup /etc/exports
+      lineinfile:
+        path: /etc/exports
+        line: "/nfsfileshare {{ test_nfs_ip }}/24(rw,sync,no_root_squash)"
+        create: yes
+
+    - file:
+        path: /nfsfileshare
+        state: directory
+        mode: "0777"
+
+    - name: "Start and enable service {{ item }}"
+      systemd:
+        name: "{{ item }}"
+        state: started
+        enabled: yes
+      loop:
+        - rpcbind
+        - nfs-server
+        - nfs-lock
+        - nfs-idmap

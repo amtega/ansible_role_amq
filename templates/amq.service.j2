@@ -1,0 +1,15 @@
+{{ ansible_managed | comment }}
+
+[Unit]
+Description = Active MQ (AMQ)
+After = network.target
+
+[Service]
+ExecStart = {{ amq_broker_dir }}/{{ amq_broker_name }}/bin/artemis-service start
+ExecStop = {{ amq_broker_dir}}/{{amq_broker_name}}/bin/artemis-service stop
+Type=forking
+User = {{ amq_user }}
+Group = {{ amq_group }}
+
+[Install]
+WantedBy = multi-user.target

@@ -1,0 +1,100 @@
+---
+
+dependency:
+  name: galaxy
+driver:
+  name: vagrant
+  provider:
+    name: virtualbox
+lint:
+  name: yamllint
+platforms:
+  - name: nfs
+    box: centos/7
+    instance_raw_config_args:
+      - 'vm.network "private_network", ip: "192.168.33.100"'
+    groups:
+      - molecule_hosts
+      - amq_tests_cluster_storage
+
+  - name: master
+    box: centos/7
+    instance_raw_config_args:
+      - 'vm.network "private_network", ip: "192.168.33.10"'
+    groups:
+      - molecule_hosts
+      - amq_tests_cluster
+
+  - name: slave
+    box: centos/7
+    instance_raw_config_args:
+      - 'vm.network "private_network", ip: "192.168.33.11"'
+    groups:
+      - molecule_hosts
+      - amq_tests_cluster
+
+provisioner:
+  name: ansible
+  ansible_args:
+    - --inventory=${ANSIBLE_INVENTORY}
+    - --vault-password-file=${ANSIBLE_VAULT_PASSWORD_FILE:-/etc/hostname}
+  lint:
+    name: ansible-lint
+  inventory:
+    host_vars:
+      master:
+        grp_amq_is_master_node: yes
+      slave:
+        grp_amq_is_master_node: no
+    group_vars:
+      all:
+        test_nfs_ip: 192.168.33.100
+        test_master_ip: 192.168.33.10
+        test_slave_ip: 192.168.33.11
+
+        grp_all_ansible_user: app-ansible
+
+        grp_all_amq_broker_admin_password: test_pass
+        amq_broker_shared_storage_nfs: "{{ test_nfs_ip }}:/nfsfileshare"
+        amq_version: 7.3.0
+        amq_java_version: java-1.8.0-openjdk
+        amq_broker_name: "{{ inventory_hostname }}"
+
+        amq_broker_virtualhost_name: "{{ ansible_facts.default_ipv4.address }}"
+        amq_broker_is_slave: "{{ not grp_amq_is_master_node }}"
+
+        amq_broker_nfs_shared_storage_dir: >-
+          {{ amq_broker_shared_storage_nfs_mount_dir }}/test_instance
+        amq_base_dir: /opt/redhat/amq-broker
+        amq_broker_shared_storage_nfs_mount_dir: /mnt/share-amqbroker
+        amq_broker_shared_storage_dir: "{{ amq_broker_nfs_shared_storage_dir }}"
+        amq_broker_cluster_discovery: yes
+        amq_broker_shared_storage: yes
+        amq_broker_cluster_maxhops: 1
+        amq_broker_cluster_load_balancing_policy: STRICT
+        amq_cluster_use_duplicate_detection: yes
+        amq_cluster_retry_interval: 500
+        amq_broker_address_setting_redelivery_delay: 500
+        amq_broker_security_invalidation_interval: 3600000
+        amq_broker_java_options: "-Djava.net.preferIPv4Stack=true"
+
+        amq_broker_users: []
+
+        amq_broker_admin:
+          name: admin
+          password: "{{ grp_all_amq_broker_admin_password }}"
+          role: admin
+
+        amq_admin_groups: "admin"
+
+        amq_broker_dir: "{{ amq_base_dir }}/brokers"
+        amq_install_dir: >-
+          {{ amq_base_dir }}/install/amq-broker-{{ amq_version }}
+        amq_group: amq-broker
+        amq_user: amq-broker
+        amq_no_log: no
+
+verifier:
+  name: testinfra
+  lint:
+    name: flake8

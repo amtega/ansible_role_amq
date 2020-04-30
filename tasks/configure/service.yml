@@ -1,0 +1,15 @@
+---
+# Configure service
+
+- name: Configure service systemd unit
+  template:
+    src: amq.service.j2
+    dest: /usr/lib/systemd/system/amq.service
+    owner: root
+    group: root
+    mode: 0644
+    backup: yes
+  notify: enable and start amq broker
+  tags:
+    - role::amq::configure
+    - role::amq::configure::service

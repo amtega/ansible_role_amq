@@ -1,0 +1,14 @@
+---
+# Setup shared storage tasks
+
+- name: Setup shared data directory
+  file:
+    path: "{{ amq_broker_shared_storage_dir }}"
+    owner: "{{ amq_user }}"
+    group: "{{ amq_group }}"
+    mode: u=rwx,g=rwx,o=
+    state: directory
+  when: amq_broker_shared_storage_dir | default("") | length > 0
+  tags:
+    - role::amq::install
+    - role::amq::install::storage

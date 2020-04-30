@@ -1,0 +1,8 @@
+---
+# Role install tasks
+
+- import_tasks: packages.yml
+- import_tasks: group.yml
+- import_tasks: user.yml
+- import_tasks: download.yml
+- import_tasks: shared_storage.yml

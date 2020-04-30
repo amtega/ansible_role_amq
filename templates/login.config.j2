@@ -1,0 +1,25 @@
+activemq {
+   org.apache.activemq.artemis.spi.core.security.jaas.PropertiesLoginModule sufficient
+       debug=false
+       reload=true
+       org.apache.activemq.jaas.properties.user="artemis-users.properties"
+       org.apache.activemq.jaas.properties.role="artemis-roles.properties";
+
+    org.apache.activemq.artemis.spi.core.security.jaas.LDAPLoginModule sufficient
+        debug={{ (amq_login.debug) | ternary("false", "true") }}
+        initialContextFactory=com.sun.jndi.ldap.LdapCtxFactory
+        connectionURL="{{ amq_login.connectionURL }}"
+        connectionUsername="{{ amq_login.connectionUsername }}"
+        connectionPassword="{{ amq_login.connectionPassword }}"
+        connectionProtocol={{ amq_login.connectionProtocol }}
+        authentication={{ amq_login.authentication }}
+        userBase="{{ amq_login.userBase }}"
+        userSearchMatching="{{ amq_login.userSearchMatching }}"
+        userSearchSubtree={{ (amq_login.userSearchSubtree) | ternary("false", "true") }}
+        roleBase="{{ amq_login.roleBase }}"
+        roleName={{ amq_login.roleName }}
+        roleSearchMatching="{{ amq_login.roleSearchMatching }}"
+        roleSearchSubtree={{ (amq_login.roleSearchSubtree) | ternary("false", "true") }}
+        referral={{ amq_login.referral }}
+        reload={{ (amq_login.reload) | ternary("false", "true") }};
+};

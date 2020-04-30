@@ -1,0 +1,14 @@
+---
+# Configure jgroups tasks
+
+- name: Configure jgroups file ping
+  template:
+    src: jgroups_file_ping.xml.j2
+    dest: "{{ amq_broker_dir }}/{{ amq_broker_name }}/etc/jgroups-file-ping.xml"
+    owner: "{{ amq_user }}"
+    group: "{{ amq_group }}"
+    backup: yes
+  when: amq_broker_nfs_shared_storage_dir is not none
+  tags:
+    - role::amq::configure
+    - role::amq::configure::jgroups

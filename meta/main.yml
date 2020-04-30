@@ -1,0 +1,26 @@
+---
+# Role dependencies
+
+galaxy_info:
+  role_name: role
+  author: Daniel Sánchez Fábregas / Juan Antonio Valiño García
+  description: Deploy RedHat AMQ Broker cluster
+  company: AMTEGA - Xunta de Galicia
+  license: GPLv3 or EUPL
+  min_ansible_version: 2.9
+  platforms:
+    - name: EL
+      versions:
+        - 7
+  galaxy_tags:
+    - redhat
+    - amq
+    - broker
+
+dependencies:
+  - role: amtega.artifact
+    tags:
+      - never
+  - role: amtega.packages
+    tags:
+      - never

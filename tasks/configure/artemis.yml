@@ -1,0 +1,15 @@
+---
+# Configure artemis tasks
+
+- name: Configure artemis profile
+  vars:
+    desired_option: '-Dhawtio.roles="{{ amq_admin_groups }}" '
+  lineinfile:
+    path: "{{ amq_broker_dir }}/{{ amq_broker_name }}/etc/artemis.profile"
+    regexp: '^(JAVA_ARGS=.*)(-Dhawtio\.role?=[^ ]* )(.*)$'
+    line: '\1{{ desired_option }}\3'
+    backrefs: yes
+    backup: yes
+  tags:
+    - role::amq::configure
+    - role::amq::configure::artemis

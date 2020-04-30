@@ -1,0 +1,14 @@
+---
+# Role variables
+
+# Jgroups file
+
+amq_jgroups_file: jgroups-file-ping.xml
+
+# TLS paths
+
+amq_broker_tls_keystore_path: >-
+  {{ amq_broker_dir }}/{{ amq_broker_name }}/etc/identity.ks
+
+amq_broker_tls_truststore_path: >-
+  {{ amq_broker_dir }}/{{ amq_broker_name }}/etc/trust.ks

@@ -1,0 +1,30 @@
+---
+# Configure jolokia tasks
+
+- name: Setup jolokia access
+  vars:
+    origin_allowed_value: "*://{{ amq_broker_virtualhost_name }}*"
+    xpath_value: '/restrict/cors[allow-origin="{{ origin_allowed_value }}"]'
+  block:
+    - name: Check jolokia access
+      xml:
+        path: >-
+          {{ amq_broker_dir }}/{{ amq_broker_name }}/etc/jolokia-access.xml
+        xpath: "{{ xpath_value }}"
+        count: yes
+      register: amq_allow_origin_result
+
+    - name: Configure jolokia access
+      when: amq_allow_origin_result.count == 0
+      xml:
+        path: >-
+          {{ amq_broker_dir }}/{{ amq_broker_name }}/etc/jolokia-access.xml
+        xpath: "/restrict/cors/strict-checking"
+        insertbefore: yes
+        add_children:
+          - "allow-origin": "{{ origin_allowed_value }}"
+        pretty_print: yes
+        backup: yes
+  tags:
+    - role::amq::configure
+    - role::amq::configure::jolokia
