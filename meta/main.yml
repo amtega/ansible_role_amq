@@ -2,7 +2,7 @@
 # Role dependencies
 
 galaxy_info:
-  role_name: role
+  role_name: amq
   author: Daniel Sánchez Fábregas / Juan Antonio Valiño García
   description: Deploy RedHat AMQ Broker cluster
   company: AMTEGA - Xunta de Galicia
@@ -21,6 +21,7 @@ dependencies:
   - role: amtega.artifact
     tags:
       - never
+
   - role: amtega.packages
     tags:
       - never
