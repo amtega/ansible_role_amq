@@ -4,9 +4,7 @@
 - name: Enable and start amq broker service
   systemd:
     name: amq
-    enabled: yes
     state: restarted
-    daemon_reload: yes
   when: amq_item.flag
   loop:
     - flag: "{{ not amq_broker_is_slave }}"
@@ -17,4 +15,8 @@
     loop_var: amq_item
     label: "{{ amq_item.label }}"
     pause: 10
-  listen: enable and start amq broker
+  listen:
+    - enable and start amq broker
+    - enable amq broker
+    - start amq broker
+    - restart amq broker

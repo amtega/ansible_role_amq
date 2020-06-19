@@ -28,8 +28,6 @@ def amq_parse_url_amq_query_string(query_str):
     Returns:
         dict: dict of the parsed elements of a URL query string component
     """
-
-
     return dict(
         (k, v if len(v) > 1 else v[0]) for k, v in parse_qs(query_str).items()
     )
@@ -72,8 +70,8 @@ def amq_url_combine(split_url):
     composes a URL.
 
     Args:
-        split_url(dict): dictionary using the same keys as produced by the urlsplit
-                   filter
+        split_url(dict): dictionary using the same keys as produced by the
+            urlsplit filter
 
     Returns:
         str: URL constructed from split_url

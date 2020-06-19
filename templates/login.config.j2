@@ -6,20 +6,20 @@ activemq {
        org.apache.activemq.jaas.properties.role="artemis-roles.properties";
 
     org.apache.activemq.artemis.spi.core.security.jaas.LDAPLoginModule sufficient
-        debug={{ (amq_login.debug) | ternary("false", "true") }}
+        debug={{ (amq_broker_login.debug) | ternary("false", "true") }}
         initialContextFactory=com.sun.jndi.ldap.LdapCtxFactory
-        connectionURL="{{ amq_login.connectionURL }}"
-        connectionUsername="{{ amq_login.connectionUsername }}"
-        connectionPassword="{{ amq_login.connectionPassword }}"
-        connectionProtocol={{ amq_login.connectionProtocol }}
-        authentication={{ amq_login.authentication }}
-        userBase="{{ amq_login.userBase }}"
-        userSearchMatching="{{ amq_login.userSearchMatching }}"
-        userSearchSubtree={{ (amq_login.userSearchSubtree) | ternary("false", "true") }}
-        roleBase="{{ amq_login.roleBase }}"
-        roleName={{ amq_login.roleName }}
-        roleSearchMatching="{{ amq_login.roleSearchMatching }}"
-        roleSearchSubtree={{ (amq_login.roleSearchSubtree) | ternary("false", "true") }}
-        referral={{ amq_login.referral }}
-        reload={{ (amq_login.reload) | ternary("false", "true") }};
+        connectionURL="{{ amq_broker_login.connectionURL }}"
+        connectionUsername="{{ amq_broker_login.connectionUsername }}"
+        connectionPassword="{{ amq_broker_login.connectionPassword }}"
+        connectionProtocol={{ amq_broker_login.connectionProtocol }}
+        authentication={{ amq_broker_login.authentication }}
+        userBase="{{ amq_broker_login.userBase }}"
+        userSearchMatching="{{ amq_broker_login.userSearchMatching }}"
+        userSearchSubtree={{ (amq_broker_login.userSearchSubtree) | ternary("false", "true") }}
+        roleBase="{{ amq_broker_login.roleBase }}"
+        roleName={{ amq_broker_login.roleName }}
+        roleSearchMatching="{{ amq_broker_login.roleSearchMatching }}"
+        roleSearchSubtree={{ (amq_broker_login.roleSearchSubtree) | ternary("false", "true") }}
+        referral={{ amq_broker_login.referral }}
+        reload={{ (amq_broker_login.reload) | ternary("false", "true") }};
 };

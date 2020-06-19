@@ -6,95 +6,106 @@ driver:
   name: vagrant
   provider:
     name: virtualbox
-lint:
-  name: yamllint
+lint: |
+  set -e
+  export ANSIBLE_ACTION_PLUGINS=$PWD/action_plugins
+  export ANSIBLE_BECOME_PLUGINS=$PWD/become_plugins
+  export ANSIBLE_CACHE_PLUGINS=$PWD/cache_plugins
+  export ANSIBLE_CALLBACK_PLUGINS=$PWD/callback_plugins
+  export ANSIBLE_CLICONF_PLUGINS=$PWD/cliconf_plugins
+  export ANSIBLE_CONNECTION_PLUGINS=$PWD/connection_plugins
+  export ANSIBLE_DOC_FRAGMENT_PLUGINS=$PWD/doc_fragment_plugins
+  export ANSIBLE_FILTER_PLUGINS=$PWD/filter_plugins
+  export ANSIBLE_HTTPAPI_PLUGINS=$PWD/httpapi_plugins
+  export ANSIBLE_INVENTORY_PLUGINS=$PWD/inventory_plugins
+  export ANSIBLE_LIBRARY=$PWD/library
+  export ANSIBLE_LOOKUP_PLUGINS=$PWD/lookup_plugins
+  export ANSIBLE_NETCONF_PLUGINS=$PWD/netconf_plugins
+  export ANSIBLE_STRATEGY_PLUGINS=$PWD/strategy_plugins
+  export ANSIBLE_TERMINAL_PLUGINS=$PWD/terminal_plugins
+  export ANSIBLE_TEST_PLUGINS=$PWD/test_plugins
+  export ANSIBLE_VARS_PLUGINS=$PWD/vars_plugins
+  yamllint .
+  ansible-lint
+  flake8
 platforms:
-  - name: nfs
+  - name: "nfs-${INSTANCE_UUID:-1}"
     box: centos/7
     instance_raw_config_args:
       - 'vm.network "private_network", ip: "192.168.33.100"'
     groups:
       - molecule_hosts
-      - amq_tests_cluster_storage
+      - molecule_hosts_nfs_servers
 
-  - name: master
+  - name: "master-${INSTANCE_UUID:-1}"
     box: centos/7
     instance_raw_config_args:
       - 'vm.network "private_network", ip: "192.168.33.10"'
     groups:
       - molecule_hosts
-      - amq_tests_cluster
+      - molecule_hosts_amq_cluster
+      - molecule_hosts_amq_master
 
-  - name: slave
+  - name: "slave-${INSTANCE_UUID:-1}"
     box: centos/7
     instance_raw_config_args:
       - 'vm.network "private_network", ip: "192.168.33.11"'
     groups:
       - molecule_hosts
-      - amq_tests_cluster
+      - molecule_hosts_amq_cluster
+      - molecule_hosts_amq_slaves
 
 provisioner:
   name: ansible
   ansible_args:
     - --inventory=${ANSIBLE_INVENTORY}
     - --vault-password-file=${ANSIBLE_VAULT_PASSWORD_FILE:-/etc/hostname}
-  lint:
-    name: ansible-lint
   inventory:
-    host_vars:
-      master:
-        grp_amq_is_master_node: yes
-      slave:
-        grp_amq_is_master_node: no
-    group_vars:
-      all:
-        test_nfs_ip: 192.168.33.100
-        test_master_ip: 192.168.33.10
-        test_slave_ip: 192.168.33.11
+    hosts:
+      molecule_hosts:
+        vars:
+          ansible_user: root
 
-        grp_all_ansible_user: app-ansible
+          test_nfs_server_ip: 192.168.33.100
+          test_nfs_directory: /nfsfileshare
+          test_nfs_share: "{{ test_nfs_server_ip }}:{{ test_nfs_directory }}"
 
-        grp_all_amq_broker_admin_password: test_pass
-        amq_broker_shared_storage_nfs: "{{ test_nfs_ip }}:/nfsfileshare"
-        amq_version: 7.3.0
-        amq_java_version: java-1.8.0-openjdk
-        amq_broker_name: "{{ inventory_hostname }}"
+          test_master_ip: 192.168.33.10
+          test_slave_ip: 192.168.33.11
 
-        amq_broker_virtualhost_name: "{{ ansible_facts.default_ipv4.address }}"
-        amq_broker_is_slave: "{{ not grp_amq_is_master_node }}"
+          test_java_package: java-1.8.0-openjdk
 
-        amq_broker_nfs_shared_storage_dir: >-
-          {{ amq_broker_shared_storage_nfs_mount_dir }}/test_instance
-        amq_base_dir: /opt/redhat/amq-broker
-        amq_broker_shared_storage_nfs_mount_dir: /mnt/share-amqbroker
-        amq_broker_shared_storage_dir: "{{ amq_broker_nfs_shared_storage_dir }}"
-        amq_broker_cluster_discovery: yes
-        amq_broker_shared_storage: yes
-        amq_broker_cluster_maxhops: 1
-        amq_broker_cluster_load_balancing_policy: STRICT
-        amq_cluster_use_duplicate_detection: yes
-        amq_cluster_retry_interval: 500
-        amq_broker_address_setting_redelivery_delay: 500
-        amq_broker_security_invalidation_interval: 3600000
-        amq_broker_java_options: "-Djava.net.preferIPv4Stack=true"
+          amq_version: 7.3.0
+          amq_broker_name: "{{ inventory_hostname }}"
+          amq_base_dir: /opt/redhat/amq-broker
+          amq_install_dir: >-
+            {{ amq_base_dir }}/install/amq-broker-{{ amq_version }}
+          amq_brokers_dir: "{{ amq_base_dir }}/brokers"
+          amq_broker_data_dir: /mnt/share-amqbroker/test_instance
 
-        amq_broker_users: []
+          amq_broker_java_options: "-Djava.net.preferIPv4Stack=true"
 
-        amq_broker_admin:
-          name: admin
-          password: "{{ grp_all_amq_broker_admin_password }}"
-          role: admin
+          amq_broker_admin:
+            name: admin
+            password: test_pass
+            role: admin
 
-        amq_admin_groups: "admin"
+          amq_broker_admin_groups:
+            - admin
 
-        amq_broker_dir: "{{ amq_base_dir }}/brokers"
-        amq_install_dir: >-
-          {{ amq_base_dir }}/install/amq-broker-{{ amq_version }}
-        amq_group: amq-broker
-        amq_user: amq-broker
-        amq_no_log: no
+          amq_broker_cluster_discovery: yes
+          amq_broker_shared_store: yes
+          amq_broker_cluster_maxhops: 1
+          amq_broker_cluster_load_balancing_policy: STRICT
+          amq_broker_address_setting_redelivery_delay: 500
+          amq_broker_security_invalidation_interval: 3600000
 
+          amq_no_log: no
+      molecule_hosts_amq_master:
+        vars:
+          amq_broker_is_slave: no
+      molecule_hosts_amq_slaves:
+        vars:
+          amq_broker_is_slave: yes
 verifier:
-  name: testinfra
-  lint:
-    name: flake8
+  name: ansible

@@ -4,7 +4,7 @@
 - name: Configure login
   template:
     src: login.config.j2
-    dest: "{{ amq_broker_dir }}/{{ amq_broker_name }}/etc/login.config"
+    dest: "{{ amq_brokers_dir }}/{{ amq_broker_name }}/etc/login.config"
     owner: "{{ amq_user }}"
     group: "{{ amq_group }}"
     backup: yes

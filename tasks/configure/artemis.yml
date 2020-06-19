@@ -3,9 +3,10 @@
 
 - name: Configure artemis profile
   vars:
-    desired_option: '-Dhawtio.roles="{{ amq_admin_groups }}" '
+    desired_option: >-
+      -Dhawtio.roles="{{ amq_broker_admin_groups | join(',') }}"
   lineinfile:
-    path: "{{ amq_broker_dir }}/{{ amq_broker_name }}/etc/artemis.profile"
+    path: "{{ amq_brokers_dir }}/{{ amq_broker_name }}/etc/artemis.profile"
     regexp: '^(JAVA_ARGS=.*)(-Dhawtio\.role?=[^ ]* )(.*)$'
     line: '\1{{ desired_option }}\3'
     backrefs: yes

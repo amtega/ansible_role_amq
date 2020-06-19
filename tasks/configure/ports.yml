@@ -4,7 +4,7 @@
 - block:
     - name: Gather ports acceptor names
       xml:
-        path: "{{ amq_broker_dir }}/{{ amq_broker_name }}/etc/broker.xml"
+        path: "{{ amq_brokers_dir }}/{{ amq_broker_name }}/etc/broker.xml"
         xpath: /conf:configuration/core:core/core:acceptors/core:acceptor
         content: attribute
         backup: yes
@@ -21,7 +21,7 @@
       block:
         - name: Gather ports acceptor URL's
           xml:
-            path: "{{ amq_broker_dir }}/{{ amq_broker_name }}/etc/broker.xml"
+            path: "{{ amq_brokers_dir }}/{{ amq_broker_name }}/etc/broker.xml"
             xpath: /conf:configuration/core:core/core:acceptors/core:acceptor
             content: text
             backup: yes
@@ -39,7 +39,7 @@
                  | from_yaml
                  | combine(amq_broker_ports, recursive=True) }}
           xml:
-            path: "{{ amq_broker_dir }}/{{ amq_broker_name }}/etc/broker.xml"
+            path: "{{ amq_brokers_dir }}/{{ amq_broker_name }}/etc/broker.xml"
             xpath: >-
               /conf:configuration/core:core/core:acceptors/core:acceptor[@name
               = "{{ amq_acceptor_name_item.name }}"]

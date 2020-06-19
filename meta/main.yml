@@ -18,10 +18,23 @@ galaxy_info:
     - broker
 
 dependencies:
-  - role: amtega.artifact
-    tags:
-      - never
+  - role: amtega.check_platform
+    vars:
+      check_platform_distributions:
+        centos: 7
+        rhel: 7
 
   - role: amtega.packages
+    vars:
+      packages_os:
+        all:
+          all:
+            libaio: present
+      packages_python:
+        all:
+          all:
+            lxml: present
+
+  - role: amtega.artifact
     tags:
       - never

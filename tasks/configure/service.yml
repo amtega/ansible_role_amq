@@ -1,15 +1,37 @@
 ---
 # Configure service
 
-- name: Configure service systemd unit
-  template:
-    src: amq.service.j2
-    dest: /usr/lib/systemd/system/amq.service
-    owner: root
-    group: root
-    mode: 0644
-    backup: yes
-  notify: enable and start amq broker
+- block:
+    - name: Configure service systemd unit
+      template:
+        src: amq.service.j2
+        dest: /usr/lib/systemd/system/amq.service
+        owner: root
+        group: root
+        mode: 0644
+        backup: yes
+      register: amq_configure_systemd_result
+
+    - name: Reload systemd
+      systemd:
+        daemon_reload: yes
+      when: amq_configure_systemd_result is changed
+
+    - name: Enable and start amq broker service
+      systemd:
+        name: amq
+        enabled: yes
+        state: started
+      when: amq_item.flag
+      loop:
+        - flag: "{{ not amq_broker_is_slave }}"
+          label: Master turn
+        - flag: "{{ amq_broker_is_slave }}"
+          label: Slave turn
+      loop_control:
+        loop_var: amq_item
+        label: "{{ amq_item.label }}"
+        pause: 10
   tags:
     - role::amq::configure
     - role::amq::configure::service

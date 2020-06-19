@@ -1,8 +1,8 @@
 ---
-# Download taskss
+# Download tasks
 
 - block:
-    - name: Ensure install directory exists
+    - name: Setup install directory
       file:
         path: "{{ amq_install_dir | dirname }}"
         state: directory
@@ -11,24 +11,10 @@
         mode: u=rwx,g=rwx,o=rx
 
     - name: Download amq artifact
+      include_tasks: artifact.yml
       when: >-
         not ansible_local.artifact_amq_artifact.version | default ("")
         == amq_version
-      block:
-        - include_role:
-            name: amtega.artifact
-          vars:
-            artifact_overrides:
-                owner: "{{ amq_user }}"
-                group: "{{ amq_group }}"
-                dest: "{{ amq_install_dir | dirname }}"
-                unarchive: yes
-                unarchive_creates: "{{ amq_install_dir }}"
-                version: "{{ amq_version }}"
-                state: present
-                no_log: "{{ amq_no_log }}"
-            artifact_list:
-              - "{{ amq_artifact | combine(artifact_overrides) }}"
   tags:
     - role::amq::install
     - role::amq::install::download
