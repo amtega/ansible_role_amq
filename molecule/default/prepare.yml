@@ -1,9 +1,7 @@
 ---
 
-- name: Prepare
-  hosts:
-    - amq_tests_cluster
-    - amq_tests_cluster_storage
+- name: Prepare testing hosts
+  hosts: molecule_hosts
   gather_facts: no
   become: yes
   tasks:
@@ -12,6 +10,7 @@
         test -e /usr/bin/python
         || (apt -y update && apt install -y python-minimal)
       changed_when: no
+      when: yes
 
     - name: Match vagrant vm name to inventory
       hostname:
@@ -40,34 +39,30 @@
         - "{{ test_master_ip }} master"
         - "{{ test_slave_ip }} slave"
 
-- name: Prepare
-  hosts: amq_tests_cluster
+- name: Prepare nfs server
+  hosts: molecule_hosts_nfs_servers
   become: yes
   tasks:
-    - name: Install - install packages
+    - name: Setup packages
       yum:
         state: present
         name:
           - nfs-utils
           - rpcbind
-          - "{{ amq_java_version }}"
-          - tmux
-          - vim
-          - nmap
-          - tree
 
     - name: Setup /etc/exports
       lineinfile:
         path: /etc/exports
-        line: "/nfsfileshare {{ test_nfs_ip }}/24(rw,sync,no_root_squash)"
+        line: "{{ test_nfs_directory }} *(rw,sync,no_root_squash)"
         create: yes
 
-    - file:
-        path: /nfsfileshare
+    - name: Setup nfs shared directory
+      file:
+        path: "{{ test_nfs_directory }}"
         state: directory
         mode: "0777"
 
-    - name: "Start and enable service {{ item }}"
+    - name: Start and enable service
       systemd:
         name: "{{ item }}"
         state: started
@@ -77,3 +72,20 @@
         - nfs-server
         - nfs-lock
         - nfs-idmap
+
+- name: Prepare amq cluster hosts
+  hosts: molecule_hosts_amq_cluster
+  become: yes
+  tasks:
+    - name: Setup packages
+      yum:
+        state: present
+        name: "{{ test_java_package }}"
+
+    - name: Mount shared nfs directory
+      mount:
+        path: amq_broker_data_dir
+        src: "{{ test_nfs_share }}"
+        fstype: nfs
+        opts: rw
+        state: present

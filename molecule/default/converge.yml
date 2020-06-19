@@ -1,0 +1,8 @@
+---
+
+- name: Converge
+  hosts: molecule_hosts_amq_cluster
+  become: yes
+  become_user: root
+  roles:
+    - amtega.amq

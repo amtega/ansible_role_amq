@@ -4,7 +4,7 @@
 - block:
     - name: Gather static connectors
       xml:
-        path: "{{ amq_broker_dir }}/{{ amq_broker_name }}/etc/broker.xml"
+        path: "{{ amq_brokers_dir }}/{{ amq_broker_name }}/etc/broker.xml"
         xpath: /conf:configuration/core:core/core:connectors/core:connector
         content: text
         namespaces:
@@ -21,7 +21,7 @@
              | json_query('matches[*].*')
              | json_query('[]') }}
       xml:
-        path: "{{ amq_broker_dir }}/{{ amq_broker_name }}/etc/broker.xml"
+        path: "{{ amq_brokers_dir }}/{{ amq_broker_name }}/etc/broker.xml"
         xpath: /conf:configuration/core:core/core:connectors
         add_children:
           - connector:
@@ -42,7 +42,7 @@
 
     - name: Configure static connectors
       xml:
-        path: "{{ amq_broker_dir }}/{{ amq_broker_name }}/etc/broker.xml"
+        path: "{{ amq_brokers_dir }}/{{ amq_broker_name }}/etc/broker.xml"
         xpath: >-
           /conf:configuration/core:core/core:connectors/core:connector[@name='{{
           item.name }}']
@@ -62,7 +62,7 @@
 
     - name: Remove all static cluster reference connectors
       xml:
-        path: "{{ amq_broker_dir }}/{{ amq_broker_name }}/etc/broker.xml"
+        path: "{{ amq_brokers_dir }}/{{ amq_broker_name }}/etc/broker.xml"
         xpath: >-
           {{ "/conf:configuration/core:core/core:cluster-connections/"
           + "core:cluster-connection/core:static-connectors" }}
@@ -76,7 +76,7 @@
 
     - name: Add static cluster reference connector
       xml:
-        path: "{{ amq_broker_dir }}/{{ amq_broker_name }}/etc/broker.xml"
+        path: "{{ amq_brokers_dir }}/{{ amq_broker_name }}/etc/broker.xml"
         xpath: >-
           {{ "/conf:configuration/core:core/core:cluster-connections/"
           + "core:cluster-connection" }}
@@ -91,7 +91,7 @@
 
     - name: Configure static cluster reference connectors
       xml:
-        path: "{{ amq_broker_dir }}/{{ amq_broker_name }}/etc/broker.xml"
+        path: "{{ amq_brokers_dir }}/{{ amq_broker_name }}/etc/broker.xml"
         xpath: >-
           {{ "/conf:configuration/core:core/core:cluster-connections/"
           + "core:cluster-connection/core:static-connectors" }}
@@ -112,7 +112,7 @@
 
     - name: Remove cluster connection discovery group reference
       xml:
-        path: "{{ amq_broker_dir }}/{{ amq_broker_name }}/etc/broker.xml"
+        path: "{{ amq_brokers_dir }}/{{ amq_broker_name }}/etc/broker.xml"
         xpath: >-
           {{ '/conf:configuration/core:core/core:cluster-connections/'
           + 'core:cluster-connection/core:discovery-group-ref' }}
@@ -125,7 +125,7 @@
 
     - name: Remove broadcast groups
       xml:
-        path: "{{ amq_broker_dir }}/{{ amq_broker_name }}/etc/broker.xml"
+        path: "{{ amq_brokers_dir }}/{{ amq_broker_name }}/etc/broker.xml"
         xpath: /conf:configuration/core:core/core:broadcast-groups
         state: absent
         namespaces:
@@ -136,7 +136,7 @@
 
     - name: Remove discovery groups
       xml:
-        path: "{{ amq_broker_dir }}/{{ amq_broker_name }}/etc/broker.xml"
+        path: "{{ amq_brokers_dir }}/{{ amq_broker_name }}/etc/broker.xml"
         xpath: /conf:configuration/core:core/core:discovery-groups
         state: absent
         namespaces:
@@ -144,6 +144,7 @@
           core: urn:activemq:core
         backup: yes
       when: not amq_broker_cluster_discovery
+
   when: amq_broker_cluster
   tags:
     - role::amq::configure

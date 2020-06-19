@@ -7,16 +7,12 @@ amq_version: 7.3.0
 
 # Unix user and group used to run AMQ service
 
-amq_group: amq-broker
-amq_user: amq-broker
+amq_user: daemon
+amq_group: daemon
 
 # Broker instance name
 
 amq_broker_name: broker
-
-# Aditional java options
-
-amq_broker_java_options: ""
 
 # Base amq directory
 
@@ -28,11 +24,15 @@ amq_install_dir: "{{ amq_base_dir }}/install/amq-broker-{{ amq_version }}"
 
 # Brokers directory
 
-amq_broker_dir: "{{ amq_base_dir }}/brokers"
+amq_brokers_dir: "{{ amq_base_dir }}/brokers"
 
-# Shared storage directory
+# Broker data directory
 
-amq_broker_shared_storage_dir: "{{ amq_broker_dir }}/data"
+amq_broker_data_dir: "{{ amq_brokers_dir }}/data"
+
+# Aditional java options
+
+amq_broker_java_options: ""
 
 # Primary admin user and role for the AMQ broker
 
@@ -40,6 +40,10 @@ amq_broker_admin:
   name: admin
   password: password
   role: admin
+
+# List of strings with AMQ borker admin groups
+
+amq_broker_admin_groups: []
 
 # List of dicts with the AMQ broker users. The format of the dicts is the
 # following:
@@ -96,6 +100,11 @@ amq_broker_cluster_load_balancing_policy: ON_DEMAND
 amq_broker_cluster_discovery: no
 amq_broker_replication_enabled: no
 amq_broker_is_slave: no
+amq_broker_shared_store: yes
+
+# Jolokia settings
+
+amq_jolokia_allow_origin: "{{ ansible_facts.default_ipv4.address }}"
 
 # Jgroups settings
 
@@ -131,17 +140,11 @@ amq_broker_disable_stomp_protocol: yes
 
 # Port assignments
 
-amq_broker_ports:
-  artemis:
-    port: 61616
-  amqp:
-    port: 5672
-  stomp:
-    port: 61613
-  hornetq:
-    port: 5445
-  mqtt:
-    port: 1833
+amq_artemis_port: 61616
+amq_amqp_port: 5672
+amq_stomp_port: 61613
+amq_hornetq_port: 5445
+amq_mqtt_port: 1833
 
 # Additional broker settings
 
@@ -150,7 +153,7 @@ amq_broker_security_invalidation_interval: 60000
 
 # Login settings
 
-amq_login:
+amq_broker_login:
   debug: no
   connectionURL: ldap://ldap.example.local:389
   connectionUsername: cn=amqLdapUser,ou=CorporateUsers,dc=example,dc=local

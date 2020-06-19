@@ -22,7 +22,7 @@
 
     - name: Setup broker directory
       file:
-        path: "{{ amq_broker_dir }}"
+        path: "{{ amq_brokers_dir }}"
         state: directory
         owner: "{{ amq_user }}"
         group: "{{ amq_group }}"
@@ -35,13 +35,13 @@
       when: amq_broker_master_slave_flag.flag
       command: >-
         {{ amq_install_dir }}/bin/artemis create
-        {{ amq_broker_dir }}/{{ amq_broker_name }}
+        {{ amq_brokers_dir }}/{{ amq_broker_name }}
         {{ amq_broker_options }}
       args:
-        creates: "{{ amq_broker_dir }}/{{ amq_broker_name }}"
+        creates: "{{ amq_brokers_dir }}/{{ amq_broker_name }}"
       become: yes
       become_user: "{{ amq_user }}"
-      notify: enable and start amq broker
+      notify: restart amq broker
       loop:
         - flag: "{{ not amq_broker_is_slave }}"
           label: Master turn
@@ -55,7 +55,7 @@
 
     - name: Setup broker messaging roles
       xml:
-        path: "{{ amq_broker_dir }}/{{ amq_broker_name }}/etc/broker.xml"
+        path: "{{ amq_brokers_dir }}/{{ amq_broker_name }}/etc/broker.xml"
         xpath: /conf:configuration/core:core/core:security-settings
         input_type: yaml
         set_children: >-
@@ -71,7 +71,7 @@
 
     - name: Configure broker redelivery delay
       xml:
-        path: "{{ amq_broker_dir }}/{{ amq_broker_name }}/etc/broker.xml"
+        path: "{{ amq_brokers_dir }}/{{ amq_broker_name }}/etc/broker.xml"
         xpath: >-
           {{ "/conf:configuration/core:core/core:address-settings/"
           + "core:address-setting/core:redelivery-delay" }}
@@ -87,7 +87,7 @@
       block:
         - name: Configure - jgroups - broker.xml - discovery-group-ref
           xml:
-            path: "{{ amq_broker_dir }}/{{ amq_broker_name }}/etc/broker.xml"
+            path: "{{ amq_brokers_dir }}/{{ amq_broker_name }}/etc/broker.xml"
             xpath: >-
               {{ "/conf:configuration/core:core/core:cluster-connections/"
               + "core:cluster-connection/core:discovery-group-ref" }}
@@ -101,7 +101,7 @@
 
         - name: Configure broker discovery groups node
           xml:
-            path: "{{ amq_broker_dir }}/{{ amq_broker_name }}/etc/broker.xml"
+            path: "{{ amq_brokers_dir }}/{{ amq_broker_name }}/etc/broker.xml"
             xpath: "/conf:configuration/core:core/core:discovery-groups"
             namespaces:
               conf: "urn:activemq"
@@ -112,7 +112,7 @@
 
         - name: Configure broker discovery groups content
           xml:
-            path: "{{ amq_broker_dir }}/{{ amq_broker_name }}/etc/broker.xml"
+            path: "{{ amq_brokers_dir }}/{{ amq_broker_name }}/etc/broker.xml"
             xpath: "/conf:configuration/core:core/core:discovery-groups"
             namespaces:
               conf: "urn:activemq"
@@ -129,7 +129,7 @@
 
         - name: Configure broker broadcast groups node
           xml:
-            path: "{{ amq_broker_dir }}/{{ amq_broker_name }}/etc/broker.xml"
+            path: "{{ amq_brokers_dir }}/{{ amq_broker_name }}/etc/broker.xml"
             xpath: "/conf:configuration/core:core/core:broadcast-groups"
             namespaces:
               conf: "urn:activemq"
@@ -140,7 +140,7 @@
 
         - name: Configure broker broadcast groups content
           xml:
-            path: "{{ amq_broker_dir }}/{{ amq_broker_name }}/etc/broker.xml"
+            path: "{{ amq_brokers_dir }}/{{ amq_broker_name }}/etc/broker.xml"
             xpath: "/conf:configuration/core:core/core:broadcast-groups"
             namespaces:
               conf: "urn:activemq"
@@ -158,7 +158,7 @@
 
     - name: Configure broker security invalidation interval node
       xml:
-        path: "{{ amq_broker_dir }}/{{ amq_broker_name }}/etc/broker.xml"
+        path: "{{ amq_brokers_dir }}/{{ amq_broker_name }}/etc/broker.xml"
         xpath: >-
           /conf:configuration/core:core/core:security-invalidation-interval
         namespaces:
@@ -168,6 +168,7 @@
         state: present
         pretty_print: yes
         backup: yes
+
   tags:
     - role::amq::configure
     - role::amq::configure::broker

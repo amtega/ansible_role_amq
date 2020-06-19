@@ -3,13 +3,13 @@
 
 - name: Setup jolokia access
   vars:
-    origin_allowed_value: "*://{{ amq_broker_virtualhost_name }}*"
-    xpath_value: '/restrict/cors[allow-origin="{{ origin_allowed_value }}"]'
+    allowed_origin_value: "*://{{ amq_jolokia_allow_origin }}*"
+    xpath_value: '/restrict/cors[allow-origin="{{ allowed_origin_value }}"]'
   block:
     - name: Check jolokia access
       xml:
         path: >-
-          {{ amq_broker_dir }}/{{ amq_broker_name }}/etc/jolokia-access.xml
+          {{ amq_brokers_dir }}/{{ amq_broker_name }}/etc/jolokia-access.xml
         xpath: "{{ xpath_value }}"
         count: yes
       register: amq_allow_origin_result
@@ -18,11 +18,11 @@
       when: amq_allow_origin_result.count == 0
       xml:
         path: >-
-          {{ amq_broker_dir }}/{{ amq_broker_name }}/etc/jolokia-access.xml
+          {{ amq_brokers_dir }}/{{ amq_broker_name }}/etc/jolokia-access.xml
         xpath: "/restrict/cors/strict-checking"
         insertbefore: yes
         add_children:
-          - "allow-origin": "{{ origin_allowed_value }}"
+          - "allow-origin": "{{ allowed_origin_value }}"
         pretty_print: yes
         backup: yes
   tags:

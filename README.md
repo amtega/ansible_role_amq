@@ -34,7 +34,7 @@ Tests are based on molecule with vagrant virtual machines. Follow the instructio
 
 To run the tests you have to pass the following variables:
 
-- `ANSIBLE_INVENTORY`: path to an inventory providing the variables `amq_artifact` and `amq_login`
+- `ANSIBLE_INVENTORY`: path to an inventory providing the variables `amq_artifact` and `amq_broker_login`
 - `ANSIBLE_VAULT_PASSWORD_FILE`: path to the file containing the vault password required for the previous inventory
 
 ```shell

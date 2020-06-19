@@ -8,7 +8,21 @@ amq_jgroups_file: jgroups-file-ping.xml
 # TLS paths
 
 amq_broker_tls_keystore_path: >-
-  {{ amq_broker_dir }}/{{ amq_broker_name }}/etc/identity.ks
+  {{ amq_brokers_dir }}/{{ amq_broker_name }}/etc/identity.ks
 
 amq_broker_tls_truststore_path: >-
-  {{ amq_broker_dir }}/{{ amq_broker_name }}/etc/trust.ks
+  {{ amq_brokers_dir }}/{{ amq_broker_name }}/etc/trust.ks
+
+# AQM broker ports dict
+
+amq_broker_ports:
+  artemis:
+    port: "{{ amq_artemis_port }}"
+  amqp:
+    port: "{{ amq_amqp_port }}"
+  stomp:
+    port: "{{ amq_stomp_port }}"
+  hornetq:
+    port: "{{ amq_hornetq_port }}"
+  mqtt:
+    port: "{{ amq_mqtt_port }}"

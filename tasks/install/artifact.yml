@@ -1,0 +1,17 @@
+---
+# Download artifact tasks
+
+- include_role:
+    name: amtega.artifact
+  vars:
+    artifact_overrides:
+      owner: "{{ amq_user }}"
+      group: "{{ amq_group }}"
+      dest: "{{ amq_install_dir | dirname }}"
+      unarchive: yes
+      unarchive_creates: "{{ amq_install_dir }}"
+      version: "{{ amq_version }}"
+      state: present
+      no_log: "{{ amq_no_log }}"
+    artifact_list:
+      - "{{ amq_artifact | combine(artifact_overrides) }}"

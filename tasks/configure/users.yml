@@ -3,14 +3,14 @@
 
 - name: Setup messaging users
   command: >
-    {{ amq_broker_dir }}/{{ amq_broker_name }}/bin/artemis user add
+    {{ amq_brokers_dir }}/{{ amq_broker_name }}/bin/artemis user add
     --user {{ amq_broker_user_item.name }}
     --password {{ amq_broker_user_item.password }}
     --role {{ amq_broker_user_item.role }}
   changed_when: no
   become: yes
   become_user: "{{ amq_user }}"
-  notify: enable and start amq broker
+  notify: restart amq broker
   loop: "{{ amq_broker_users }}"
   loop_control:
     loop_var: amq_broker_user_item

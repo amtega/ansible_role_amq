@@ -1,9 +1,0 @@
----
-
-- name: Converge
-  hosts: amq_tests_cluster
-  become: yes
-  become_user: root
-  tasks:
-    - include_role:
-        name: amtega.amq

@@ -5,7 +5,7 @@
 --password {{ amq_broker_admin.password }}
 --host {{ ansible_facts.hostname }}
 --http-host {{ ansible_facts.hostname }}
---data {{ amq_broker_shared_storage_dir }}
+--data {{ amq_broker_data_dir }}
 --java-options '{{ amq_broker_java_options }}'
 --force
 --verbose
@@ -37,7 +37,7 @@
 --replicated
 {% endif %}
 
-{% if amq_broker_shared_storage %}
+{% if amq_broker_shared_store %}
 --shared-store
 {% endif %}
 
