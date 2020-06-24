@@ -7,8 +7,8 @@ amq_version: 7.3.0
 
 # Unix user and group used to run AMQ service
 
-amq_user: daemon
-amq_group: daemon
+amq_user: amq-broker
+amq_group: amq-broker
 
 # Broker instance name
 
