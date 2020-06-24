@@ -76,6 +76,10 @@ provisioner:
           test_java_package: java-1.8.0-openjdk
 
           amq_version: 7.3.0
+
+          amq_user: daemon
+          amq_group: daemon
+
           amq_broker_name: "{{ inventory_hostname }}"
           amq_base_dir: /opt/redhat/amq-broker
           amq_install_dir: >-
