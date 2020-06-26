@@ -182,7 +182,7 @@ amq_broker_login:
 # version state and no_log will be ignored
 
 amq_artifact:
-  id: amq_artifact
+  id: amq
   type: gitlab
   host: https://gitlab.example.local
   path: /redhat/amq

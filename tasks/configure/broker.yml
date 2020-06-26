@@ -30,6 +30,7 @@
 
     - name: Create broker
       vars:
+        ansible_become_user: "{{ amq_user }}"
         amq_broker_options: >-
           {{ lookup('template', 'broker_options.j2').split("\n") | join(' ') }}
       when: amq_broker_master_slave_flag.flag
@@ -39,8 +40,6 @@
         {{ amq_broker_options }}
       args:
         creates: "{{ amq_brokers_dir }}/{{ amq_broker_name }}"
-      become: yes
-      become_user: "{{ amq_user }}"
       notify: restart amq broker
       loop:
         - flag: "{{ not amq_broker_is_slave }}"
@@ -51,6 +50,7 @@
         loop_var: amq_broker_master_slave_flag
         label: "{{ amq_broker_master_slave_flag.label }}"
         pause: 5
+      become: yes
       no_log: "{{ amq_no_log | bool }}"
 
     - name: Setup broker messaging roles

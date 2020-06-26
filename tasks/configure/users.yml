@@ -8,14 +8,15 @@
     --password {{ amq_broker_user_item.password }}
     --role {{ amq_broker_user_item.role }}
   changed_when: no
-  become: yes
-  become_user: "{{ amq_user }}"
   notify: restart amq broker
   loop: "{{ amq_broker_users }}"
   loop_control:
     loop_var: amq_broker_user_item
     label: "{{ amq_broker_user_item.name }}"
+  become: yes
   no_log: "{{ amq_no_log | bool }}"
+  vars:
+    ansible_become_user: "{{ amq_user }}"
   tags:
     - role::amq::configure
     - role::amq::configure::users
