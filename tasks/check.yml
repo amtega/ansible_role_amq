@@ -1,0 +1,12 @@
+---
+# Sanity checks
+
+- name: Config check (amq_broker_aio, amq_broker_nio)
+  assert:
+    that:
+      # amq_broker_aio xor amq_broker_nio (but no xor operator)
+      - >-
+        amq_broker_aio and not amq_broker_nio
+        or not amq_broker_aio and amq_broker_nio
+    quiet: yes
+    fail_msg: Mutually exclusive options (amq_broker_aio, amq_broker_nio)

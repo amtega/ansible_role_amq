@@ -118,9 +118,13 @@ amq_broker_paging: yes
 amq_broker_disable_destination_autocreate: yes
 amq_broker_queues: []
 
+# ASYNCIO settings
+
+amq_broker_aio: yes
+
 # Nio settings
 
-amq_broker_nio: yes
+amq_broker_nio: no
 
 # TLS settings
 
