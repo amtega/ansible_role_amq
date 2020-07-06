@@ -169,6 +169,20 @@
         pretty_print: yes
         backup: yes
 
+    - name: Configure broker queue depth for libaio
+      when: amq_broker_aio
+      xml:
+        path: "{{ amq_brokers_dir }}/{{ amq_broker_name }}/etc/broker.xml"
+        xpath: >-
+          /conf:configuration/core:core/core:journal-max-io
+        namespaces:
+          conf: "urn:activemq"
+          core: "urn:activemq:core"
+        value: "{{ amq_broker_journal_max_io | string }}"
+        state: present
+        pretty_print: yes
+        backup: yes
+
   tags:
     - role::amq::configure
     - role::amq::configure::broker

@@ -121,6 +121,7 @@ amq_broker_queues: []
 # ASYNCIO settings
 
 amq_broker_aio: yes
+amq_broker_journal_max_io: 4096
 
 # Nio settings
 
