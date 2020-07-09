@@ -83,9 +83,10 @@
         backup: yes
 
     - name: Configure broker discovery group
-      when: amq_broker_cluster_discovery
+      when: amq_broker_cluster_discovery | bool
       block:
         - name: Configure - jgroups - broker.xml - discovery-group-ref
+          when: amq_jgroups_enabled | bool
           xml:
             path: "{{ amq_brokers_dir }}/{{ amq_broker_name }}/etc/broker.xml"
             xpath: >-
@@ -100,6 +101,7 @@
             backup: yes
 
         - name: Configure broker discovery groups node
+          when: amq_jgroups_enabled | bool
           xml:
             path: "{{ amq_brokers_dir }}/{{ amq_broker_name }}/etc/broker.xml"
             xpath: "/conf:configuration/core:core/core:discovery-groups"
@@ -111,6 +113,7 @@
             backup: yes
 
         - name: Configure broker discovery groups content
+          when: amq_jgroups_enabled | bool
           xml:
             path: "{{ amq_brokers_dir }}/{{ amq_broker_name }}/etc/broker.xml"
             xpath: "/conf:configuration/core:core/core:discovery-groups"
@@ -128,6 +131,7 @@
             backup: yes
 
         - name: Configure broker broadcast groups node
+          when: amq_jgroups_enabled | bool
           xml:
             path: "{{ amq_brokers_dir }}/{{ amq_broker_name }}/etc/broker.xml"
             xpath: "/conf:configuration/core:core/core:broadcast-groups"
@@ -139,6 +143,7 @@
             backup: yes
 
         - name: Configure broker broadcast groups content
+          when: amq_jgroups_enabled | bool
           xml:
             path: "{{ amq_brokers_dir }}/{{ amq_broker_name }}/etc/broker.xml"
             xpath: "/conf:configuration/core:core/core:broadcast-groups"

@@ -107,7 +107,7 @@ amq_broker_shared_store: yes
 amq_jolokia_allow_origin: "{{ ansible_facts.default_ipv4.address }}"
 
 # Jgroups settings
-
+amq_jgroups_enabled: no
 amq_jgroups_channel: active_broadcast_channel
 amq_jgroups_connector_ref: artemis
 amq_jgroups_refresh_timeout: "10000"

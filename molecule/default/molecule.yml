@@ -97,7 +97,7 @@ provisioner:
           amq_broker_admin_groups:
             - admin
 
-          amq_broker_cluster_discovery: yes
+          amq_broker_cluster_discovery: no
           amq_broker_shared_store: yes
           amq_broker_cluster_maxhops: 1
           amq_broker_cluster_load_balancing_policy: STRICT
