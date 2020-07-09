@@ -36,8 +36,8 @@
         mode: "0644"
         backup: yes
       loop:
-        - "{{ test_master_ip }} master"
-        - "{{ test_slave_ip }} slave"
+        - "{{ test_master_ip }} master-{{ instance_uuid }}"
+        - "{{ test_slave_ip }} slave-{{ instance_uuid }}"
 
 - name: Prepare nfs server
   hosts: molecule_hosts_nfs_servers
