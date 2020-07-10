@@ -1,7 +1,11 @@
 ---
 # Configure broker tasks
 
-- block:
+- name: Configure broker tasks
+  tags:
+    - role::amq::configure
+    - role::amq::configure::broker
+  block:
     - name: Setup fact with broker cluster node members
       set_fact:
         amq_broker_cluster_nodes: >
@@ -83,9 +87,10 @@
         backup: yes
 
     - name: Configure broker discovery group
-      when: amq_broker_cluster_discovery
+      when: amq_broker_cluster_discovery | bool
       block:
         - name: Configure - jgroups - broker.xml - discovery-group-ref
+          when: amq_jgroups_enabled | bool
           xml:
             path: "{{ amq_brokers_dir }}/{{ amq_broker_name }}/etc/broker.xml"
             xpath: >-
@@ -100,6 +105,7 @@
             backup: yes
 
         - name: Configure broker discovery groups node
+          when: amq_jgroups_enabled | bool
           xml:
             path: "{{ amq_brokers_dir }}/{{ amq_broker_name }}/etc/broker.xml"
             xpath: "/conf:configuration/core:core/core:discovery-groups"
@@ -111,6 +117,7 @@
             backup: yes
 
         - name: Configure broker discovery groups content
+          when: amq_jgroups_enabled | bool
           xml:
             path: "{{ amq_brokers_dir }}/{{ amq_broker_name }}/etc/broker.xml"
             xpath: "/conf:configuration/core:core/core:discovery-groups"
@@ -128,6 +135,7 @@
             backup: yes
 
         - name: Configure broker broadcast groups node
+          when: amq_jgroups_enabled | bool
           xml:
             path: "{{ amq_brokers_dir }}/{{ amq_broker_name }}/etc/broker.xml"
             xpath: "/conf:configuration/core:core/core:broadcast-groups"
@@ -139,6 +147,7 @@
             backup: yes
 
         - name: Configure broker broadcast groups content
+          when: amq_jgroups_enabled | bool
           xml:
             path: "{{ amq_brokers_dir }}/{{ amq_broker_name }}/etc/broker.xml"
             xpath: "/conf:configuration/core:core/core:broadcast-groups"
@@ -169,6 +178,52 @@
         pretty_print: yes
         backup: yes
 
-  tags:
-    - role::amq::configure
-    - role::amq::configure::broker
+    - name: Configure broker queue depth for libaio
+      when: amq_broker_aio
+      xml:
+        path: "{{ amq_brokers_dir }}/{{ amq_broker_name }}/etc/broker.xml"
+        xpath: >-
+          /conf:configuration/core:core/core:journal-max-io
+        namespaces:
+          conf: "urn:activemq"
+          core: "urn:activemq:core"
+        value: "{{ amq_broker_journal_max_io | string }}"
+        state: present
+        pretty_print: yes
+        backup: yes
+
+    - name: Configure maximum number of thread used by the general thread pool
+      xml:
+        path: "{{ amq_brokers_dir }}/{{ amq_broker_name }}/etc/broker.xml"
+        xpath: >-
+          /conf:configuration/core:core/core:thread-pool-max-size
+        namespaces:
+          conf: "urn:activemq"
+          core: "urn:activemq:core"
+        value: "{{ amq_broker_thread_pool_max_size | string }}"
+        state: present
+        pretty_print: yes
+        backup: yes
+
+    - name: Configure maximum number of thread used by the scheduled thread pool
+      xml:
+        path: "{{ amq_brokers_dir }}/{{ amq_broker_name }}/etc/broker.xml"
+        xpath: >-
+          /conf:configuration/core:core/core:scheduled-thread-pool-max-size
+        namespaces:
+          conf: "urn:activemq"
+          core: "urn:activemq:core"
+        value: "{{ amq_broker_scheduled_thread_pool_max_size | string }}"
+        state: present
+        pretty_print: yes
+        backup: yes
+
+    - name: Apply thread and credit configuration in artemis acceptor
+      when: amq_broker_aio | bool
+      include_tasks: acceptor.yml
+      vars:
+        acceptor_name: artemis
+        acceptor_configuration:
+          query:
+            nioRemotingThreads: "{{ amq_broker_nioRemotingThreads }}"
+            amqpLowCredits: "{{ amq_broker_amqpLowCredits }}"

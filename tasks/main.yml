@@ -1,5 +1,6 @@
 ---
 # Role tasks
 
+- import_tasks: check.yml
 - import_tasks: install/main.yml
 - import_tasks: configure/main.yml

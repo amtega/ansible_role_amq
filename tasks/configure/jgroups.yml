@@ -2,6 +2,7 @@
 # Configure jgroups tasks
 
 - name: Configure jgroups file ping
+  when: amq_broker_shared_store | bool and amq_jgroups_enabled | bool
   template:
     src: jgroups_file_ping.xml.j2
     dest: >-
@@ -9,7 +10,6 @@
     owner: "{{ amq_user }}"
     group: "{{ amq_group }}"
     backup: yes
-  when: amq_broker_shared_store | bool
   tags:
     - role::amq::configure
     - role::amq::configure::jgroups

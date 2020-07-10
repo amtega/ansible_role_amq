@@ -107,7 +107,7 @@ amq_broker_shared_store: yes
 amq_jolokia_allow_origin: "{{ ansible_facts.default_ipv4.address }}"
 
 # Jgroups settings
-
+amq_jgroups_enabled: no
 amq_jgroups_channel: active_broadcast_channel
 amq_jgroups_connector_ref: artemis
 amq_jgroups_refresh_timeout: "10000"
@@ -118,9 +118,23 @@ amq_broker_paging: yes
 amq_broker_disable_destination_autocreate: yes
 amq_broker_queues: []
 
+
+# ASYNCIO settings
+
+amq_broker_aio: yes
+amq_broker_journal_max_io: 500
+
+# Thread settings
+
+amq_broker_thread_pool_max_size: 30
+amq_broker_scheduled_thread_pool_max_size: 5
+
 # Nio settings
 
-amq_broker_nio: yes
+amq_broker_nio: no
+amq_broker_nioRemotingThreads: -1
+amq_broker_amqpLowCredits: 30
+
 
 # TLS settings
 
@@ -149,13 +163,13 @@ amq_mqtt_port: 1833
 # Additional broker settings
 
 amq_broker_address_setting_redelivery_delay: 500
-amq_broker_security_invalidation_interval: 60000
+amq_broker_security_invalidation_interval: 3600000
 
 # Login settings
 
 amq_broker_login:
   debug: no
-  connectionURL: ldap://ldap.example.local:389
+  connectionURL: ldap://ldap.example.local:3268
   connectionUsername: cn=amqLdapUser,ou=CorporateUsers,dc=example,dc=local
   connectionPassword: "*******************"
   connectionProtocol: s

@@ -41,6 +41,7 @@ platforms:
     box: centos/7
     instance_raw_config_args:
       - 'vm.network "private_network", ip: "192.168.33.10"'
+      - 'vm.boot_timeout = 600'
     groups:
       - molecule_hosts
       - molecule_hosts_amq_cluster
@@ -50,6 +51,7 @@ platforms:
     box: centos/7
     instance_raw_config_args:
       - 'vm.network "private_network", ip: "192.168.33.11"'
+      - 'vm.boot_timeout = 600'
     groups:
       - molecule_hosts
       - molecule_hosts_amq_cluster
@@ -64,6 +66,7 @@ provisioner:
     hosts:
       molecule_hosts:
         vars:
+          instance_uuid: "${INSTANCE_UUID:-1}"
           ansible_user: root
 
           test_nfs_server_ip: 192.168.33.100
@@ -97,12 +100,19 @@ provisioner:
           amq_broker_admin_groups:
             - admin
 
-          amq_broker_cluster_discovery: yes
+          amq_broker_cluster_discovery: no
           amq_broker_shared_store: yes
           amq_broker_cluster_maxhops: 1
           amq_broker_cluster_load_balancing_policy: STRICT
           amq_broker_address_setting_redelivery_delay: 500
           amq_broker_security_invalidation_interval: 3600000
+
+          amq_broker_nio: no
+          amq_broker_nioRemotingThreads: -1
+          amq_broker_amqpLowCredits: 30
+
+          amq_broker_aio: yes
+          amq_broker_journal_max_io: 500
 
           amq_no_log: no
       molecule_hosts_amq_master:

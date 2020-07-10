@@ -40,7 +40,7 @@ To run the tests you have to pass the following variables:
 ```shell
 cd amtega.amq
 
-ANSIBLE_INVENTORY=~/myinventory ANSIBLE_VAULT_PASSWORD_FILE=~/myvaultpassword
+export ANSIBLE_INVENTORY=~/myinventory ANSIBLE_VAULT_PASSWORD_FILE=~/myvaultpassword
 molecule test
 ```
 

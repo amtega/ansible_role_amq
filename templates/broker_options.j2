@@ -57,6 +57,10 @@
 --nio
 {% endif %}
 
+{% if amq_broker_aio %}
+--aio
+{% endif %}
+
 {% if amq_broker_disable_stomp_protocol %}
 --no-stomp-acceptor
 {% endif %}

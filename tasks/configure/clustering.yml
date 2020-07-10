@@ -11,7 +11,7 @@
           conf: urn:activemq
           core: urn:activemq:core
         backup: yes
-      when: not amq_broker_cluster_discovery
+      when: not amq_broker_cluster_discovery | bool
       register: amq_connectors_result
 
     - name: Add static connectors
@@ -32,7 +32,7 @@
         pretty_print: yes
         backup: yes
       when: >-
-        not amq_broker_cluster_discovery
+        not amq_broker_cluster_discovery | bool
         and not amq_broker_cluster_node_item.value is search(ansible_host)
         and not amq_broker_cluster_node_item.value in connectors
       loop: "{{ amq_broker_cluster_nodes }}"
@@ -45,7 +45,7 @@
         path: "{{ amq_brokers_dir }}/{{ amq_broker_name }}/etc/broker.xml"
         xpath: >-
           /conf:configuration/core:core/core:connectors/core:connector[@name='{{
-          item.name }}']
+          amq_broker_cluster_node_item.name }}']
         value: "{{ amq_broker_cluster_node_item.value | string }}"
         namespaces:
           conf: urn:activemq
@@ -53,7 +53,7 @@
         pretty_print: yes
         backup: yes
       when: >-
-        not amq_broker_cluster_discovery
+        not amq_broker_cluster_discovery | bool
         and not amq_broker_cluster_node_item.value is search(ansible_host)
       loop: "{{ amq_broker_cluster_nodes }}"
       loop_control:
@@ -72,7 +72,7 @@
           core: urn:activemq:core
         pretty_print: yes
         backup: yes
-      when: not amq_broker_cluster_discovery
+      when: not amq_broker_cluster_discovery | bool
 
     - name: Add static cluster reference connector
       xml:
@@ -87,7 +87,7 @@
           core: urn:activemq:core
         pretty_print: yes
         backup: yes
-      when: not amq_broker_cluster_discovery
+      when: not amq_broker_cluster_discovery | bool
 
     - name: Configure static cluster reference connectors
       xml:
@@ -103,7 +103,7 @@
         pretty_print: yes
         backup: yes
       when: >-
-        not amq_broker_cluster_discovery
+        not amq_broker_cluster_discovery | bool
         and not amq_broker_cluster_node_item.value is search(ansible_host)
       loop: "{{ amq_broker_cluster_nodes }}"
       loop_control:
@@ -121,7 +121,7 @@
           conf: urn:activemq
           core: urn:activemq:core
         backup: yes
-      when: not amq_broker_cluster_discovery
+      when: not amq_broker_cluster_discovery | bool
 
     - name: Remove broadcast groups
       xml:
@@ -132,7 +132,7 @@
           conf: urn:activemq
           core: urn:activemq:core
         backup: yes
-      when: not amq_broker_cluster_discovery
+      when: not amq_broker_cluster_discovery | bool
 
     - name: Remove discovery groups
       xml:
@@ -143,7 +143,7 @@
           conf: urn:activemq
           core: urn:activemq:core
         backup: yes
-      when: not amq_broker_cluster_discovery
+      when: not amq_broker_cluster_discovery | bool
 
   when: amq_broker_cluster
   tags:
