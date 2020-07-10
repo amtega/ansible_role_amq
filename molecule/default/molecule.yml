@@ -107,6 +107,8 @@ provisioner:
           amq_broker_address_setting_redelivery_delay: 500
           amq_broker_security_invalidation_interval: 3600000
 
+          amq_broker_http_host_bindings: 0.0.0.0
+
           amq_broker_nio: no
           amq_broker_nioRemotingThreads: -1
           amq_broker_amqpLowCredits: 30

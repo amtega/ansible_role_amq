@@ -2,6 +2,7 @@
 # Role configure tasks
 
 - import_tasks: broker.yml
+- import_tasks: bootstrap.yml
 - import_tasks: clustering.yml
 - import_tasks: ports.yml
 - import_tasks: users.yml

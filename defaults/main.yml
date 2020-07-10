@@ -106,6 +106,12 @@ amq_broker_shared_store: yes
 
 amq_jolokia_allow_origin: "{{ ansible_facts.default_ipv4.address }}"
 
+# Web
+
+# With artemis create --http-host configurates web bindings in
+# etc/bootstrap.xml → xpath:/broker/web/@bind= ...
+amq_broker_http_host_bindings: "{{ ansible_facts.hostname }}"
+
 # Jgroups settings
 amq_jgroups_enabled: no
 amq_jgroups_channel: active_broadcast_channel
@@ -159,6 +165,11 @@ amq_amqp_port: 5672
 amq_stomp_port: 61613
 amq_hornetq_port: 5445
 amq_mqtt_port: 1833
+amq_http_admin_port: 8161
+  # HTTP Server http://hostname:8161
+  # Artemis Jolokia http://hostname:8161/console/jolokia
+  # Artemis Console http://hostname:8161/console
+
 
 # Additional broker settings
 

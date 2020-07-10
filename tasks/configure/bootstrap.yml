@@ -1,0 +1,20 @@
+---
+# Configure bootstrap tasks
+
+- name: Configure bootstrap tasks
+  tags:
+    - role::amq::configure
+    - role::amq::configure::bootstrap
+  block:
+
+    - name: Bootstrap - Configure console web binding
+      xml:
+        path: "{{ amq_brokers_dir }}/{{ amq_broker_name }}/etc/bootstrap.xml"
+        xpath: /broker/web
+        attribute: bind
+        value: >-
+          {{ amq_broker_http_host_bindings | string
+          }}:{{ amq_http_admin_port | string }}"
+        state: present
+        pretty_print: yes
+        backup: yes
