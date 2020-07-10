@@ -89,3 +89,6 @@
         fstype: nfs
         opts: rw
         state: present
+
+    - name: Clean amq if installed
+      import_tasks: prepare_clean.yml

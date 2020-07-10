@@ -1,0 +1,24 @@
+---
+
+- name: Check for amq service file
+  stat:
+    path: /usr/lib/systemd/system/amq.service
+  register: amq_service_result
+
+- name: Stop amq service if present
+  when: amq_service_result.stat.exists
+  systemd:
+    name: amq
+    enabled: yes
+    state: stopped
+
+- name: Kill java when active
+  command: /usr/bin/pkill java
+  register: pkill_result
+  changed_when: pkill_result.rc | int == 0
+  failed_when: no
+
+- name: Erase all amq files and dirs if present
+  file:
+    path: "{{ amq_base_dir }}"
+    state: absent
