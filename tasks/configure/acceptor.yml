@@ -1,0 +1,41 @@
+---
+# Configure acceptor
+
+- name: "Retrieve {{ acceptor_name }} acceptor"
+  xml:
+    path: "{{ amq_brokers_dir }}/{{ amq_broker_name }}/etc/broker.xml"
+    xpath: >-
+      /conf:configuration/core:core/core:acceptors/core:acceptor[@name
+      = "{{ acceptor_name }}"]
+    content: text
+    namespaces:
+      conf: urn:activemq
+      core: urn:activemq:core
+  register: amq_acceptor
+
+- name: configure - tls - extract artemis acceptor for messaging TLS enablment
+  set_fact:
+    amq_acceptor: "{{ amq_acceptor | json_query('matches[*].*') | json_query('[]') | join }}"
+
+- name: configure - tls - parse artemis acceptor URL for messaging TLS enablement
+  set_fact:
+    amq_acceptor: "{{ amq_acceptor | urlsplit | urlsplit_splitquery }}"
+
+- name: configure - tls - incorporate messaging TLS configuration
+  set_fact:
+    amq_acceptor: "{{ amq_acceptor | combine(acceptor_configuration, recursive=True) }}"
+
+- name: configure - tls - update artemis acceptor URL for messaging TLS enablement
+  set_fact:
+    amq_acceptor: "{{ amq_acceptor | urlcombine }}"
+
+- name: "Apply configuration in {{ acceptor_name }} acceptor"
+  xml:
+    path: "{{ amq_brokers_dir }}/{{ amq_broker_name }}/etc/broker.xml"
+    xpath: >-
+      /conf:configuration/core:core/core:acceptors/core:acceptor[@name
+       = "{{ acceptor_name }}"]
+    value: "{{ amq_acceptor }}"
+    namespaces:
+      conf: urn:activemq
+      core: urn:activemq:core

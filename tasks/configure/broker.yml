@@ -217,3 +217,13 @@
         state: present
         pretty_print: yes
         backup: yes
+
+    - name: Apply thread and credit configuration in artemis acceptor
+      when: amq_broker_aio | bool
+      include_tasks: acceptor.yml
+      vars:
+        acceptor_name: artemis
+        acceptor_configuration:
+          query:
+            nioRemotingThreads: "{{ amq_broker_nioRemotingThreads }}"
+            amqpLowCredits: "{{ amq_broker_amqpLowCredits }}"
