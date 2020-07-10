@@ -160,7 +160,7 @@ amq_broker_security_invalidation_interval: 60000
 
 amq_broker_login:
   debug: no
-  connectionURL: ldap://ldap.example.local:389
+  connectionURL: ldap://ldap.example.local:3268
   connectionUsername: cn=amqLdapUser,ou=CorporateUsers,dc=example,dc=local
   connectionPassword: "*******************"
   connectionProtocol: s
