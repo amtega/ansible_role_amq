@@ -1,7 +1,11 @@
 ---
 # Configure broker tasks
 
-- block:
+- name: Configure broker tasks
+  tags:
+    - role::amq::configure
+    - role::amq::configure::broker
+  block:
     - name: Setup fact with broker cluster node members
       set_fact:
         amq_broker_cluster_nodes: >
@@ -188,6 +192,28 @@
         pretty_print: yes
         backup: yes
 
-  tags:
-    - role::amq::configure
-    - role::amq::configure::broker
+    - name: Configure maximum number of thread used by the general thread pool
+      xml:
+        path: "{{ amq_brokers_dir }}/{{ amq_broker_name }}/etc/broker.xml"
+        xpath: >-
+          /conf:configuration/core:core/core:thread-pool-max-size
+        namespaces:
+          conf: "urn:activemq"
+          core: "urn:activemq:core"
+        value: "{{ amq_broker_thread_pool_max_size | string }}"
+        state: present
+        pretty_print: yes
+        backup: yes
+
+    - name: Configure maximum number of thread used by the scheduled thread pool
+      xml:
+        path: "{{ amq_brokers_dir }}/{{ amq_broker_name }}/etc/broker.xml"
+        xpath: >-
+          /conf:configuration/core:core/core:scheduled-thread-pool-max-size
+        namespaces:
+          conf: "urn:activemq"
+          core: "urn:activemq:core"
+        value: "{{ amq_broker_scheduled_thread_pool_max_size | string }}"
+        state: present
+        pretty_print: yes
+        backup: yes
