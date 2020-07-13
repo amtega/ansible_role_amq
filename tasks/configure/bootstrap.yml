@@ -10,11 +10,13 @@
     - name: Bootstrap - Configure console web binding
       xml:
         path: "{{ amq_brokers_dir }}/{{ amq_broker_name }}/etc/bootstrap.xml"
-        xpath: /broker/web
+        xpath: /activemq:broker/activemq:web
         attribute: bind
         value: >-
-          {{ amq_broker_http_host_bindings | string
+          http://{{ amq_broker_http_host_bindings | string
           }}:{{ amq_http_admin_port | string }}
         state: present
+        namespaces:
+          activemq: http://activemq.org/schema
         pretty_print: yes
         backup: yes
