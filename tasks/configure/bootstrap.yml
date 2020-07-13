@@ -14,7 +14,7 @@
         attribute: bind
         value: >-
           {{ amq_broker_http_host_bindings | string
-          }}:{{ amq_http_admin_port | string }}"
+          }}:{{ amq_http_admin_port | string }}
         state: present
         pretty_print: yes
         backup: yes
