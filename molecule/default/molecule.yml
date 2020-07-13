@@ -80,8 +80,8 @@ provisioner:
 
           amq_version: 7.3.0
 
-          amq_user: daemon
-          amq_group: daemon
+          amq_user: amq-broker
+          amq_group: amq-broker
 
           amq_broker_name: "{{ inventory_hostname }}"
           amq_base_dir: /opt/redhat/amq-broker

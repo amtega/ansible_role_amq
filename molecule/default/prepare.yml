@@ -92,6 +92,15 @@
           - "{{ test_java_package }}"
           - nfs-utils
 
+    - name: "Ensure group {{ amq_group }} exists"
+      group:
+        name: "{{ amq_group }}"
+        state: present
+
+    - name: "Ensure user {{ amq_user }} exists"
+      user:
+        name: "{{ amq_user }}"
+        group: "{{ amq_group }}"
 
     - name: Clean amq if installed
       import_tasks: prepare_clean.yml
@@ -105,6 +114,7 @@
         group: "{{ amq_group }}"
         mode: u=rwx,g=rwx,o=
         state: directory
+        recurse: yes
 
     - name: Mount shared nfs directory
       mount:
@@ -112,4 +122,4 @@
         src: "{{ test_nfs_share }}"
         fstype: nfs
         opts: rw
-        state: remounted
+        state: mounted
