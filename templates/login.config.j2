@@ -6,7 +6,7 @@ activemq {
        org.apache.activemq.jaas.properties.role="artemis-roles.properties";
 
     org.apache.activemq.artemis.spi.core.security.jaas.LDAPLoginModule sufficient
-        debug={{ (amq_broker_login.debug) | ternary("false", "true") }}
+        debug={{ (amq_broker_login.debug) | ternary("true", "false") }}
         initialContextFactory=com.sun.jndi.ldap.LdapCtxFactory
         connectionURL="{{ amq_broker_login.connectionURL }}"
         connectionUsername="{{ amq_broker_login.connectionUsername }}"
@@ -15,11 +15,11 @@ activemq {
         authentication={{ amq_broker_login.authentication }}
         userBase="{{ amq_broker_login.userBase }}"
         userSearchMatching="{{ amq_broker_login.userSearchMatching }}"
-        userSearchSubtree={{ (amq_broker_login.userSearchSubtree) | ternary("false", "true") }}
+        userSearchSubtree={{ (amq_broker_login.userSearchSubtree) | ternary("true", "false") }}
         roleBase="{{ amq_broker_login.roleBase }}"
         roleName={{ amq_broker_login.roleName }}
         roleSearchMatching="{{ amq_broker_login.roleSearchMatching }}"
-        roleSearchSubtree={{ (amq_broker_login.roleSearchSubtree) | ternary("false", "true") }}
+        roleSearchSubtree={{ (amq_broker_login.roleSearchSubtree) | ternary("true", "false") }}
         referral={{ amq_broker_login.referral }}
-        reload={{ (amq_broker_login.reload) | ternary("false", "true") }};
+        reload={{ (amq_broker_login.reload) | ternary("true", "false") }};
 };
