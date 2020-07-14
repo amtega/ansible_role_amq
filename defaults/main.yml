@@ -13,6 +13,7 @@ amq_group: amq-broker
 # Broker instance name
 
 amq_broker_name: broker
+amq_broker_fqdn: "{{ ansible_facts.fqdn }}"
 
 # Base amq directory
 

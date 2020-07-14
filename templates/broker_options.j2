@@ -1,4 +1,4 @@
---name {{ ansible_facts.fqdn }}
+--name {{ amq_broker_fqdn }}
 --role {{ amq_broker_admin.role }}
 --require-login
 --user {{ amq_broker_admin.name }}
