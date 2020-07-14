@@ -7,6 +7,7 @@
     dest: "{{ amq_brokers_dir }}/{{ amq_broker_name }}/etc/login.config"
     owner: "{{ amq_user }}"
     group: "{{ amq_group }}"
+    mode: 0600
     backup: yes
   tags:
     - role::amq::configure
