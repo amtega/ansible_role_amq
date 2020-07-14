@@ -53,14 +53,16 @@
     - name: Setup /etc/exports
       lineinfile:
         path: /etc/exports
-        line: "{{ test_nfs_directory }} *(rw,sync,no_root_squash)"
+        line: "{{ test_nfs_directory }} *(rw,sync,no_root_squash,no_all_squash)"
         create: yes
 
     - name: Setup nfs shared directory
       file:
         path: "{{ test_nfs_directory }}"
         state: directory
-        mode: "0777"
+        mode: "755"
+        owner: nobody
+        group: nobody
 
     - name: Start and enable service
       systemd:
@@ -73,6 +75,12 @@
         - nfs-lock
         - nfs-idmap
 
+    - name: Restart service nfs-server
+      systemd:
+        name: nfs-server
+        state: restarted
+
+
 - name: Prepare amq cluster hosts
   hosts: molecule_hosts_amq_cluster
   become: yes
@@ -80,15 +88,28 @@
     - name: Setup packages
       yum:
         state: present
-        name: "{{ test_java_package }}"
+        name:
+          - "{{ test_java_package }}"
+          - nfs-utils
 
-    - name: Mount shared nfs directory
-      mount:
-        path: amq_broker_data_dir
-        src: "{{ test_nfs_share }}"
-        fstype: nfs
-        opts: rw
-        state: present
 
     - name: Clean amq if installed
       import_tasks: prepare_clean.yml
+
+    # HACK: Need mount point, made in advance.
+    #       Same as tasks/install/data_dir.yml
+    - name: Setup data directory
+      file:
+        path: "{{ amq_broker_data_dir }}"
+        owner: "{{ amq_user }}"
+        group: "{{ amq_group }}"
+        mode: u=rwx,g=rwx,o=
+        state: directory
+
+    - name: Mount shared nfs directory
+      mount:
+        path: "{{ amq_broker_data_dir }}"
+        src: "{{ test_nfs_share }}"
+        fstype: nfs
+        opts: rw
+        state: remounted
