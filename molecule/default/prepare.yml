@@ -27,7 +27,7 @@
         mode: "0644"
         backup: yes
 
-    - name: Add master and slave to DNS (/etc/hosts) HARDCODED
+    - name: Add primary and replica to DNS (/etc/hosts) HARDCODED
       lineinfile:
         path: /etc/hosts
         line: "{{ item }}"
@@ -36,8 +36,8 @@
         mode: "0644"
         backup: yes
       loop:
-        - "{{ test_master_ip }} master-{{ instance_uuid }}"
-        - "{{ test_slave_ip }} slave-{{ instance_uuid }}"
+        - "{{ test_primary_ip }} primary-{{ instance_uuid }}"
+        - "{{ test_replica_ip }} replica-{{ instance_uuid }}"
 
 - name: Prepare nfs server
   hosts: molecule_hosts_nfs_servers

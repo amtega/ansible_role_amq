@@ -29,7 +29,7 @@
 --queues {{ amq_broker_queues }}
 {% endif %}
 
-{% if amq_broker_is_slave %}
+{% if amq_broker_is_replica %}
 --slave
 {% endif %}
 
