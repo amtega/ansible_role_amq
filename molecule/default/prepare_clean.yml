@@ -18,6 +18,15 @@
   changed_when: pkill_result.rc | int == 0
   failed_when: no
 
+- name: Erase all amq files in shared nfs directory
+  when: >-
+    amq_broker_data_dir | length > 0
+    and amq_broker_name == "primary"
+  shell: >-
+    rm -fr
+    {{ amq_broker_data_dir }}/*
+    /etc/ansible/facts.d/artifact_amq_artifact.fact
+
 - name: Unmount shared nfs directory
   mount:
     path: "{{ amq_broker_data_dir }}"
