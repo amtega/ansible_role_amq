@@ -6,7 +6,6 @@
 --host {{ ansible_facts.hostname }}
 --http-host {{ amq_broker_http_host_bindings | string }}
 --data {{ amq_broker_data_dir }}
---java-options '{{ amq_broker_java_options }}'
 --force
 --verbose
 

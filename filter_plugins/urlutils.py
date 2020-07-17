@@ -98,7 +98,65 @@ def amq_url_combine(split_url):
     return result
 
 
+def merge_java_parameters(old, new):
+    """Allows adding/replacing parameters in artemis.profile JAVA_ARGS
+
+    Merges the new given parameters into a JAVA_ARGS config value from an
+    artemis.profile file.
+
+    Args:
+        old(string): Line containing JAVA_ARGS config value from an
+            artemis.profile file.
+
+        new(list): List containing the parameters to merge in the JAVA_ARGS
+            config value from an artemis.profile file. List format:
+            * value: value of the parameter. Example: 'value': 'amq'
+            * param: Name of the parameter, containing all the characters non
+                included in 'value'. Example: 'param': '-Djon.id='
+
+    Returns:
+        str: Merged JAVA_ARGS config value ready to insert into a
+            artemis.profile file.
+    """
+    result = old
+
+    if result.startswith('JAVA_ARGS='):
+        with_declaration = True
+        result = result.replace('JAVA_ARGS=', '', 1)
+    else:
+        with_declaration = False
+
+    if result and result[0] == result[-1] == '"':
+        quoted = True
+        result = result[1:-1]
+    else:
+        quoted = False
+
+    for argument in sorted(new, key=lambda argument: argument['param']):
+        param = argument['param']
+        new_argument = param + argument['value']
+        if param in result:
+            if new_argument not in result:
+                position_ini = result.find(param)
+                position_end = result.find(' ', position_ini)
+                result = (
+                    result[:position_ini]
+                    + new_argument
+                    + result[position_end:]
+                )
+        else:
+            result += " " + new_argument
+    result = result.strip()
+    if quoted:
+        result = '"{}"'.format(result)
+    if with_declaration:
+        result = 'JAVA_ARGS={}'.format(result)
+    return result
+
+
 class FilterModule(object):
     def filters(self):
         return {"urlsplit_splitquery": amq_urlsplit_split_query,
-                "urlcombine": amq_url_combine}
+                "urlcombine": amq_url_combine,
+                "merge_java_parameters": merge_java_parameters,
+                }

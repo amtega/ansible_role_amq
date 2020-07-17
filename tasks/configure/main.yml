@@ -6,9 +6,9 @@
 - import_tasks: clustering.yml
 - import_tasks: ports.yml
 - import_tasks: users.yml
-- import_tasks: service.yml
 - import_tasks: jolokia.yml
 - import_tasks: jgroups.yml
 - import_tasks: management.yml
 - import_tasks: artemis.yml
 - import_tasks: login.yml
+- import_tasks: service.yml

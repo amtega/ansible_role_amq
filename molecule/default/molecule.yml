@@ -90,7 +90,16 @@ provisioner:
           amq_brokers_dir: "{{ amq_base_dir }}/brokers"
           amq_broker_data_dir: /mnt/share-amqbroker/test_instance
 
-          amq_broker_java_options: "-Djava.net.preferIPv4Stack=true"
+          amq_broker_java_options:
+            -
+              param: "-Djava.net.preferIPv4Stack="
+              value: "true"
+            -
+              param: "-Xms"
+              value: "512M"
+            -
+              param: "-Xmx"
+              value: "2G"
 
           amq_broker_admin:
             name: admin
