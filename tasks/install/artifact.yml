@@ -9,7 +9,7 @@
       group: "{{ amq_group }}"
       dest: "{{ amq_install_dir | dirname }}"
       unarchive: yes
-      unarchive_creates: "{{ amq_install_dir }}"
+      unarchive_creates: "{{ amq_install_dir | basename }}"
       version: "{{ amq_version }}"
       state: present
       no_log: "{{ amq_no_log }}"
