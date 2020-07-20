@@ -110,9 +110,13 @@ def merge_java_parameters(old, new):
 
         new(list): List containing the parameters to merge in the JAVA_ARGS
             config value from an artemis.profile file. List format:
-            * value: value of the parameter. Example: 'value': 'amq'
+            * value: value of the parameter. When undefined, parameter will be
+                deleted.
             * param: Name of the parameter, containing all the characters non
-                included in 'value'. Example: 'param': '-Djon.id='
+                included in 'value'.
+            Example:
+                [{'param': '-Dhawtio.role='},
+                 {'param': '-Dhawtio.roles=', 'value': 'admin,user'}]
 
     Returns:
         str: Merged JAVA_ARGS config value ready to insert into a
@@ -134,9 +138,12 @@ def merge_java_parameters(old, new):
 
     for argument in sorted(new, key=lambda argument: argument['param']):
         param = argument['param']
-        new_argument = param + argument['value']
+        if 'value' in argument.keys():
+            new_argument = param + argument['value']
+        else:
+            new_argument = ""  # Delete argument
         if param in result:
-            if new_argument not in result:
+            if not new_argument or new_argument not in result:
                 position_ini = result.find(param)
                 position_end = result.find(' ', position_ini)
                 result = (
@@ -146,7 +153,9 @@ def merge_java_parameters(old, new):
                 )
         else:
             result += " " + new_argument
-    result = result.strip()
+
+        result = result.strip()
+
     if quoted:
         result = '"{}"'.format(result)
     if with_declaration:
