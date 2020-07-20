@@ -12,9 +12,6 @@
 
     - name: Download amq artifact
       include_tasks: artifact.yml
-      when: >-
-        not ansible_local.artifact_amq_artifact.version | default ("")
-        == amq_version
   tags:
     - role::amq::install
     - role::amq::install::download
