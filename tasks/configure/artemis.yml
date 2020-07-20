@@ -1,16 +1,28 @@
 ---
 # Configure artemis tasks
 
-- name: Configure artemis profile
+
+- name: Configure artemis JAVA_ARGS
   vars:
-    desired_option: >-
-      -Dhawtio.roles="{{ amq_broker_admin_groups | join(',') }}"
-  lineinfile:
-    path: "{{ amq_brokers_dir }}/{{ amq_broker_name }}/etc/artemis.profile"
-    regexp: '^(JAVA_ARGS=.*)(-Dhawtio\.role?=[^ ]* )(.*)$'
-    line: '\1{{ desired_option }}\3'
-    backrefs: yes
-    backup: yes
-  tags:
-    - role::amq::configure
-    - role::amq::configure::artemis
+    ini_file: "{{ amq_brokers_dir }}/{{ amq_broker_name }}/etc/artemis.profile"
+  block:
+
+    - name: Get artemis JAVA_ARGS
+      command: >-
+        /bin/grep "^JAVA_ARGS=" {{ ini_file }}
+      changed_when: no
+      register: get_java_args_result
+
+    - name: Configure artemis JAVA_ARGS
+      vars:
+        configured_java_args: >-
+          {{ get_java_args_result.stdout
+          | merge_java_parameters(amq_broker_java_options) }}
+      lineinfile:
+        path: "{{ ini_file }}"
+        regexp: '^JAVA_ARGS=.*$'
+        line: "{{ configured_java_args }}"
+        backup: yes
+      tags:
+        - role::amq::configure
+        - role::amq::configure::artemis

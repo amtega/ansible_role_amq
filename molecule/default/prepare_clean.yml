@@ -20,5 +20,20 @@
 
 - name: Erase all amq files and dirs if present
   file:
+    path: "{{ file }}"
+    state: absent
+  loop:
+    - /etc/ansible/facts.d/artifact_amq_artifact.fact
+    - "{{ amq_base_dir }}"
+  loop_control:
+    loop_var: file
+
+- name: Unmount shared nfs directory
+  mount:
+    path: "{{ amq_broker_data_dir }}"
+    state: unmounted
+
+- name: Erase all amq files and dirs if present
+  file:
     path: "{{ amq_base_dir }}"
     state: absent

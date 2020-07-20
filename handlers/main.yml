@@ -7,10 +7,10 @@
     state: restarted
   when: amq_item.flag
   loop:
-    - flag: "{{ not amq_broker_is_slave }}"
-      label: Master turn
-    - flag: "{{ amq_broker_is_slave }}"
-      label: Slave turn
+    - flag: "{{ not amq_broker_is_replica }}"
+      label: Primary turn
+    - flag: "{{ amq_broker_is_replica }}"
+      label: Replica turn
   loop_control:
     loop_var: amq_item
     label: "{{ amq_item.label }}"

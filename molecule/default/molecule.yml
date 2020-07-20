@@ -37,7 +37,7 @@ platforms:
       - molecule_hosts
       - molecule_hosts_nfs_servers
 
-  - name: "master-${INSTANCE_UUID:-1}"
+  - name: "primary-${INSTANCE_UUID:-1}"
     box: centos/7
     instance_raw_config_args:
       - 'vm.network "private_network", ip: "192.168.33.10"'
@@ -45,9 +45,9 @@ platforms:
     groups:
       - molecule_hosts
       - molecule_hosts_amq_cluster
-      - molecule_hosts_amq_master
+      - molecule_hosts_amq_primary
 
-  - name: "slave-${INSTANCE_UUID:-1}"
+  - name: "replica-${INSTANCE_UUID:-1}"
     box: centos/7
     instance_raw_config_args:
       - 'vm.network "private_network", ip: "192.168.33.11"'
@@ -55,7 +55,7 @@ platforms:
     groups:
       - molecule_hosts
       - molecule_hosts_amq_cluster
-      - molecule_hosts_amq_slaves
+      - molecule_hosts_amq_replicas
 
 provisioner:
   name: ansible
@@ -73,15 +73,15 @@ provisioner:
           test_nfs_directory: /nfsfileshare
           test_nfs_share: "{{ test_nfs_server_ip }}:{{ test_nfs_directory }}"
 
-          test_master_ip: 192.168.33.10
-          test_slave_ip: 192.168.33.11
+          test_primary_ip: 192.168.33.10
+          test_replica_ip: 192.168.33.11
 
           test_java_package: java-1.8.0-openjdk
 
           amq_version: 7.3.0
 
-          amq_user: daemon
-          amq_group: daemon
+          amq_user: amq-broker
+          amq_group: amq-broker
 
           amq_broker_name: "{{ inventory_hostname }}"
           amq_base_dir: /opt/redhat/amq-broker
@@ -90,7 +90,19 @@ provisioner:
           amq_brokers_dir: "{{ amq_base_dir }}/brokers"
           amq_broker_data_dir: /mnt/share-amqbroker/test_instance
 
-          amq_broker_java_options: "-Djava.net.preferIPv4Stack=true"
+          amq_broker_java_options:
+            -
+              param: "-Djava.net.preferIPv4Stack="
+              value: "true"
+            -
+              param: "-Xms"
+              value: "512M"
+            -
+              param: "-Xmx"
+              value: "2G"
+            -
+              param: '-Dhawtio.roles="'
+              value: '{{ amq_broker_admin_groups | join(",") }}"'
 
           amq_broker_admin:
             name: admin
@@ -117,11 +129,11 @@ provisioner:
           amq_broker_journal_max_io: 500
 
           amq_no_log: no
-      molecule_hosts_amq_master:
+      molecule_hosts_amq_primary:
         vars:
-          amq_broker_is_slave: no
-      molecule_hosts_amq_slaves:
+          amq_broker_is_replica: no
+      molecule_hosts_amq_replicas:
         vars:
-          amq_broker_is_slave: yes
+          amq_broker_is_replica: yes
 verifier:
   name: ansible

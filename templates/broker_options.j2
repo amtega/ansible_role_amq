@@ -1,4 +1,4 @@
---name {{ amq_broker_name }}
+--name {{ amq_broker_fqdn }}
 --role {{ amq_broker_admin.role }}
 --require-login
 --user {{ amq_broker_admin.name }}
@@ -6,7 +6,6 @@
 --host {{ ansible_facts.hostname }}
 --http-host {{ amq_broker_http_host_bindings | string }}
 --data {{ amq_broker_data_dir }}
---java-options '{{ amq_broker_java_options }}'
 --force
 --verbose
 
@@ -29,7 +28,7 @@
 --queues {{ amq_broker_queues }}
 {% endif %}
 
-{% if amq_broker_is_slave %}
+{% if amq_broker_is_replica %}
 --slave
 {% endif %}
 

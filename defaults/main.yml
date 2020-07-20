@@ -13,6 +13,7 @@ amq_group: amq-broker
 # Broker instance name
 
 amq_broker_name: broker
+amq_broker_fqdn: "{{ ansible_facts.fqdn }}"
 
 # Base amq directory
 
@@ -99,7 +100,7 @@ amq_broker_cluster_maxhops: 0
 amq_broker_cluster_load_balancing_policy: ON_DEMAND
 amq_broker_cluster_discovery: no
 amq_broker_replication_enabled: no
-amq_broker_is_slave: no
+amq_broker_is_replica: no
 amq_broker_shared_store: yes
 
 # Jolokia settings
