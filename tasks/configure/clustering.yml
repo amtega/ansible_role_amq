@@ -13,7 +13,8 @@
       + "core:cluster-connection" }}
     backup: yes
     query: >-
-      [?contains(value, `{{ ansible_host }}`) != `true`].name
+      [?contains(value, `{{ ansible_host }}`) != `true`
+      && contains(value, `{{ ansible_facts.fqdn }}`) != `true` ].name
       | sort(@)
     expected_connectors: >-
       {{ amq_broker_cluster_nodes
