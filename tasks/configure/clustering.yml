@@ -3,7 +3,7 @@
 
 - name: Configure static cluster connectors
   when: >-
-    amq_broker_cluster
+    amq_broker_cluster | bool
     and not amq_broker_cluster_discovery | bool
   vars:
     etc_broker_path: >-
@@ -66,44 +66,35 @@
       loop_control:
         loop_var: name
 
-- block:
-
     - name: Remove cluster connection discovery group reference
       xml:
-        path: "{{ amq_brokers_dir }}/{{ amq_broker_name }}/etc/broker.xml"
-        xpath: >-
-          {{ '/conf:configuration/core:core/core:cluster-connections/'
-          + 'core:cluster-connection/core:discovery-group-ref' }}
+        path: "{{ etc_broker_path }}"
+        xpath: "{{ xpath_root + '/core:discovery-group-ref' }}"
         state: absent
         namespaces:
           conf: urn:activemq
           core: urn:activemq:core
-        backup: yes
+        backup: "{{ backup }}"
       when: not amq_broker_cluster_discovery | bool
 
     - name: Remove broadcast groups
       xml:
-        path: "{{ amq_brokers_dir }}/{{ amq_broker_name }}/etc/broker.xml"
+        path: "{{ etc_broker_path }}"
         xpath: /conf:configuration/core:core/core:broadcast-groups
         state: absent
         namespaces:
           conf: urn:activemq
           core: urn:activemq:core
-        backup: yes
+        backup: "{{ backup }}"
       when: not amq_broker_cluster_discovery | bool
 
     - name: Remove discovery groups
       xml:
-        path: "{{ amq_brokers_dir }}/{{ amq_broker_name }}/etc/broker.xml"
+        path: "{{ etc_broker_path }}"
         xpath: /conf:configuration/core:core/core:discovery-groups
         state: absent
         namespaces:
           conf: urn:activemq
           core: urn:activemq:core
-        backup: yes
+        backup: "{{ backup }}"
       when: not amq_broker_cluster_discovery | bool
-
-  when: amq_broker_cluster
-  tags:
-    - role::amq::configure
-    - role::amq::configure::clustering
