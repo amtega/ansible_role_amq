@@ -17,7 +17,7 @@
         daemon_reload: yes
       when: amq_configure_systemd_result is changed
 
-    - name: Enable and start amq broker service
+    - name: Enable and start amq broker service after configuration
       systemd:
         name: amq
         enabled: yes
