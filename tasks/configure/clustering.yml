@@ -28,12 +28,7 @@
     - role::amq::configure
     - role::amq::configure::clustering
   block:
-    - debug:
-        var: amq_broker_cluster_nodes
-    - debug:
-        var: query
-    - debug:
-        var: constructed_connectors
+
     - name: Get number of static-connectors nodes
       xml:
         path: "{{ etc_broker_path }}"
@@ -43,9 +38,6 @@
           core: urn:activemq:core
         count: yes
       register: static_connectors_count_result
-
-    - debug:
-        var: static_connectors_count_result
 
     - name: Add static-connectors node
       when: static_connectors_count_result.count == 0
@@ -60,26 +52,11 @@
         pretty_print: yes
         backup: "{{ backup }}"
 
-
-    - debug:
-        var: query
-
-    - debug:
-        var: amq_broker_cluster_nodes
-
-    - debug:
-        var: expected_connectors
-
-    - debug:
-        var: constructed_connectors
-
     - name: Add static-connectors/connector nodes
       xml:
         path: "{{ etc_broker_path }}"
         xpath: "{{ xpath_root + '/core:static-connectors' }}"
         set_children: "{{ constructed_connectors }}"
-          # - connector:
-          #     name: "{{ name | string }}"
         namespaces:
           conf: urn:activemq
           core: urn:activemq:core
