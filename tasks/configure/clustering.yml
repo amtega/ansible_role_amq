@@ -131,6 +131,17 @@
         pretty_print: yes
         backup: "{{ backup }}"
 
+    - name: Set cluster connector-ref
+      xml:
+        path: "{{ etc_broker_path }}"
+        xpath: "{{ xpath_root + '/core:connector-ref' }}"
+        value: "{{ expected_connectors[0] | string }}"
+        namespaces:
+          conf: urn:activemq
+          core: urn:activemq:core
+        pretty_print: yes
+        backup: "{{ backup }}"
+
     - name: Set cluster retry interval
       when: amq_cluster_retry_interval is defined
       xml:
