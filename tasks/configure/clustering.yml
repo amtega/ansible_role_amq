@@ -21,9 +21,18 @@
       | json_query( query )
       | sort
       | list }}
-    constructed_connectors: >-
+    constructed_static_connectors: >-
       {{ expected_connectors
       | json_query( 'map(&{"connector-ref": @},  @)' )
+      | list }}
+    query2: >-
+      [?contains(value, `{{ ansible_host }}`) != `true`
+      && contains(value, `{{ ansible_facts.fqdn }}`) != `true`
+      ].{name: name, value: value}
+      | sort_by(@, &name)
+    constructed_connectors: >-
+      {{ amq_broker_cluster_nodes
+      | json_query(query2)
       | list }}
   tags:
     - role::amq::configure
@@ -57,15 +66,25 @@
       xml:
         path: "{{ etc_broker_path }}"
         xpath: "{{ xpath_root + '/core:static-connectors' }}"
-        set_children: "{{ constructed_connectors }}"
+        set_children: "{{ constructed_static_connectors }}"
         namespaces:
           conf: urn:activemq
           core: urn:activemq:core
         pretty_print: yes
         backup: "{{ backup }}"
-      loop: "{{ expected_connectors }}"
-      loop_control:
-        loop_var: name
+
+    - name: Set connector
+      xml:
+        path: "{{ etc_broker_path }}"
+        xpath: /conf:configuration/core:core/core:connectors
+        set_children: "{{ lookup('template', 'connector.xml.j2') }}"
+        input_type: xml
+        namespaces:
+          conf: urn:activemq
+          core: urn:activemq:core
+        pretty_print: yes
+        backup: "{{ backup }}"
+
 
     - name: Remove cluster connection discovery group reference
       xml:
