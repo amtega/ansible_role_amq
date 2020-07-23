@@ -105,7 +105,10 @@ amq_broker_shared_store: yes
 
 # Jolokia settings
 
-amq_jolokia_allow_origin: "{{ ansible_facts.default_ipv4.address }}"
+amq_jolokia_allowed_origins:
+  - "*://localhost*"
+
+amq_jolokia_strict_checking: yes
 
 # Web
 
