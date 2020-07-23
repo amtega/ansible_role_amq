@@ -1,0 +1,10 @@
+<restrict>
+  <cors>
+{% for origin in amq_jolokia_allowed_origins %}
+    <allow-origin>{{ origin }}</allow-origin>
+{% endfor %}
+{% if amq_jolokia_strict_checking | bool %}
+    <strict-checking/>
+{% endif %}
+  </cors>
+</restrict>
