@@ -102,6 +102,9 @@ amq_broker_cluster_discovery: no
 amq_broker_replication_enabled: no
 amq_broker_is_replica: no
 amq_broker_shared_store: yes
+amq_cluster_name: my-cluster
+# amq_cluster_retry_interval: 500
+# amq_cluster_use_duplicate_detection: yes
 
 # Jolokia settings
 

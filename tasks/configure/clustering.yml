@@ -118,3 +118,42 @@
           core: urn:activemq:core
         backup: "{{ backup }}"
       when: not amq_broker_cluster_discovery | bool
+
+    - name: Set cluster name
+      xml:
+        path: "{{ etc_broker_path }}"
+        xpath: "{{ xpath_root }}"
+        attribute: name
+        value: "{{ amq_cluster_name }}"
+        namespaces:
+          conf: urn:activemq
+          core: urn:activemq:core
+        pretty_print: yes
+        backup: "{{ backup }}"
+
+    - name: Set cluster retry interval
+      when: amq_cluster_retry_interval is defined
+      xml:
+        path: "{{ etc_broker_path }}"
+        xpath: "{{ xpath_root + '/core:retry-interval' }}"
+        value: "{{ amq_cluster_retry_interval | string }}"
+        namespaces:
+          conf: urn:activemq
+          core: urn:activemq:core
+        pretty_print: yes
+        backup: "{{ backup }}"
+
+    - name: Set cluster use duplicate detection flag
+      when: amq_cluster_use_duplicate_detection is defined
+      xml:
+        path: "{{ etc_broker_path }}"
+        xpath: "{{ xpath_root + '/core:use-duplicate-detection' }}"
+        value: >-
+          {{ amq_cluster_use_duplicate_detection
+          | ternary("true", "false")
+          | string }}
+        namespaces:
+          conf: urn:activemq
+          core: urn:activemq:core
+        pretty_print: yes
+        backup: "{{ backup }}"
