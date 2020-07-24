@@ -105,6 +105,8 @@ amq_broker_shared_store: yes
 amq_cluster_name: my-cluster
 # amq_cluster_retry_interval: 500
 # amq_cluster_use_duplicate_detection: yes
+amq_cluster_message_load_balancing: STRICT
+amq_cluster_max_hops: 1
 
 # Jolokia settings
 

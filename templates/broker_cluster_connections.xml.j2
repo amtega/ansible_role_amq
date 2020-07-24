@@ -1,0 +1,22 @@
+  <cluster-connection name="{{ amq_cluster_name }}">
+    {{ "Ansible managed. Don't alter cluster-connections node"
+       | comment('xml') }}
+    <connector-ref>{{ expected_connectors[0] | string }}</connector-ref>
+    {% if amq_cluster_retry_interval is defined -%}
+    <retry-interval>{{ amq_cluster_retry_interval | string }}</retry-interval>
+    {%- endif %}
+    {% if amq_cluster_use_duplicate_detection is defined -%}
+    <use-duplicate-detection>{{ amq_cluster_use_duplicate_detection
+                                | ternary("true", "false")
+                                | string
+                                }}</use-duplicate-detection>
+    {%- endif %}
+    <message-load-balancing>{{ amq_cluster_message_load_balancing
+      }}</message-load-balancing>
+    <max-hops>{{ amq_cluster_max_hops | string }}</max-hops>
+    <static-connectors>
+      {% for connector in expected_connectors -%}
+      <connector-ref>{{ connector }}</connector-ref>
+      {%- endfor %}
+    </static-connectors>
+  </cluster-connection>

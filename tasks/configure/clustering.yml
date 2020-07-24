@@ -8,9 +8,6 @@
   vars:
     etc_broker_path: >-
       {{ amq_brokers_dir }}/{{ amq_broker_name }}/etc/broker.xml
-    xpath_root: >-
-      {{ "/conf:configuration/core:core/core:cluster-connections/"
-      + "core:cluster-connection" }}
     backup: yes
     query: >-
       [?contains(value, `{{ ansible_host }}`) != `true`
@@ -20,10 +17,6 @@
       {{ amq_broker_cluster_nodes
       | json_query( query )
       | sort
-      | list }}
-    constructed_static_connectors: >-
-      {{ expected_connectors
-      | json_query( 'map(&{"connector-ref": @},  @)' )
       | list }}
     query2: >-
       [?contains(value, `{{ ansible_host }}`) != `true`
@@ -39,34 +32,12 @@
     - role::amq::configure::clustering
   block:
 
-    - name: Get number of static-connectors nodes
+    - name: Set cluster-connections
       xml:
         path: "{{ etc_broker_path }}"
-        xpath: "{{ xpath_root + '/core:static-connectors' }}"
-        namespaces:
-          conf: urn:activemq
-          core: urn:activemq:core
-        count: yes
-      register: static_connectors_count_result
-
-    - name: Add static-connectors node
-      when: static_connectors_count_result.count == 0
-      xml:
-        path: "{{ etc_broker_path }}"
-        xpath: "{{ xpath_root }}"
-        add_children:
-          - static-connectors:
-        namespaces:
-          conf: urn:activemq
-          core: urn:activemq:core
-        pretty_print: yes
-        backup: "{{ backup }}"
-
-    - name: Add static-connectors/connector nodes
-      xml:
-        path: "{{ etc_broker_path }}"
-        xpath: "{{ xpath_root + '/core:static-connectors' }}"
-        set_children: "{{ constructed_static_connectors }}"
+        xpath: /conf:configuration/core:core/core:cluster-connections
+        set_children: "{{ lookup('template', 'broker_cluster_connections.xml.j2') }}"
+        input_type: xml
         namespaces:
           conf: urn:activemq
           core: urn:activemq:core
@@ -85,17 +56,17 @@
         pretty_print: yes
         backup: "{{ backup }}"
 
-
     - name: Remove cluster connection discovery group reference
       xml:
         path: "{{ etc_broker_path }}"
-        xpath: "{{ xpath_root + '/core:discovery-group-ref' }}"
+        xpath: >-
+          {{ "/conf:configuration/core:core/core:cluster-connections/"
+          + "core:cluster-connection/core:discovery-group-ref" }}
         state: absent
         namespaces:
           conf: urn:activemq
           core: urn:activemq:core
         backup: "{{ backup }}"
-      when: not amq_broker_cluster_discovery | bool
 
     - name: Remove broadcast groups
       xml:
@@ -106,7 +77,6 @@
           conf: urn:activemq
           core: urn:activemq:core
         backup: "{{ backup }}"
-      when: not amq_broker_cluster_discovery | bool
 
     - name: Remove discovery groups
       xml:
@@ -116,55 +86,4 @@
         namespaces:
           conf: urn:activemq
           core: urn:activemq:core
-        backup: "{{ backup }}"
-      when: not amq_broker_cluster_discovery | bool
-
-    - name: Set cluster name
-      xml:
-        path: "{{ etc_broker_path }}"
-        xpath: "{{ xpath_root }}"
-        attribute: name
-        value: "{{ amq_cluster_name }}"
-        namespaces:
-          conf: urn:activemq
-          core: urn:activemq:core
-        pretty_print: yes
-        backup: "{{ backup }}"
-
-    - name: Set cluster connector-ref
-      xml:
-        path: "{{ etc_broker_path }}"
-        xpath: "{{ xpath_root + '/core:connector-ref' }}"
-        value: "{{ expected_connectors[0] | string }}"
-        namespaces:
-          conf: urn:activemq
-          core: urn:activemq:core
-        pretty_print: yes
-        backup: "{{ backup }}"
-
-    - name: Set cluster retry interval
-      when: amq_cluster_retry_interval is defined
-      xml:
-        path: "{{ etc_broker_path }}"
-        xpath: "{{ xpath_root + '/core:retry-interval' }}"
-        value: "{{ amq_cluster_retry_interval | string }}"
-        namespaces:
-          conf: urn:activemq
-          core: urn:activemq:core
-        pretty_print: yes
-        backup: "{{ backup }}"
-
-    - name: Set cluster use duplicate detection flag
-      when: amq_cluster_use_duplicate_detection is defined
-      xml:
-        path: "{{ etc_broker_path }}"
-        xpath: "{{ xpath_root + '/core:use-duplicate-detection' }}"
-        value: >-
-          {{ amq_cluster_use_duplicate_detection
-          | ternary("true", "false")
-          | string }}
-        namespaces:
-          conf: urn:activemq
-          core: urn:activemq:core
-        pretty_print: yes
         backup: "{{ backup }}"
