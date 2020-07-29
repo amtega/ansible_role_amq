@@ -72,6 +72,7 @@
           core: urn:activemq:core
           xi: "http://www.w3.org/2001/XInclude"
         pretty_print: yes
+        backup: "{{ backup }}"
 
     - name: Remove cluster connection discovery group reference
       xml:
