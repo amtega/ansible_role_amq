@@ -1,7 +1,7 @@
   <cluster-connection name="{{ amq_cluster_name }}">
     {{ "Ansible managed. Don't alter cluster-connections node"
        | comment('xml') }}
-    <connector-ref>{{ expected_connectors[0] | string }}</connector-ref>
+    <connector-ref>{{ amq_broker_name }}</connector-ref>
     {% if amq_cluster_retry_interval is defined -%}
     <retry-interval>{{ amq_cluster_retry_interval | string }}</retry-interval>
     {%- endif %}
@@ -16,7 +16,11 @@
     <max-hops>{{ amq_cluster_max_hops | string }}</max-hops>
     <static-connectors>
       {% for connector in expected_connectors -%}
-      <connector-ref>{{ connector }}</connector-ref>
+      {% if connector.name not in amq_broker_name
+            and connector.name not in ansible_host
+            and connector.name not in ansible_facts.fqdn -%}
+      <connector-ref>{{ connector.name }}</connector-ref>
+      {%- endif %}
       {%- endfor %}
     </static-connectors>
   </cluster-connection>
