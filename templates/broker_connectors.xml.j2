@@ -1,0 +1,7 @@
+{{ ansible_managed | comment('xml') }}
+<!-- Connector used to be announced through cluster connections and notifications -->
+<connectors xmlns="urn:activemq:core">
+{% for connector in expected_connectors %}
+  <connector name="{{ connector.name }}">{{ connector.value }}</connector>
+{% endfor %}
+</connectors>

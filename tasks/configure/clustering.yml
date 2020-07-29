@@ -8,25 +8,14 @@
   vars:
     etc_broker_path: >-
       {{ amq_brokers_dir }}/{{ amq_broker_name }}/etc/broker.xml
+    etc_broker_connectors_path: >-
+      {{ amq_brokers_dir }}/{{ amq_broker_name }}/etc/broker_connectors.xml
     backup: yes
-    query: >-
-      [?contains(value, `{{ ansible_host }}`) != `true`
-      && contains(value, `{{ ansible_facts.fqdn }}`) != `true` ].name
-      | sort(@)
     expected_connectors: >-
       {{ amq_broker_cluster_nodes
-      | json_query( query )
-      | sort
+      | json_query('[].{name: name, value: value} | sort_by(@, &name)')
       | list }}
-    query2: >-
-      [?contains(value, `{{ ansible_host }}`) != `true`
-      && contains(value, `{{ ansible_facts.fqdn }}`) != `true`
-      ].{name: name, value: value}
-      | sort_by(@, &name)
-    constructed_connectors: >-
-      {{ amq_broker_cluster_nodes
-      | json_query(query2)
-      | list }}
+
   tags:
     - role::amq::configure
     - role::amq::configure::clustering
@@ -44,17 +33,45 @@
         pretty_print: yes
         backup: "{{ backup }}"
 
-    - name: Set connector
+    - name: Remove connectors node
       xml:
         path: "{{ etc_broker_path }}"
         xpath: /conf:configuration/core:core/core:connectors
-        set_children: "{{ lookup('template', 'connector.xml.j2') }}"
-        input_type: xml
+        state: absent
         namespaces:
           conf: urn:activemq
           core: urn:activemq:core
+
+    - name: Template broker_connectors.xml
+      template:
+        src: broker_connectors.xml.j2
+        dest: "{{ etc_broker_connectors_path }}"
+
+    # TODO: Narrow to this include .../xi:include/@href=...broker_connectors.xml
+    - name: Count includes
+      xml:
+        path: "{{ etc_broker_path }}"
+        xpath: >-
+          /conf:configuration/core:core/xi:include
+        namespaces:
+          conf: urn:activemq
+          core: urn:activemq:core
+          xi: "http://www.w3.org/2001/XInclude"
+        count: yes
+      register: broker_connectors_include_count_result
+
+    - name: Add include
+      when: broker_connectors_include_count_result.count == 0
+      xml:
+        path: "{{ etc_broker_path }}"
+        xpath: /conf:configuration/core:core/xi:include
+        attribute: href
+        value: "{{ etc_broker_connectors_path }}"
+        namespaces:
+          conf: urn:activemq
+          core: urn:activemq:core
+          xi: "http://www.w3.org/2001/XInclude"
         pretty_print: yes
-        backup: "{{ backup }}"
 
     - name: Remove cluster connection discovery group reference
       xml:
