@@ -23,6 +23,12 @@ amq_base_dir: /opt/redhat/amq-broker
 
 amq_install_dir: "{{ amq_base_dir }}/install/amq-broker-{{ amq_version }}"
 
+# Maximum number of file descriptors for AMQ process. Keep in mind that this
+# limit must also be set via ulimit, as this value will only be added to systemd
+# unit
+
+amq_limit_no_file: 65535
+
 # Brokers directory
 
 amq_brokers_dir: "{{ amq_base_dir }}/brokers"
