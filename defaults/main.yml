@@ -118,6 +118,8 @@ amq_cluster_max_hops: 1
 
 amq_jolokia_allowed_origins:
   - "*://localhost*"
+  - "*://{{ ansible_facts.fqdn }}*"
+  - "*://{{ ansible_default_ipv4.address }}*"
 
 amq_jolokia_strict_checking: yes
 
