@@ -47,12 +47,12 @@
         src: broker_connectors.xml.j2
         dest: "{{ etc_broker_connectors_path }}"
 
-    # TODO: Narrow to this include .../xi:include/@href=...broker_connectors.xml
-    - name: Count includes
+    - name: Count broker connectors includes
       xml:
         path: "{{ etc_broker_path }}"
         xpath: >-
-          /conf:configuration/core:core/xi:include
+          /conf:configuration/core:core/xi:include[@href='{{
+          etc_broker_connectors_path }}']
         namespaces:
           conf: urn:activemq
           core: urn:activemq:core
@@ -60,7 +60,7 @@
         count: yes
       register: broker_connectors_include_count_result
 
-    - name: Add include
+    - name: Add broker connectors include
       when: broker_connectors_include_count_result.count == 0
       xml:
         path: "{{ etc_broker_path }}"
