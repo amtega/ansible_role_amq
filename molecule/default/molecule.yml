@@ -11,6 +11,14 @@ lint: |
 platforms:
   - name: "nfs-${INSTANCE_UUID:-1}"
     box: centos/7
+    provider_options:
+      gui: false
+    provider_raw_config_args:
+      # Disable video
+      - 'customize ["modifyvm", :id, "--graphicscontroller", "none"]'
+      - 'customize ["modifyvm", :id, "--vram", "0"]'
+      # Disable audio
+      - 'customize ["modifyvm", :id, "--audio", "none"]'
     instance_raw_config_args:
       - 'vm.network "private_network", ip: "192.168.33.100"'
     groups:
@@ -19,6 +27,14 @@ platforms:
 
   - name: "primary-${INSTANCE_UUID:-1}"
     box: centos/7
+    provider_options:
+      gui: false
+    provider_raw_config_args:
+      # Disable video
+      - 'customize ["modifyvm", :id, "--graphicscontroller", "none"]'
+      - 'customize ["modifyvm", :id, "--vram", "0"]'
+      # Disable audio
+      - 'customize ["modifyvm", :id, "--audio", "none"]'
     instance_raw_config_args:
       - 'vm.network "private_network", ip: "192.168.33.10"'
       - 'vm.boot_timeout = 600'
@@ -29,6 +45,14 @@ platforms:
 
   - name: "replica-${INSTANCE_UUID:-1}"
     box: centos/7
+    provider_options:
+      gui: false
+    provider_raw_config_args:
+      # Disable video
+      - 'customize ["modifyvm", :id, "--graphicscontroller", "none"]'
+      - 'customize ["modifyvm", :id, "--vram", "0"]'
+      # Disable audio
+      - 'customize ["modifyvm", :id, "--audio", "none"]'
     instance_raw_config_args:
       - 'vm.network "private_network", ip: "192.168.33.11"'
       - 'vm.boot_timeout = 600'
