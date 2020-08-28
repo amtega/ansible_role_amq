@@ -117,6 +117,9 @@ provisioner:
           amq_broker_cluster_maxhops: 1
           amq_broker_cluster_load_balancing_policy: STRICT
           amq_broker_address_setting_redelivery_delay: 500
+          # broker.xml:/configuration/core/global-max-size=512M
+          # amq_broker_global_max_size = amq_broker_java_options.param Xmx / 4
+          amq_broker_global_max_size: 512M
           amq_broker_security_invalidation_interval: 3600000
 
           amq_broker_http_host_bindings: 0.0.0.0
