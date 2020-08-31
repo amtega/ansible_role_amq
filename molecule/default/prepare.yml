@@ -43,6 +43,10 @@
   hosts: molecule_hosts_nfs_servers
   become: yes
   tasks:
+
+    - name: Molecule requirements for this scenario
+      include_tasks: scenario_requirements.yml
+
     - name: Setup packages
       yum:
         state: present

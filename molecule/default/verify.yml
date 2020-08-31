@@ -1,0 +1,9 @@
+---
+
+- name: Verify
+  hosts: molecule_hosts
+  become: yes
+  tasks:
+
+    - name: Molecule requirements for this scenario
+      include_tasks: scenario_requirements.yml
