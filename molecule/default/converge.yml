@@ -1,5 +1,12 @@
 ---
 
+- name: Pre - Converge
+  hosts: molecule_hosts_amq_cluster
+  tasks:
+
+    - name: Molecule requirements for this scenario
+      include_tasks: scenario_requirements.yml
+
 - name: Converge
   hosts: molecule_hosts_amq_cluster
   become: yes

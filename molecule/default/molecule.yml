@@ -7,30 +7,18 @@ driver:
   provider:
     name: virtualbox
 lint: |
-  set -e
-  export ANSIBLE_ACTION_PLUGINS=$PWD/action_plugins
-  export ANSIBLE_BECOME_PLUGINS=$PWD/become_plugins
-  export ANSIBLE_CACHE_PLUGINS=$PWD/cache_plugins
-  export ANSIBLE_CALLBACK_PLUGINS=$PWD/callback_plugins
-  export ANSIBLE_CLICONF_PLUGINS=$PWD/cliconf_plugins
-  export ANSIBLE_CONNECTION_PLUGINS=$PWD/connection_plugins
-  export ANSIBLE_DOC_FRAGMENT_PLUGINS=$PWD/doc_fragment_plugins
-  export ANSIBLE_FILTER_PLUGINS=$PWD/filter_plugins
-  export ANSIBLE_HTTPAPI_PLUGINS=$PWD/httpapi_plugins
-  export ANSIBLE_INVENTORY_PLUGINS=$PWD/inventory_plugins
-  export ANSIBLE_LIBRARY=$PWD/library
-  export ANSIBLE_LOOKUP_PLUGINS=$PWD/lookup_plugins
-  export ANSIBLE_NETCONF_PLUGINS=$PWD/netconf_plugins
-  export ANSIBLE_STRATEGY_PLUGINS=$PWD/strategy_plugins
-  export ANSIBLE_TERMINAL_PLUGINS=$PWD/terminal_plugins
-  export ANSIBLE_TEST_PLUGINS=$PWD/test_plugins
-  export ANSIBLE_VARS_PLUGINS=$PWD/vars_plugins
-  yamllint .
-  ansible-lint
-  flake8
+  $MOLECULE_SCENARIO_DIRECTORY/molecule_linters.sh
 platforms:
   - name: "nfs-${INSTANCE_UUID:-1}"
     box: centos/7
+    provider_options:
+      gui: false
+    provider_raw_config_args:
+      # Disable video
+      - 'customize ["modifyvm", :id, "--graphicscontroller", "none"]'
+      - 'customize ["modifyvm", :id, "--vram", "0"]'
+      # Disable audio
+      - 'customize ["modifyvm", :id, "--audio", "none"]'
     instance_raw_config_args:
       - 'vm.network "private_network", ip: "192.168.33.100"'
     groups:
@@ -39,6 +27,14 @@ platforms:
 
   - name: "primary-${INSTANCE_UUID:-1}"
     box: centos/7
+    provider_options:
+      gui: false
+    provider_raw_config_args:
+      # Disable video
+      - 'customize ["modifyvm", :id, "--graphicscontroller", "none"]'
+      - 'customize ["modifyvm", :id, "--vram", "0"]'
+      # Disable audio
+      - 'customize ["modifyvm", :id, "--audio", "none"]'
     instance_raw_config_args:
       - 'vm.network "private_network", ip: "192.168.33.10"'
       - 'vm.boot_timeout = 600'
@@ -49,6 +45,14 @@ platforms:
 
   - name: "replica-${INSTANCE_UUID:-1}"
     box: centos/7
+    provider_options:
+      gui: false
+    provider_raw_config_args:
+      # Disable video
+      - 'customize ["modifyvm", :id, "--graphicscontroller", "none"]'
+      - 'customize ["modifyvm", :id, "--vram", "0"]'
+      # Disable audio
+      - 'customize ["modifyvm", :id, "--audio", "none"]'
     instance_raw_config_args:
       - 'vm.network "private_network", ip: "192.168.33.11"'
       - 'vm.boot_timeout = 600'
@@ -117,6 +121,9 @@ provisioner:
           amq_broker_cluster_maxhops: 1
           amq_broker_cluster_load_balancing_policy: STRICT
           amq_broker_address_setting_redelivery_delay: 500
+          # broker.xml:/configuration/core/global-max-size=512M
+          # amq_broker_global_max_size = amq_broker_java_options.param Xmx / 4
+          amq_broker_global_max_size: 512M
           amq_broker_security_invalidation_interval: 3600000
 
           amq_broker_http_host_bindings: 0.0.0.0

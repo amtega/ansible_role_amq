@@ -86,6 +86,18 @@
           {{ amq_broker_address_setting_redelivery_delay | string | lower }}
         backup: yes
 
+    - name: Configure broker global max size
+      xml:
+        path: "{{ amq_brokers_dir }}/{{ amq_broker_name }}/etc/broker.xml"
+        xpath: >-
+          {{ "/conf:configuration/core:core/core:global-max-size" }}
+        namespaces:
+          conf: urn:activemq
+          core: urn:activemq:core
+        value: >-
+          {{ amq_broker_global_max_size | string | upper }}
+        backup: yes
+
     - name: Configure broker discovery group
       when: amq_broker_cluster_discovery | bool
       block:
