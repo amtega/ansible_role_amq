@@ -20,7 +20,7 @@
 --failover-on-shutdown
 {% endif %}
 
-{% if amq_broker_disable_destination_autocreate %}
+{% if not amq_broker_enable_destination_autocreate %}
 --no-autocreate
 {% endif %}
 

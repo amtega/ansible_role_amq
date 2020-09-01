@@ -138,7 +138,14 @@ amq_jgroups_refresh_timeout: "10000"
 # Queues settings
 
 amq_broker_paging: yes
-amq_broker_disable_destination_autocreate: yes
+
+# Related to etc/broker.xml in xpath:
+# /configuration/core/address-settings/address-setting/auto-create-queues=true
+# /configuration/core/address-settings/address-setting/auto-create-addresses=true
+# /configuration/core/address-settings/address-setting/auto-create-jms-queues=true
+# /configuration/core/address-settings/address-setting/auto-create-jms-topics=true
+amq_broker_enable_destination_autocreate: no
+
 amq_broker_queues: []
 
 
