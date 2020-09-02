@@ -73,6 +73,10 @@ provisioner:
           instance_uuid: "${INSTANCE_UUID:-1}"
           ansible_user: root
 
+          # Save created files for further study
+          test_save_files: no
+          test_saved_files_dir: ${MOLECULE_SCENARIO_DIRECTORY}/output
+
           test_nfs_server_ip: 192.168.33.100
           test_nfs_directory: /nfsfileshare
           test_nfs_share: "{{ test_nfs_server_ip }}:{{ test_nfs_directory }}"
