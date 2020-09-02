@@ -16,3 +16,6 @@
     - name: Save created VM files
       when: test_save_files
       include_tasks: verify_save_files.yml
+
+    - name: Verify xml
+      include_tasks: verify_xml.yml
