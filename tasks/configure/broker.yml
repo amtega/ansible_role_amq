@@ -86,6 +86,29 @@
           {{ amq_broker_address_setting_redelivery_delay | string | lower }}
         backup: yes
 
+    - name: Configure address autocreation
+      xml:
+        path: "{{ amq_brokers_dir }}/{{ amq_broker_name }}/etc/broker.xml"
+        xpath: >-
+          {{ "/conf:configuration/core:core/core:address-settings/"
+          + 'core:address-setting[@match="#"]/'
+          + node_item }}
+        namespaces:
+          conf: urn:activemq
+          core: urn:activemq:core
+        value: >-
+          {{ amq_broker_enable_destination_autocreate
+          | ternary("true", "false") }}
+        backup: yes
+        pretty_print: yes
+      loop:
+        - core:auto-create-queues
+        - core:auto-create-addresses
+        - core:auto-create-jms-queues
+        - core:auto-create-jms-topics
+      loop_control:
+        loop_var: node_item
+
     - name: Configure broker global max size
       xml:
         path: "{{ amq_brokers_dir }}/{{ amq_broker_name }}/etc/broker.xml"
