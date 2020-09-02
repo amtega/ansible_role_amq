@@ -99,8 +99,8 @@
         value: >-
           {{ amq_broker_enable_destination_autocreate
           | ternary("true", "false") }}
-        backup: yes
         pretty_print: yes
+        backup: yes
       loop:
         - core:auto-create-queues
         - core:auto-create-addresses
@@ -132,11 +132,11 @@
               {{ "/conf:configuration/core:core/core:cluster-connections/"
               + "core:cluster-connection/core:discovery-group-ref" }}
             namespaces:
-              conf: "urn:activemq"
-              core: "urn:activemq:core"
+              conf: urn:activemq
+              core: urn:activemq:core
             attribute: discovery-group-name
-            pretty_print: yes
             value: discovery-group-01
+            pretty_print: yes
             backup: yes
 
         - name: Configure broker discovery groups node
@@ -145,8 +145,8 @@
             path: "{{ amq_brokers_dir }}/{{ amq_broker_name }}/etc/broker.xml"
             xpath: "/conf:configuration/core:core/core:discovery-groups"
             namespaces:
-              conf: "urn:activemq"
-              core: "urn:activemq:core"
+              conf: urn:activemq
+              core: urn:activemq:core
             state: present
             pretty_print: yes
             backup: yes
@@ -157,9 +157,8 @@
             path: "{{ amq_brokers_dir }}/{{ amq_broker_name }}/etc/broker.xml"
             xpath: "/conf:configuration/core:core/core:discovery-groups"
             namespaces:
-              conf: "urn:activemq"
-              core: "urn:activemq:core"
-            pretty_print: yes
+              conf: urn:activemq
+              core: urn:activemq:core
             set_children:
               - "discovery-group":
                   name: discovery-group-01
@@ -167,6 +166,7 @@
                     - "jgroups-file": "{{ amq_jgroups_file }}"
                     - "jgroups-channel": "{{ amq_jgroups_channel }}"
                     - "refresh-timeout": "{{ amq_jgroups_refresh_timeout }}"
+            pretty_print: yes
             backup: yes
 
         - name: Configure broker broadcast groups node
@@ -175,8 +175,8 @@
             path: "{{ amq_brokers_dir }}/{{ amq_broker_name }}/etc/broker.xml"
             xpath: "/conf:configuration/core:core/core:broadcast-groups"
             namespaces:
-              conf: "urn:activemq"
-              core: "urn:activemq:core"
+              conf: urn:activemq
+              core: urn:activemq:core
             state: present
             pretty_print: yes
             backup: yes
@@ -187,9 +187,8 @@
             path: "{{ amq_brokers_dir }}/{{ amq_broker_name }}/etc/broker.xml"
             xpath: "/conf:configuration/core:core/core:broadcast-groups"
             namespaces:
-              conf: "urn:activemq"
-              core: "urn:activemq:core"
-            pretty_print: yes
+              conf: urn:activemq
+              core: urn:activemq:core
             set_children:
               - "broadcast-group":
                   name: broadcast-group-01
@@ -198,6 +197,7 @@
                     - "jgroups-file": "{{ amq_jgroups_file }}"
                     - "jgroups-channel": "{{ amq_jgroups_channel }}"
                     - "connector-ref": "{{ amq_jgroups_connector_ref }}"
+            pretty_print: yes
             backup: yes
 
     - name: Configure broker security invalidation interval node
@@ -206,8 +206,8 @@
         xpath: >-
           /conf:configuration/core:core/core:security-invalidation-interval
         namespaces:
-          conf: "urn:activemq"
-          core: "urn:activemq:core"
+          conf: urn:activemq
+          core: urn:activemq:core
         value: "{{ amq_broker_security_invalidation_interval | string }}"
         state: present
         pretty_print: yes
@@ -220,8 +220,8 @@
         xpath: >-
           /conf:configuration/core:core/core:journal-max-io
         namespaces:
-          conf: "urn:activemq"
-          core: "urn:activemq:core"
+          conf: urn:activemq
+          core: urn:activemq:core
         value: "{{ amq_broker_journal_max_io | string }}"
         state: present
         pretty_print: yes
@@ -233,8 +233,8 @@
         xpath: >-
           /conf:configuration/core:core/core:thread-pool-max-size
         namespaces:
-          conf: "urn:activemq"
-          core: "urn:activemq:core"
+          conf: urn:activemq
+          core: urn:activemq:core
         value: "{{ amq_broker_thread_pool_max_size | string }}"
         state: present
         pretty_print: yes
@@ -246,8 +246,8 @@
         xpath: >-
           /conf:configuration/core:core/core:scheduled-thread-pool-max-size
         namespaces:
-          conf: "urn:activemq"
-          core: "urn:activemq:core"
+          conf: urn:activemq
+          core: urn:activemq:core
         value: "{{ amq_broker_scheduled_thread_pool_max_size | string }}"
         state: present
         pretty_print: yes
