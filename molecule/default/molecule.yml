@@ -7,7 +7,7 @@ driver:
   provider:
     name: virtualbox
 lint: |
-  $MOLECULE_SCENARIO_DIRECTORY/molecule_linters.sh
+  ${MOLECULE_SCENARIO_DIRECTORY}/molecule_linters.sh
 platforms:
   - name: "nfs-${INSTANCE_UUID:-1}"
     box: centos/7
@@ -72,6 +72,10 @@ provisioner:
         vars:
           instance_uuid: "${INSTANCE_UUID:-1}"
           ansible_user: root
+
+          # Save created files for further study
+          test_save_files: no
+          test_saved_files_dir: ${MOLECULE_SCENARIO_DIRECTORY}/output
 
           test_nfs_server_ip: 192.168.33.100
           test_nfs_directory: /nfsfileshare

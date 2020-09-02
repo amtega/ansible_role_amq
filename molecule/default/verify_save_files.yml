@@ -1,0 +1,42 @@
+---
+
+# test_saved_files_dir
+
+
+- name: Get /etc from servers
+  vars:
+    # ansible_python_interpreter: /usr/bin/python
+    output_dir: >-
+      {{ test_saved_files_dir
+      }}/{{ ansible_facts.date_time.iso8601 | regex_replace(':', '_')
+      }}/{{ inventory_hostname
+      }}
+    remote_path: "{{ amq_brokers_dir }}/{{ amq_broker_name }}"
+  block:
+
+    - name: Make output dir
+      file:
+        path: "{{ output_dir }}"
+        state: directory
+      delegate_to: localhost
+      become: no
+
+    - name: "Recursively find AMQ etc files in {{ remote_path }}"
+      find:
+        paths: "{{ remote_path }}/"
+        recurse: yes
+      register: find_result
+
+    - name: "Store file into {{ output_dir }}"
+      when: >-
+        (found_file.path.startswith(remote_path + '/etc/')
+        or found_file.path.startswith(remote_path + '/log/'))
+        and not found_file.path.endswith('~')
+      fetch:
+        src: "{{ found_file.path }}"
+        dest: "{{ output_dir }}/"
+        flat: yes
+      loop: "{{ find_result.files }}"
+      loop_control:
+        loop_var: found_file
+        label: "{{ found_file.path | basename }}"

@@ -7,3 +7,15 @@
 
     - name: Molecule requirements for this scenario
       include_tasks: scenario_requirements.yml
+
+- name: Get historic
+  hosts: molecule_hosts_amq_cluster
+  become: yes
+  tasks:
+
+    - name: Save created VM files
+      when: test_save_files
+      include_tasks: verify_save_files.yml
+
+    - name: Verify xml
+      include_tasks: verify_xml.yml
