@@ -53,3 +53,14 @@
           value: >-
             {{ amq_broker_enable_destination_autocreate
             | ternary("true", "false") }}
+      register: xml_node_verification
+
+    - name: Check xml node values verificarion
+      assert:
+        # Fail if anything changes
+        that: >-
+          not (xml_node_verification.results
+          | json_query('[].changed')
+          | max )
+        # max == (any true → 1 ; all false → 0)
+        msg: "Verifications should not change values"
