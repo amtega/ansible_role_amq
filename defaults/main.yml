@@ -144,7 +144,14 @@ amq_jgroups_refresh_timeout: "10000"
 # Queues settings
 
 amq_broker_paging: yes
-amq_broker_disable_destination_autocreate: yes
+
+# Related to etc/broker.xml in xpath:
+# /configuration/core/address-settings/address-setting[@match="#"]/auto-create-queues=true
+# /configuration/core/address-settings/address-setting[@match="#"]/auto-create-addresses=true
+# /configuration/core/address-settings/address-setting[@match="#"]/auto-create-jms-queues=true
+# /configuration/core/address-settings/address-setting[@match="#"]/auto-create-jms-topics=true
+amq_broker_enable_destination_autocreate: no
+
 amq_broker_queues: []
 
 
@@ -197,6 +204,9 @@ amq_http_admin_port: 8161
 # Additional broker settings
 
 amq_broker_address_setting_redelivery_delay: 500
+# broker.xml:/configuration/core/global-max-size=2GB
+# amq_broker_global_max_size = amq_broker_java_options.param Xmx / 4
+amq_broker_global_max_size: 2G
 amq_broker_security_invalidation_interval: 3600000
 
 # Login settings

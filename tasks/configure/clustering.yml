@@ -46,6 +46,8 @@
       template:
         src: broker_connectors.xml.j2
         dest: "{{ etc_broker_connectors_path }}"
+        owner: "{{ amq_user }}"
+        group: "{{ amq_group }}"
 
     - name: Count broker connectors includes
       xml:

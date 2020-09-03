@@ -30,7 +30,7 @@ This is an example playbook:
 
 ## Testing
 
-Tests are based on molecule with vagrant virtual machines. Follow the instructions in `molecule/default/INSTALL.rst`.
+Tests are based on [molecule with vagrant virtual machines](https://molecule.readthedocs.io/en/latest/installation.html).
 
 To run the tests you have to pass the following variables:
 
