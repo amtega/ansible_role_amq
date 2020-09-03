@@ -1,18 +1,10 @@
-{% set ns = namespace(permissions_roles={}) %}
-{%- for role in amq_broker_roles %}
-{%- for permission in role.permissions %}
-{%- set _ = ns.permissions_roles.__setitem__(
-            permission, ns.permissions_roles.get(permission, [])
-                                                 + [role.name]) %}
-{%- endfor %}
-{%- endfor -%}
-
-
+{% for address in amq_broker_security_settings %}
 - security-setting:
-    match: "#"
+    match: "{{ address.address }}"
     _:
-{% for permission, roles in ns.permissions_roles.items() %}
+{% for permission in address.permissions.keys() | sort %}
       - permission:
+          roles: "{{ ','.join(address.permissions[permission]) }}"
           type: "{{ permission }}"
-          roles: "{{ ','.join(roles) }}"
+{% endfor %}
 {% endfor %}

@@ -139,6 +139,30 @@ provisioner:
           amq_broker_aio: yes
           amq_broker_journal_max_io: 500
 
+          amq_broker_security_settings:
+            - address: "#"
+              permissions:
+                createNonDurableQueue:
+                  - admin
+                deleteNonDurableQueue:
+                  - admin
+                createDurableQueue:
+                  - admin
+                deleteDurableQueue:
+                  - admin
+                createAddress:
+                  - admin
+                deleteAddress:
+                  - admin
+                consume:
+                  - admin
+                browse:
+                  - admin
+                send:
+                  - admin
+                manage:
+                  - admin
+
           amq_no_log: no
       molecule_hosts_amq_primary:
         vars:
