@@ -48,6 +48,15 @@
         dest: "{{ etc_broker_connectors_path }}"
         owner: "{{ amq_user }}"
         group: "{{ amq_group }}"
+      register: broker_connectors_result
+
+    - name: Trigger configuration reload on broker_connectors.xml change
+      # When an included file changes, parent file needs to be touched to
+      #  trigger service configuration reload
+      when: broker_connectors_result is changed
+      file:
+        path: "{{ etc_broker_path }}"
+        state: touch
 
     - name: Count broker connectors includes
       xml:
