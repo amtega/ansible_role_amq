@@ -68,6 +68,9 @@ amq_broker_admin:
   role: admin
 
 # List of strings with AMQ borker admin groups
+# 📂 etc/management.xml → xpath:
+#   /management-context/authorisation/default-access/access/@roles
+#   /management-context/authorisation/role-access/match/access/@roles
 
 amq_broker_admin_groups: []
 
