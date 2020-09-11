@@ -44,6 +44,19 @@ amq_brokers_dir: "{{ amq_base_dir }}/brokers"
 amq_broker_data_dir: "{{ amq_brokers_dir }}/data"
 
 # Aditional java options
+# 📂 etc/artemis.profile → JAVA_ARGS (merged)
+#         amq_broker_java_options:
+#           -
+#             param: "-Xmx"
+#             value: "8G"
+#             # Result: -Xmx8G
+#           -
+#             param: "-Turbo="
+#             value: "FULL"
+#             # Result: -Turbo=FULL
+#           -
+#             param: "-Dhawtio.realm="
+#             # Result: Erases -Dhawtio.realm=*
 
 amq_broker_java_options: ""
 
