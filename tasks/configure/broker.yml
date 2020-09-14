@@ -57,6 +57,9 @@
       become: yes
       no_log: "{{ amq_no_log | bool }}"
 
+    - name: Setup broker addresses
+      import_tasks: broker_addresses.yml
+
     - name: Setup broker security settings
       xml:
         path: "{{ amq_brokers_dir }}/{{ amq_broker_name }}/etc/broker.xml"

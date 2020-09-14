@@ -110,6 +110,31 @@ amq_broker_security_settings:
       manage:
         - admin
 
+# 📂 etc/broker.xml → xpath /configuration/core/addresses
+# moved to an include:
+#   📂 etc/broker_addresses.xml → xpath /addresses
+#
+# ⚠️ Not all configuration options implemented, only:
+#
+# amq_broker_addresses:
+#   - name: EjemploQueue
+#     routing: anycast
+#     queues:
+#       - name: EjemploQueue
+#         durable: yes
+#
+#   - name: EjemploTopic
+#     routing: multicast
+
+amq_broker_addresses:
+  - name: DLQ
+    routing: anycast
+    queues:
+      - name: DLQ
+  - name: ExpiryQueue
+    routing: anycast
+    queues:
+      - name: ExpiryQueue
 
 # Clustering settings
 
