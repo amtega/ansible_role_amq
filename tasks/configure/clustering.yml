@@ -75,7 +75,9 @@
       when: broker_connectors_include_count_result.count == 0
       xml:
         path: "{{ etc_broker_path }}"
-        xpath: /conf:configuration/core:core/xi:include
+        xpath: >-
+          /conf:configuration/core:core/xi:include[@href='{{
+          etc_broker_connectors_path }}']
         attribute: href
         value: "{{ etc_broker_connectors_path }}"
         namespaces:
