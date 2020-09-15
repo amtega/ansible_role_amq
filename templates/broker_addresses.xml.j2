@@ -1,6 +1,6 @@
 {{ ansible_managed | comment('xml') }}
 <!-- AMQ declared addresses -->
-<addresses>
+<addresses xmlns="urn:activemq:core">
 {% for address in amq_broker_addresses %}
 <address name="{{ address.name }}">
 {% if address.routing == "multicast" %}
