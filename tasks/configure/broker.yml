@@ -57,13 +57,16 @@
       become: yes
       no_log: "{{ amq_no_log | bool }}"
 
-    - name: Setup broker messaging roles
+    - name: Setup broker addresses
+      import_tasks: broker_addresses.yml
+
+    - name: Setup broker security settings
       xml:
         path: "{{ amq_brokers_dir }}/{{ amq_broker_name }}/etc/broker.xml"
         xpath: /conf:configuration/core:core/core:security-settings
         input_type: yaml
         set_children: >-
-          {{ lookup("template", "messaging_security_settings.xml.j2")
+          {{ lookup("template", "broker_security_settings.yml.j2")
              | from_yaml }}
         namespaces:
           conf: urn:activemq

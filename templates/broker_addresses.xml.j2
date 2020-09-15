@@ -1,0 +1,31 @@
+{{ ansible_managed | comment('xml') }}
+<!-- AMQ declared addresses -->
+<addresses xmlns="urn:activemq:core">
+{% for address in amq_broker_addresses %}
+<address name="{{ address.name }}">
+{% if address.routing == "multicast" %}
+  <multicast/>
+{% elif address.routing == "anycast" %}
+  <anycast>
+{% for queue in address.queues %}
+{% if "durable" in queue.keys() %}
+    <queue name="{{ queue.name }}">
+      <durable>
+        {%- if queue.durable -%}
+          true
+        {%- else -%}
+          false
+        {%- endif -%}
+      </durable>
+    </queue>
+{% else %}
+    <queue name="{{ queue.name }}"/>
+{% endif %}
+{% endfor %}
+  </anycast>
+{% else %}
+  Error: Unknown routing {{ address.routing }} found by broker_addresses.xml.j2
+{% endif %}
+</address>
+{% endfor %}
+</addresses>
