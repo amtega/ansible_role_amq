@@ -8,8 +8,13 @@
 {% elif address.routing == "anycast" %}
   <anycast>
 {% for queue in address.queues %}
-{% if "durable" in queue.keys() %}
-    <queue name="{{ queue.name }}">
+{% if queue.max_consumers is defined %}
+{% set max_consumers = ' max-consumers="' + queue.max_consumers + '"' %}
+{% else %}
+{% set max_consumers = '' %}
+{% endif %}
+{% if queue.durable is defined %}
+    <queue name="{{ queue.name }}{{ max_consumers }}">
       <durable>
         {%- if queue.durable -%}
           true
@@ -19,7 +24,7 @@
       </durable>
     </queue>
 {% else %}
-    <queue name="{{ queue.name }}"/>
+    <queue name="{{ queue.name }}{{ max_consumers }}"/>
 {% endif %}
 {% endfor %}
   </anycast>

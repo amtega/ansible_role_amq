@@ -18,7 +18,7 @@
           conf: urn:activemq
           core: urn:activemq:core
 
-    - name: Template broker_connectors.xml
+    - name: Template broker_addresses.xml
       template:
         src: broker_addresses.xml.j2
         dest: "{{ etc_broker_addresses_path }}"
