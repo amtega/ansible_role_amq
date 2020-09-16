@@ -122,6 +122,7 @@ amq_broker_security_settings:
 #     queues:
 #       - name: EjemploQueue
 #         durable: yes
+#         max_consumers: 10
 #
 #   - name: EjemploTopic
 #     routing: multicast
