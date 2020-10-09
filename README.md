@@ -30,7 +30,13 @@ This is an example playbook:
 
 ## Testing
 
-Tests are based on [molecule with vagrant virtual machines](https://molecule.readthedocs.io/en/latest/installation.html).
+Tests are based on [molecule](https://molecule.readthedocs.io/en/latest/installation.html) with vagrant virtual machines.
+
+Third party modules are needed for vagrant to be supported:
+~~~ bash
+# Use of virtualenv is recommended
+python3 -m pip install --upgrade molecule-vagrant
+~~~
 
 To run the tests you have to pass the following variables:
 
