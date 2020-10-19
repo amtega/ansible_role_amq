@@ -26,14 +26,17 @@ amq_install_dir: "{{ amq_base_dir }}/install/amq-broker-{{ amq_version }}"
 # Maximum number of processes for AMQ process. Keep in mind that this
 # limit must also be set via ulimit, as this value will only be added to systemd
 # unit
+# Valid values: "unlimited" or number
 
-amq_limit_nproc: 300
+amq_limit_nproc: unlimited
+
 
 # Maximum number of file descriptors for AMQ process. Keep in mind that this
 # limit must also be set via ulimit, as this value will only be added to systemd
 # unit
+# Valid values: "unlimited" or number
 
-amq_limit_no_file: 65535
+amq_limit_no_file: unlimited
 
 # Brokers directory
 

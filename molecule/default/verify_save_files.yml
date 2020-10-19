@@ -3,7 +3,7 @@
 # test_saved_files_dir
 
 
-- name: Get /etc from servers
+- name: Get /etc and amq.service from servers
   vars:
     # ansible_python_interpreter: /usr/bin/python
     output_dir: >-
@@ -40,3 +40,9 @@
       loop_control:
         loop_var: found_file
         label: "{{ found_file.path | basename }}"
+
+    - name: Copy /usr/lib/systemd/system/amq.service
+      fetch:
+          src: /usr/lib/systemd/system/amq.service
+          dest: "{{ output_dir }}/"
+          flat: yes
