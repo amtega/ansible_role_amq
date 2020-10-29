@@ -98,7 +98,7 @@
           conf: urn:activemq
           core: urn:activemq:core
         node_content: >-
-          {{ lookup("template", "broker_security_settings.yml.j2") }}
+          {{ lookup("template", "broker_security_settings.xml.j2") }}
         node_backup: yes
 
 
