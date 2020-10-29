@@ -86,8 +86,49 @@ amq_broker_admin_groups: []
 
 amq_broker_users: []
 
-# Related to etc/broker.xml in xpath /configuration/core/security-settings
+# Related to etc/broker.xml in xpath /configuration/core/address-settings
 
+amq_broker_address_settings_xml: |-
+      <address-settings xmlns="urn:activemq:core">
+        <!-- if you define auto-create on certain queues, management has to be auto-create -->
+        <address-setting match="activemq.management#">
+          <dead-letter-address>DLQ</dead-letter-address>
+          <expiry-address>ExpiryQueue</expiry-address>
+          <redelivery-delay>{{ amq_broker_address_setting_redelivery_delay | string | lower }}</redelivery-delay>
+          <!-- with -1 only the global-max-size is in use for limiting -->
+          <max-size-bytes>-1</max-size-bytes>
+          <message-counter-history-day-limit>10</message-counter-history-day-limit>
+          <address-full-policy>PAGE</address-full-policy>
+          <auto-create-queues>{{ amq_broker_enable_destination_autocreate
+          | ternary("true", "false") }}</auto-create-queues>
+          <auto-create-addresses>{{ amq_broker_enable_destination_autocreate
+          | ternary("true", "false") }}</auto-create-addresses>
+          <auto-create-jms-queues>{{ amq_broker_enable_destination_autocreate
+          | ternary("true", "false") }}</auto-create-jms-queues>
+          <auto-create-jms-topics>{{ amq_broker_enable_destination_autocreate
+          | ternary("true", "false") }}</auto-create-jms-topics>
+        </address-setting>
+        <!--default for catch all-->
+        <address-setting match="#">
+          <dead-letter-address>DLQ</dead-letter-address>
+          <expiry-address>ExpiryQueue</expiry-address>
+          <redelivery-delay>{{ amq_broker_address_setting_redelivery_delay | string | lower }}</redelivery-delay>
+          <!-- with -1 only the global-max-size is in use for limiting -->
+          <max-size-bytes>-1</max-size-bytes>
+          <message-counter-history-day-limit>10</message-counter-history-day-limit>
+          <address-full-policy>PAGE</address-full-policy>
+          <auto-create-queues>{{ amq_broker_enable_destination_autocreate
+          | ternary("true", "false") }}</auto-create-queues>
+          <auto-create-addresses>{{ amq_broker_enable_destination_autocreate
+          | ternary("true", "false") }}</auto-create-addresses>
+          <auto-create-jms-queues>{{ amq_broker_enable_destination_autocreate
+          | ternary("true", "false") }}</auto-create-jms-queues>
+          <auto-create-jms-topics>{{ amq_broker_enable_destination_autocreate
+          | ternary("true", "false") }}</auto-create-jms-topics>
+        </address-setting>
+      </address-settings>
+
+# Related to etc/broker.xml in xpath /configuration/core/security-settings
 
 amq_broker_security_settings:
   - address: "#"
