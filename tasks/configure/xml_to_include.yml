@@ -13,18 +13,41 @@
         state: absent
         namespaces: "{{ node_namespaces }}"
 
-    - name: "Populate {{ xml_destination }}"
-      copy:
-        dest: "{{ xml_destination }}"
-        content: "{{ node_content }}"  # Must contain main node namespace
-        owner: "{{ xml_destination_owner }}"
-        group: "{{ xml_destination_group }}"
-      register: include_population_result
+    - name: "Check {{ xml_destination }} existence"
+      stat:
+        path: /path/to/something
+      register: destination_check_result
+
+    - name: Populate include
+      when: >-
+        destination_check_result.stat.isreg is defined
+        and destination_check_result.stat.isreg
+      block:
+        - name: "Populate {{ xml_destination }} with template"
+          when: node_template is defined
+          template:
+            src: "{{ xml_destination }}"
+            dest: "{{ etc_broker_addresses_path }}"
+            owner: "{{ xml_destination_owner }}"
+            group: "{{ xml_destination_group }}"
+          register: include_template_result
+
+        - name: "Populate {{ xml_destination }}"
+          when: node_template is not defined
+          copy:
+            dest: "{{ xml_destination }}"
+            content: "{{ node_content }}"  # Must contain main node namespace
+            # <addresses xmlns="urn:activemq:core">
+            owner: "{{ xml_destination_owner }}"
+            group: "{{ xml_destination_group }}"
+          register: include_copy_result
 
     - name: "Trigger configuration reload on {{ xml_destination }} change"
       # When an included file changes, parent file needs to be touched to
       #  trigger service configuration reload
-      when: include_population_result is changed
+      when: >-
+        include_template_result is changed
+        or include_copy_result is changed
       file:
         path: "{{ xml_source }}"
         state: touch
