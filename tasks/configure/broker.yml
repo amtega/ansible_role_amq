@@ -77,6 +77,7 @@
         node_content: >-
           {{ lookup("template", "broker_addresses.xml.j2") }}
         node_backup: yes
+        overwrite_existing_include: no
 
     - include_tasks: xml_to_include.yml
       name: >-
@@ -97,6 +98,7 @@
           core: urn:activemq:core
         node_content: "{{ amq_broker_address_settings_xml }}"
         node_backup: yes
+        overwrite_existing_include: no
 
     - include_tasks: xml_to_include.yml
       name: >-
@@ -118,6 +120,7 @@
         node_content: >-
           {{ lookup("template", "broker_security_settings.xml.j2") }}
         node_backup: yes
+        overwrite_existing_include: no
 
 
 
