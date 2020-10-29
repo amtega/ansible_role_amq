@@ -58,7 +58,9 @@
       no_log: "{{ amq_no_log | bool }}"
 
     - name: Setup broker addresses
-      import_tasks: broker_addresses.yml
+      include_tasks: broker_addresses.yml
+    - name: Setup broker addresses
+      include_tasks: broker_address_settings.yml
 
     - name: Setup broker security settings
       xml:
@@ -76,41 +78,6 @@
       changed_when: no
       no_log: "{{ amq_no_log | bool }}"
 
-    - name: Configure broker redelivery delay
-      xml:
-        path: "{{ amq_brokers_dir }}/{{ amq_broker_name }}/etc/broker.xml"
-        xpath: >-
-          {{ "/conf:configuration/core:core/core:address-settings/"
-          + "core:address-setting/core:redelivery-delay" }}
-        namespaces:
-          conf: urn:activemq
-          core: urn:activemq:core
-        value: >-
-          {{ amq_broker_address_setting_redelivery_delay | string | lower }}
-        backup: yes
-
-    - name: Configure address autocreation
-      xml:
-        path: "{{ amq_brokers_dir }}/{{ amq_broker_name }}/etc/broker.xml"
-        xpath: >-
-          {{ "/conf:configuration/core:core/core:address-settings/"
-          + 'core:address-setting[@match="#"]/'
-          + node_item }}
-        namespaces:
-          conf: urn:activemq
-          core: urn:activemq:core
-        value: >-
-          {{ amq_broker_enable_destination_autocreate
-          | ternary("true", "false") }}
-        pretty_print: yes
-        backup: yes
-      loop:
-        - core:auto-create-queues
-        - core:auto-create-addresses
-        - core:auto-create-jms-queues
-        - core:auto-create-jms-topics
-      loop_control:
-        loop_var: node_item
 
     - name: Configure broker global max size
       xml:

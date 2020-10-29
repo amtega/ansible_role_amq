@@ -1,0 +1,69 @@
+---
+
+- name: Configure address-settings node in broker.xml
+  vars:
+    etc_broker_path: >-
+      {{ amq_brokers_dir }}/{{ amq_broker_name }}/etc/broker.xml
+    etc_broker_address_settings: >-
+      {{ amq_brokers_dir }}/{{ amq_broker_name }}/etc/broker_address_settings.xml
+    backup: yes
+  block:
+
+    - name: Remove address-settings node
+      xml:
+        path: "{{ etc_broker_path }}"
+        xpath: /conf:configuration/core:core/core:address-settings
+        state: absent
+        namespaces:
+          conf: urn:activemq
+          core: urn:activemq:core
+
+    - name: "Populate broker_address_settings.xml"
+      copy:
+        dest: "{{ etc_broker_address_settings }}"
+        content: "{{ amq_broker_address_settings_xml }}"
+    #
+    # - name: Template broker_address_settings.xml
+    #   template:
+    #     src: broker_address_settings.xml.j2
+    #     dest: "{{ etc_broker_address_settings }}"
+        owner: "{{ amq_user }}"
+        group: "{{ amq_group }}"
+      register: broker_address_settings_result
+
+    - name: Trigger configuration reload on broker_address_settings.xml change
+      # When an included file changes, parent file needs to be touched to
+      #  trigger service configuration reload
+      when: broker_address_settings_result is changed
+      file:
+        path: "{{ etc_broker_path }}"
+        state: touch
+
+    - name: Count broker address-settings includes
+      xml:
+        path: "{{ etc_broker_path }}"
+        xpath: >-
+          /conf:configuration/core:core/xi:include[@href='{{
+          etc_broker_address_settings }}']
+        namespaces:
+          conf: urn:activemq
+          core: urn:activemq:core
+          xi: "http://www.w3.org/2001/XInclude"
+        count: yes
+      register: broker_address_settings_include_count_result
+
+    - name: Add broker address-settings include
+      when: broker_address_settings_include_count_result.count == 0
+      xml:
+        path: "{{ etc_broker_path }}"
+        xpath: >-
+          /conf:configuration/core:core/xi:include[@href='{{
+          etc_broker_address_settings }}']
+        attribute: href
+        value: "{{ etc_broker_address_settings }}"
+        namespaces:
+          conf: urn:activemq
+          core: urn:activemq:core
+          xi: "http://www.w3.org/2001/XInclude"
+        pretty_print: yes
+        backup: "{{ backup }}"
