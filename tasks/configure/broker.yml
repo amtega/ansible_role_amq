@@ -59,8 +59,25 @@
 
     - name: Setup broker addresses
       include_tasks: broker_addresses.yml
-    - name: Setup broker addresses
-      include_tasks: broker_address_settings.yml
+
+    - name: Configure address-settings node in broker.xml
+      include_tasks: xml_to_include.yml
+      vars:
+        xml_source: "{{ amq_brokers_dir }}/{{ amq_broker_name }}/etc/broker.xml"
+        xml_destination: >-
+          {{ amq_brokers_dir }}/{{ amq_broker_name
+          }}/etc/broker_address_settings.xml
+        xml_destination_owner: "{{ amq_user }}"
+        xml_destination_group: "{{ amq_group }}"
+        node_name: address-settings
+        node_parent_xpath: /conf:configuration/core:core
+        node_xpath: "{{ node_parent_xpath }}/core:{{ node_name }}"
+        node_namespaces:
+          conf: urn:activemq
+          core: urn:activemq:core
+        node_content: "{{ amq_broker_address_settings_xml }}"
+        node_backup: yes
+
 
     - name: Setup broker security settings
       xml:
