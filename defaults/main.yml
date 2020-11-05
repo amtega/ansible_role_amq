@@ -70,12 +70,15 @@ amq_broker_admin:
   password: password
   role: admin
 
-# List of strings with AMQ borker admin groups
+# List of strings with AMQ borker user and admin groups
 # 📂 etc/management.xml → xpath:
 #   /management-context/authorisation/default-access/access/@roles
 #   /management-context/authorisation/role-access/match/access/@roles
+# 📂 etc/artemis.profile →  JAVA_ARGS -Dawtio.roles
 
 amq_broker_admin_groups: []
+
+amq_broker_user_groups: []
 
 # List of dicts with the AMQ broker users. The format of the dicts is the
 # following:
