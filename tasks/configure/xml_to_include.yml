@@ -1,0 +1,61 @@
+---
+- name: Move xml node to move to include
+  vars:
+    namespaces: >-
+      {{ node_namespaces
+      | combine({ "xi": "http://www.w3.org/2001/XInclude" }) }}
+  block:
+
+    - name: "Remove {{ node_name }} node"
+      xml:
+        path: "{{ xml_source }}"
+        xpath: "{{ node_xpath }}"
+        state: absent
+        namespaces: "{{ node_namespaces }}"
+
+    - name: "Check {{ xml_destination }} existence"
+      stat:
+        path: /path/to/something
+      register: destination_check_result
+
+    - name: "Populate {{ xml_destination }}"
+      vars:
+        include_exists: >-
+          {{ destination_check_result.stat.isreg is defined
+          and destination_check_result.stat.isreg }}
+      when: overwrite_existing_include or not include_exists
+      copy:
+        dest: "{{ xml_destination }}"
+        content: "{{ node_content }}"  # Must contain main node namespace
+        owner: "{{ xml_destination_owner }}"
+        group: "{{ xml_destination_group }}"
+      register: include_copy_result
+
+    - name: "Trigger configuration reload on {{ xml_destination }} change"
+      # When an included file changes, parent file needs to be touched to
+      #  trigger service configuration reload
+      when: include_copy_result is changed
+      file:
+        path: "{{ xml_source }}"
+        state: touch
+
+    - name: "Count {{ xml_source }} {{ node_name }} includes"
+      xml:
+        path: "{{ xml_source }}"
+        xpath: >-
+          {{ node_parent_xpath }}/xi:include[@href='{{ xml_destination }}']
+        namespaces: "{{ namespaces }}"
+        count: yes
+      register: include_count_result
+
+    - name: "Add {{ xml_source }} {{ node_name }} include"
+      when: include_count_result.count == 0
+      xml:
+        path: "{{ xml_source }}"
+        xpath: >-
+          {{ node_parent_xpath }}/xi:include[@href='{{ xml_destination }}']
+        attribute: href
+        value: "{{ xml_destination }}"
+        namespaces: "{{ namespaces }}"
+        pretty_print: yes
+        backup: "{{ node_backup }}"

@@ -1,0 +1,10 @@
+<security-settings xmlns="urn:activemq:core">
+{% for address in amq_broker_security_settings %}
+  <security-setting match="{{ address.address }}">
+{% for permission in address.permissions.keys() | sort %}
+    <permission roles="{{ ','.join(address.permissions[permission])
+                }}" type="{{ permission }}"/>
+{% endfor %}
+  </security-setting>
+{% endfor %}
+</security-settings>

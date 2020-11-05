@@ -57,60 +57,72 @@
       become: yes
       no_log: "{{ amq_no_log | bool }}"
 
-    - name: Setup broker addresses
-      import_tasks: broker_addresses.yml
-
-    - name: Setup broker security settings
-      xml:
-        path: "{{ amq_brokers_dir }}/{{ amq_broker_name }}/etc/broker.xml"
-        xpath: /conf:configuration/core:core/core:security-settings
-        input_type: yaml
-        set_children: >-
-          {{ lookup("template", "broker_security_settings.yml.j2")
-             | from_yaml }}
-        namespaces:
+    - include_tasks: xml_to_include.yml
+      name: >-
+        Configure addresses node in broker.xml
+        to broker_addresses.xml
+      vars:
+        xml_source: "{{ amq_brokers_dir }}/{{ amq_broker_name }}/etc/broker.xml"
+        xml_destination: >-
+          {{ amq_brokers_dir }}/{{ amq_broker_name
+          }}/etc/broker_addresses.xml
+        xml_destination_owner: "{{ amq_user }}"
+        xml_destination_group: "{{ amq_group }}"
+        node_name: addresses
+        node_parent_xpath: /conf:configuration/core:core
+        node_xpath: "{{ node_parent_xpath }}/core:{{ node_name }}"
+        node_namespaces:
           conf: urn:activemq
           core: urn:activemq:core
-        pretty_print: yes
-        backup: yes
-      changed_when: no
-      no_log: "{{ amq_no_log | bool }}"
+        node_content: >-
+          {{ lookup("template", "broker_addresses.xml.j2") }}
+        node_backup: yes
+        overwrite_existing_include: no
 
-    - name: Configure broker redelivery delay
-      xml:
-        path: "{{ amq_brokers_dir }}/{{ amq_broker_name }}/etc/broker.xml"
-        xpath: >-
-          {{ "/conf:configuration/core:core/core:address-settings/"
-          + "core:address-setting/core:redelivery-delay" }}
-        namespaces:
+    - include_tasks: xml_to_include.yml
+      name: >-
+        Configure address-settings node in broker.xml
+        to broker_address_settings.xml
+      vars:
+        xml_source: "{{ amq_brokers_dir }}/{{ amq_broker_name }}/etc/broker.xml"
+        xml_destination: >-
+          {{ amq_brokers_dir }}/{{ amq_broker_name
+          }}/etc/broker_address_settings.xml
+        xml_destination_owner: "{{ amq_user }}"
+        xml_destination_group: "{{ amq_group }}"
+        node_name: address-settings
+        node_parent_xpath: /conf:configuration/core:core
+        node_xpath: "{{ node_parent_xpath }}/core:{{ node_name }}"
+        node_namespaces:
           conf: urn:activemq
           core: urn:activemq:core
-        value: >-
-          {{ amq_broker_address_setting_redelivery_delay | string | lower }}
-        backup: yes
+        node_content: "{{ amq_broker_address_settings_xml }}"
+        node_backup: yes
+        overwrite_existing_include: no
 
-    - name: Configure address autocreation
-      xml:
-        path: "{{ amq_brokers_dir }}/{{ amq_broker_name }}/etc/broker.xml"
-        xpath: >-
-          {{ "/conf:configuration/core:core/core:address-settings/"
-          + 'core:address-setting[@match="#"]/'
-          + node_item }}
-        namespaces:
+    - include_tasks: xml_to_include.yml
+      name: >-
+        Configure security-settings node in broker.xml
+        to broker_security_settings.xml
+      vars:
+        xml_source: "{{ amq_brokers_dir }}/{{ amq_broker_name }}/etc/broker.xml"
+        xml_destination: >-
+          {{ amq_brokers_dir }}/{{ amq_broker_name
+          }}/etc/broker_security_settings.xml
+        xml_destination_owner: "{{ amq_user }}"
+        xml_destination_group: "{{ amq_group }}"
+        node_name: security-settings
+        node_parent_xpath: /conf:configuration/core:core
+        node_xpath: "{{ node_parent_xpath }}/core:{{ node_name }}"
+        node_namespaces:
           conf: urn:activemq
           core: urn:activemq:core
-        value: >-
-          {{ amq_broker_enable_destination_autocreate
-          | ternary("true", "false") }}
-        pretty_print: yes
-        backup: yes
-      loop:
-        - core:auto-create-queues
-        - core:auto-create-addresses
-        - core:auto-create-jms-queues
-        - core:auto-create-jms-topics
-      loop_control:
-        loop_var: node_item
+        node_content: >-
+          {{ lookup("template", "broker_security_settings.xml.j2") }}
+        node_backup: yes
+        overwrite_existing_include: no
+
+
 
     - name: Configure broker global max size
       xml:
