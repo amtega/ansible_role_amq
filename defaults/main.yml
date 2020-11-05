@@ -36,7 +36,7 @@ amq_limit_nproc: unlimited
 # unit
 # Valid values: "unlimited" or number
 
-amq_limit_no_file: unlimited
+amq_limit_no_file: "{{ 2**20 | int }}"
 
 # Brokers directory
 
