@@ -9,6 +9,7 @@
       {{ amq_brokers_dir }}/{{ amq_broker_name }}/etc/jgroups-file-ping.xml
     owner: "{{ amq_user }}"
     group: "{{ amq_group }}"
+    mode: 0640
     backup: yes
   tags:
     - role::amq::configure

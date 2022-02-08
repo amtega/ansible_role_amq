@@ -2,60 +2,82 @@
 
 dependency:
   name: galaxy
+  enabled: yes
+  options:
+    ignore-certs: yes
+    ignore-errors: yes
+    role-file: "${MOLECULE_SCENARIO_DIRECTORY}/requirements.yml"
+    requirements-file: "${MOLECULE_SCENARIO_DIRECTORY}/requirements.yml"
 driver:
   name: vagrant
   provider:
     name: virtualbox
-lint: |
-  ${MOLECULE_SCENARIO_DIRECTORY}/molecule_linters.sh
+lint: "${MOLECULE_SCENARIO_DIRECTORY}/linters.sh"
 platforms:
   - name: "nfs-${INSTANCE_UUID:-1}"
     box: centos/7
     provider_options:
-      gui: false
+      gui: no
     provider_raw_config_args:
       # Disable video
       - 'customize ["modifyvm", :id, "--graphicscontroller", "none"]'
       - 'customize ["modifyvm", :id, "--vram", "0"]'
       # Disable audio
       - 'customize ["modifyvm", :id, "--audio", "none"]'
-    instance_raw_config_args:
-      - 'vm.network "private_network", ip: "192.168.33.100"'
+    interfaces:
+      - network_name: private_network
+        type: dhcp
     groups:
       - molecule_hosts
+      - molecule_hosts_centos_7
       - molecule_hosts_nfs_servers
 
   - name: "primary-${INSTANCE_UUID:-1}"
-    box: centos/7
+    box: centos/stream8
     provider_options:
-      gui: false
+      gui: no
     provider_raw_config_args:
       # Disable video
       - 'customize ["modifyvm", :id, "--graphicscontroller", "none"]'
       - 'customize ["modifyvm", :id, "--vram", "0"]'
       # Disable audio
       - 'customize ["modifyvm", :id, "--audio", "none"]'
-    instance_raw_config_args:
-      - 'vm.network "private_network", ip: "192.168.33.10"'
-      - 'vm.boot_timeout = 600'
+
+    interfaces:
+      - network_name: private_network
+        type: dhcp
+
+    # instance_raw_config_args:
+    #   - 'vm.network "private_network", ip: "192.168.33.10"'
+    #   - 'vm.boot_timeout = 600'
+
+
     groups:
       - molecule_hosts
       - molecule_hosts_amq_cluster
       - molecule_hosts_amq_primary
 
+
+
   - name: "replica-${INSTANCE_UUID:-1}"
-    box: centos/7
+    box: centos/stream8
     provider_options:
-      gui: false
+      gui: no
     provider_raw_config_args:
-      # Disable video
       - 'customize ["modifyvm", :id, "--graphicscontroller", "none"]'
       - 'customize ["modifyvm", :id, "--vram", "0"]'
-      # Disable audio
       - 'customize ["modifyvm", :id, "--audio", "none"]'
-    instance_raw_config_args:
-      - 'vm.network "private_network", ip: "192.168.33.11"'
-      - 'vm.boot_timeout = 600'
+
+    interfaces:
+      - network_name: private_network
+        type: dhcp
+
+
+    # instance_raw_config_args:
+    #   - 'vm.network "private_network", ip: "192.168.33.11"'
+    #   - 'vm.boot_timeout = 600'
+
+
     groups:
       - molecule_hosts
       - molecule_hosts_amq_cluster
@@ -77,12 +99,20 @@ provisioner:
           test_save_files: no
           test_saved_files_dir: ${MOLECULE_SCENARIO_DIRECTORY}/output
 
-          test_nfs_server_ip: 192.168.33.100
+          test_nfs_server_ip: >-
+            {{ hostvars[groups.molecule_hosts_nfs_servers.0]
+               .ansible_default_ipv4.address }}
+
           test_nfs_directory: /nfsfileshare
           test_nfs_share: "{{ test_nfs_server_ip }}:{{ test_nfs_directory }}"
 
-          test_primary_ip: 192.168.33.10
-          test_replica_ip: 192.168.33.11
+          test_primary_ip: >-
+            {{ hostvars[groups.molecule_hosts_amq_primary.0]
+               .ansible_default_ipv4.address }}
+
+          test_replica_ip: >-
+            {{ hostvars[groups.molecule_hosts_amq_replicas.0]
+               .ansible_default_ipv4.address }}
 
           test_java_package: java-1.8.0-openjdk
 
@@ -133,8 +163,8 @@ provisioner:
           amq_broker_http_host_bindings: 0.0.0.0
 
           amq_broker_nio: no
-          amq_broker_nioRemotingThreads: -1
-          amq_broker_amqpLowCredits: 30
+          amq_broker_nio_remoting_threads: -1
+          amq_broker_amqp_low_credits: 30
 
           amq_broker_aio: yes
           amq_broker_journal_max_io: 500

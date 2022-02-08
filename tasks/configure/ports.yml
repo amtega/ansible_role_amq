@@ -13,12 +13,7 @@
           core: urn:activemq:core
       register: amq_acceptor_names_result
 
-    - vars:
-        acceptor_names: >-
-          {{ amq_acceptor_names_result
-          | json_query('matches[*].*')
-          | json_query('[]') }}
-      block:
+    - block:
         - name: Gather ports acceptor URL's
           xml:
             path: "{{ amq_brokers_dir }}/{{ amq_broker_name }}/etc/broker.xml"
@@ -55,7 +50,11 @@
           loop_control:
             loop_var: amq_acceptor_name_item
             label: "{{ amq_acceptor_name_item.name }}"
-
+      vars:
+        acceptor_names: >-
+          {{ amq_acceptor_names_result
+          | json_query('matches[*].*')
+          | json_query('[]') }}
   tags:
     - role::amq::configure
     - role::amq::configure::ports
