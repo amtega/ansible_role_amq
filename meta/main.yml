@@ -3,15 +3,17 @@
 
 galaxy_info:
   role_name: amq
+  namespace: amtega
   author: Daniel Sánchez Fábregas / Juan Antonio Valiño García
   description: Deploy RedHat AMQ Broker cluster
   company: AMTEGA - Xunta de Galicia
   license: GPLv3 or EUPL
-  min_ansible_version: 2.9
+  min_ansible_version: 2.10
   platforms:
     - name: EL
       versions:
         - 7
+        - 8
   galaxy_tags:
     - redhat
     - amq

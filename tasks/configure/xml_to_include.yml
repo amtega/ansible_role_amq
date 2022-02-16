@@ -1,11 +1,7 @@
 ---
-- name: Move xml node to move to include
-  vars:
-    namespaces: >-
-      {{ node_namespaces
-      | combine({ "xi": "http://www.w3.org/2001/XInclude" }) }}
-  block:
 
+- name: Move xml node to include
+  block:
     - name: "Remove {{ node_name }} node"
       xml:
         path: "{{ xml_source }}"
@@ -29,6 +25,7 @@
         content: "{{ node_content }}"  # Must contain main node namespace
         owner: "{{ xml_destination_owner }}"
         group: "{{ xml_destination_group }}"
+        mode: 0640
       register: include_copy_result
 
     - name: "Trigger configuration reload on {{ xml_destination }} change"
@@ -38,6 +35,7 @@
       file:
         path: "{{ xml_source }}"
         state: touch
+        mode: 0640
 
     - name: "Count {{ xml_source }} {{ node_name }} includes"
       xml:
@@ -59,3 +57,7 @@
         namespaces: "{{ namespaces }}"
         pretty_print: yes
         backup: "{{ node_backup }}"
+  vars:
+    namespaces: >-
+      {{ node_namespaces
+      | combine({ "xi": "http://www.w3.org/2001/XInclude" }) }}

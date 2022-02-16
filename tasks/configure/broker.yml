@@ -2,9 +2,6 @@
 # Configure broker tasks
 
 - name: Configure broker tasks
-  tags:
-    - role::amq::configure
-    - role::amq::configure::broker
   block:
     - name: Setup fact with broker cluster node members
       set_fact:
@@ -33,10 +30,6 @@
         recurse: yes
 
     - name: Create broker
-      vars:
-        ansible_become_user: "{{ amq_user }}"
-        amq_broker_options: >-
-          {{ lookup('template', 'broker_options.j2').split("\n") | join(' ') }}
       when: amq_broker_primary_replica_flag.flag
       command: >-
         {{ amq_install_dir }}/bin/artemis create
@@ -56,11 +49,13 @@
         pause: 5
       become: yes
       no_log: "{{ amq_no_log | bool }}"
+      vars:
+        ansible_become_user: "{{ amq_user }}"
+        amq_broker_options: >-
+          {{ lookup('template', 'broker_options.j2').split("\n") | join(' ') }}
 
-    - include_tasks: xml_to_include.yml
-      name: >-
-        Configure addresses node in broker.xml
-        to broker_addresses.xml
+    - name: Configure addresses node in broker.xml to broker_addresses.xml
+      include_tasks: xml_to_include.yml
       vars:
         xml_source: "{{ amq_brokers_dir }}/{{ amq_broker_name }}/etc/broker.xml"
         xml_destination: >-
@@ -79,10 +74,10 @@
         node_backup: yes
         overwrite_existing_include: no
 
-    - include_tasks: xml_to_include.yml
-      name: >-
+    - name: >-
         Configure address-settings node in broker.xml
         to broker_address_settings.xml
+      include_tasks: xml_to_include.yml
       vars:
         xml_source: "{{ amq_brokers_dir }}/{{ amq_broker_name }}/etc/broker.xml"
         xml_destination: >-
@@ -100,10 +95,10 @@
         node_backup: yes
         overwrite_existing_include: no
 
-    - include_tasks: xml_to_include.yml
-      name: >-
+    - name: >-
         Configure security-settings node in broker.xml
         to broker_security_settings.xml
+      include_tasks: xml_to_include.yml
       vars:
         xml_source: "{{ amq_brokers_dir }}/{{ amq_broker_name }}/etc/broker.xml"
         xml_destination: >-
@@ -121,8 +116,6 @@
           {{ lookup("template", "broker_security_settings.xml.j2") }}
         node_backup: yes
         overwrite_existing_include: no
-
-
 
     - name: Configure broker global max size
       xml:
@@ -275,5 +268,8 @@
         acceptor_name: artemis
         acceptor_configuration:
           query:
-            nioRemotingThreads: "{{ amq_broker_nioRemotingThreads }}"
-            amqpLowCredits: "{{ amq_broker_amqpLowCredits }}"
+            nioRemotingThreads: "{{ amq_broker_nio_remoting_threads }}"
+            amqpLowCredits: "{{ amq_broker_amqp_low_credits }}"
+  tags:
+    - role::amq::configure
+    - role::amq::configure::broker

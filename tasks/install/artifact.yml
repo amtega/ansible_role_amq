@@ -1,7 +1,8 @@
 ---
 # Download artifact tasks
 
-- include_role:
+- name: Download artifact
+  include_role:
     name: amtega.artifact
   vars:
     artifact_overrides:

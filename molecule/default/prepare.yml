@@ -5,12 +5,13 @@
   gather_facts: no
   become: yes
   tasks:
-    - name: Install python for ansible
-      raw: >-
-        test -e /usr/bin/python
-        || (apt -y update && apt install -y python-minimal)
+    - name: Setup python
+      raw: yum install -y python39
       changed_when: no
       when: yes
+
+    - name: Gather facts
+      setup:
 
     - name: Match vagrant vm name to inventory
       hostname:
@@ -38,12 +39,13 @@
       loop:
         - "{{ test_primary_ip }} primary-{{ instance_uuid }}"
         - "{{ test_replica_ip }} replica-{{ instance_uuid }}"
+  vars:
+    ansible_python_interpreter: /usr/bin/python3
 
 - name: Prepare nfs server
   hosts: molecule_hosts_nfs_servers
   become: yes
   tasks:
-
     - name: Molecule requirements for this scenario
       include_tasks: scenario_requirements.yml
 
@@ -59,6 +61,7 @@
         path: /etc/exports
         line: "{{ test_nfs_directory }} *(rw,sync,no_root_squash,no_all_squash)"
         create: yes
+        mode: 0644
 
     - name: Setup nfs shared directory
       file:
@@ -76,14 +79,13 @@
       loop:
         - rpcbind
         - nfs-server
-        - nfs-lock
-        - nfs-idmap
 
-    - name: Restart service nfs-server
+    - name: Setup nfs-server service
       systemd:
         name: nfs-server
         state: restarted
-
+  vars:
+    ansible_python_interpreter: /usr/bin/python3
 
 - name: Prepare amq cluster hosts
   hosts: molecule_hosts_amq_cluster
@@ -120,6 +122,12 @@
         state: directory
         recurse: yes
 
+    - name: Setup nfs-mountd service
+      service:
+        name: nfs-mountd
+        state: started
+        enabled: yes
+
     - name: Mount shared nfs directory
       mount:
         path: "{{ amq_broker_data_dir }}"
@@ -127,3 +135,5 @@
         fstype: nfs
         opts: rw
         state: mounted
+  vars:
+    ansible_python_interpreter: /usr/bin/python3

@@ -1,12 +1,9 @@
 ---
-# Configure bootstrap tasks
+# Bootstrap tasks
 
-- name: Configure bootstrap tasks
-  tags:
-    - role::amq::configure
-    - role::amq::configure::bootstrap
+- name: Bootstrap
   block:
-    - name: Bootstrap - Configure console web binding
+    - name: Configure console web binding
       xml:
         path: >-
           {{ amq_brokers_dir
@@ -23,3 +20,6 @@
         state: present
         pretty_print: yes
         backup: yes
+  tags:
+    - role::amq::configure
+    - role::amq::configure::bootstrap
