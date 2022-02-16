@@ -5,7 +5,6 @@
 
 - name: Get /etc and amq.service from servers
   vars:
-    # ansible_python_interpreter: /usr/bin/python
     output_dir: >-
       {{ test_saved_files_dir
       }}/{{ ansible_facts.date_time.iso8601 | regex_replace(':', '_')
@@ -43,6 +42,6 @@
 
     - name: Copy /usr/lib/systemd/system/amq.service
       fetch:
-          src: /usr/lib/systemd/system/amq.service
-          dest: "{{ output_dir }}/"
-          flat: yes
+        src: /usr/lib/systemd/system/amq.service
+        dest: "{{ output_dir }}/"
+        flat: yes

@@ -1,12 +1,8 @@
 ---
 # Configure artemis tasks
 
-
 - name: Configure artemis JAVA_ARGS
-  vars:
-    ini_file: "{{ amq_brokers_dir }}/{{ amq_broker_name }}/etc/artemis.profile"
   block:
-
     - name: Get artemis JAVA_ARGS
       command: >-
         /bin/grep "^JAVA_ARGS=" {{ ini_file }}
@@ -23,6 +19,8 @@
         regexp: '^JAVA_ARGS=.*$'
         line: "{{ configured_java_args }}"
         backup: yes
-      tags:
-        - role::amq::configure
-        - role::amq::configure::artemis
+  vars:
+    ini_file: "{{ amq_brokers_dir }}/{{ amq_broker_name }}/etc/artemis.profile"
+  tags:
+    - role::amq::configure
+    - role::amq::configure::artemis

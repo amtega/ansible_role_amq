@@ -30,13 +30,7 @@ This is an example playbook:
 
 ## Testing
 
-Tests are based on [molecule](https://molecule.readthedocs.io/en/latest/installation.html) with vagrant virtual machines.
-
-Third party modules are needed for vagrant to be supported:
-~~~ bash
-# Use of virtualenv is recommended
-python3 -m pip install --upgrade molecule-vagrant
-~~~
+Tests are based on [molecule with vagrant virtual machines](https://molecule.readthedocs.io/en/latest/installation.html).
 
 To run the tests you have to pass the following variables:
 
@@ -47,12 +41,12 @@ To run the tests you have to pass the following variables:
 cd amtega.amq
 
 export ANSIBLE_INVENTORY=~/myinventory ANSIBLE_VAULT_PASSWORD_FILE=~/myvaultpassword
-molecule test
+molecule test --all
 ```
 
 ## License
 
-Copyright (C) 2020 AMTEGA - Xunta de Galicia
+Copyright (C) 2022 AMTEGA - Xunta de Galicia
 
 This role is free software: you can redistribute it and/or modify it under the terms of:
 

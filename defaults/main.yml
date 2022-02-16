@@ -30,7 +30,6 @@ amq_install_dir: "{{ amq_base_dir }}/install/amq-broker-{{ amq_version }}"
 
 amq_limit_nproc: unlimited
 
-
 # Maximum number of file descriptors for AMQ process. Keep in mind that this
 # limit must also be set via ulimit, as this value will only be added to systemd
 # unit
@@ -47,18 +46,15 @@ amq_brokers_dir: "{{ amq_base_dir }}/brokers"
 amq_broker_data_dir: "{{ amq_brokers_dir }}/data"
 
 # Aditional java options
-# 📂 etc/artemis.profile → JAVA_ARGS (merged)
+# etc/artemis.profile → JAVA_ARGS (merged)
 #         amq_broker_java_options:
-#           -
-#             param: "-Xmx"
+#           - param: "-Xmx"
 #             value: "8G"
 #             # Result: -Xmx8G
-#           -
-#             param: "-Turbo="
+#           - param: "-Turbo="
 #             value: "FULL"
 #             # Result: -Turbo=FULL
-#           -
-#             param: "-Dhawtio.realm="
+#           - param: "-Dhawtio.realm="
 #             # Result: Erases -Dhawtio.realm=*
 
 amq_broker_java_options: ""
@@ -71,10 +67,10 @@ amq_broker_admin:
   role: admin
 
 # List of strings with AMQ borker user and admin groups
-# 📂 etc/management.xml → xpath:
+# etc/management.xml → xpath:
 #   /management-context/authorisation/default-access/access/@roles
 #   /management-context/authorisation/role-access/match/access/@roles
-# 📂 etc/artemis.profile →  JAVA_ARGS -Dawtio.roles
+# etc/artemis.profile →  JAVA_ARGS -Dawtio.roles
 
 amq_broker_admin_groups: []
 
@@ -91,6 +87,7 @@ amq_broker_users: []
 
 # Related to etc/broker.xml in xpath /configuration/core/address-settings
 
+# yamllint disable rule:line-length
 amq_broker_address_settings_xml: |-
       <address-settings xmlns="urn:activemq:core">
         <!-- if you define auto-create on certain queues, management has to be auto-create -->
@@ -130,6 +127,7 @@ amq_broker_address_settings_xml: |-
           | ternary("true", "false") }}</auto-create-jms-topics>
         </address-setting>
       </address-settings>
+# yamllint enable
 
 # Related to etc/broker.xml in xpath /configuration/core/security-settings
 
@@ -157,11 +155,11 @@ amq_broker_security_settings:
       manage:
         - admin
 
-# 📂 etc/broker.xml → xpath /configuration/core/addresses
+# etc/broker.xml → xpath /configuration/core/addresses
 # moved to an include:
-#   📂 etc/broker_addresses.xml → xpath /addresses
+#   etc/broker_addresses.xml → xpath /addresses
 #
-# ⚠️ Not all configuration options implemented, only:
+# Not all configuration options implemented, only:
 #
 # amq_broker_addresses:
 #   - name: EjemploQueue
@@ -249,9 +247,8 @@ amq_broker_scheduled_thread_pool_max_size: 5
 # Nio settings
 
 amq_broker_nio: no
-amq_broker_nioRemotingThreads: -1
-amq_broker_amqpLowCredits: 30
-
+amq_broker_nio_remoting_threads: -1
+amq_broker_amqp_low_credits: 30
 
 # TLS settings
 
@@ -281,7 +278,6 @@ amq_http_admin_port: 8161
   # Artemis Jolokia http://hostname:8161/console/jolokia
   # Artemis Console http://hostname:8161/console
 
-
 # Additional broker settings
 
 amq_broker_address_setting_redelivery_delay: 500
@@ -309,7 +305,7 @@ amq_broker_login:
   referral: follow
   reload: yes
 
-# Install Artifact
+# Install artifact
 #
 # Point `amq_artifact` to a repository that contains the install artifact.
 #

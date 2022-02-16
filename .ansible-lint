@@ -3,3 +3,7 @@
 exclude_paths:
   - meta
   - tasks/install/artifact.yml
+  - molecule/default/prepare_clean.yml
+  - molecule/default/scenario_requirements.yml
+  - molecule/default/verify_xml.yml
+  - molecule/default/verify_save_files.yml

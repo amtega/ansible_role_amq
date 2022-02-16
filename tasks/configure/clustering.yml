@@ -25,7 +25,8 @@
       xml:
         path: "{{ etc_broker_path }}"
         xpath: /conf:configuration/core:core/core:cluster-connections
-        set_children: "{{ lookup('template', 'broker_cluster_connections.xml.j2') }}"
+        set_children: >-
+          {{ lookup('template', 'broker_cluster_connections.xml.j2') }}
         input_type: xml
         namespaces:
           conf: urn:activemq
@@ -48,6 +49,7 @@
         dest: "{{ etc_broker_connectors_path }}"
         owner: "{{ amq_user }}"
         group: "{{ amq_group }}"
+        mode: 0640
       register: broker_connectors_result
 
     - name: Trigger configuration reload on broker_connectors.xml change
@@ -57,6 +59,7 @@
       file:
         path: "{{ etc_broker_path }}"
         state: touch
+        mode: 0640
 
     - name: Count broker connectors includes
       xml:

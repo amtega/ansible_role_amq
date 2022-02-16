@@ -2,20 +2,6 @@
 # Configure management tasks
 
 - name: Configure default and management role access
-  vars:
-    amq_broker_all_groups: >-
-      {{ (amq_broker_admin_groups + amq_broker_user_groups) | list }}
-    config:
-      - method: "list*"
-        groups: "{{ amq_broker_all_groups }}"
-      - method: "get*"
-        groups: "{{ amq_broker_all_groups }}"
-      - method: "is*"
-        groups: "{{ amq_broker_all_groups }}"
-      - method: "set*"
-        groups: "{{ amq_broker_admin_groups }}"
-      - method: "*"
-        groups: "{{ amq_broker_admin_groups }}"
   block:
     - name: Configure management role access
       xml:
@@ -58,6 +44,20 @@
         label: >-
           {{ element.method }}
           {{ element.groups }}
+  vars:
+    amq_broker_all_groups: >-
+      {{ (amq_broker_admin_groups + amq_broker_user_groups) | list }}
+    config:
+      - method: "list*"
+        groups: "{{ amq_broker_all_groups }}"
+      - method: "get*"
+        groups: "{{ amq_broker_all_groups }}"
+      - method: "is*"
+        groups: "{{ amq_broker_all_groups }}"
+      - method: "set*"
+        groups: "{{ amq_broker_admin_groups }}"
+      - method: "*"
+        groups: "{{ amq_broker_admin_groups }}"
   tags:
     - role::amq::configure
     - role::amq::configure::management
