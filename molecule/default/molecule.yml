@@ -15,11 +15,10 @@ driver:
 lint: "${MOLECULE_SCENARIO_DIRECTORY}/linters.sh"
 platforms:
   - name: "nfs-${INSTANCE_UUID:-1}"
-    box: centos/7
+    box: ${VAGRANT_BOX:-centos/stream8}
     provider_options:
       gui: no
     provider_raw_config_args:
-      # Disable video
       - 'customize ["modifyvm", :id, "--graphicscontroller", "none"]'
       - 'customize ["modifyvm", :id, "--vram", "0"]'
       # Disable audio
@@ -29,11 +28,9 @@ platforms:
         type: dhcp
     groups:
       - molecule_hosts
-      - molecule_hosts_centos_7
       - molecule_hosts_nfs_servers
-
   - name: "primary-${INSTANCE_UUID:-1}"
-    box: centos/stream8
+    box: ${VAGRANT_BOX:-centos/stream8}
     provider_options:
       gui: no
     provider_raw_config_args:
@@ -42,47 +39,28 @@ platforms:
       - 'customize ["modifyvm", :id, "--vram", "0"]'
       # Disable audio
       - 'customize ["modifyvm", :id, "--audio", "none"]'
-
     interfaces:
       - network_name: private_network
         type: dhcp
-
-    # instance_raw_config_args:
-    #   - 'vm.network "private_network", ip: "192.168.33.10"'
-    #   - 'vm.boot_timeout = 600'
-
-
     groups:
       - molecule_hosts
       - molecule_hosts_amq_cluster
       - molecule_hosts_amq_primary
-
-
-
   - name: "replica-${INSTANCE_UUID:-1}"
-    box: centos/stream8
+    box: ${VAGRANT_BOX:-centos/stream8}
     provider_options:
       gui: no
     provider_raw_config_args:
       - 'customize ["modifyvm", :id, "--graphicscontroller", "none"]'
       - 'customize ["modifyvm", :id, "--vram", "0"]'
       - 'customize ["modifyvm", :id, "--audio", "none"]'
-
     interfaces:
       - network_name: private_network
         type: dhcp
-
-
-    # instance_raw_config_args:
-    #   - 'vm.network "private_network", ip: "192.168.33.11"'
-    #   - 'vm.boot_timeout = 600'
-
-
     groups:
       - molecule_hosts
       - molecule_hosts_amq_cluster
       - molecule_hosts_amq_replicas
-
 provisioner:
   name: ansible
   ansible_args:
@@ -101,18 +79,18 @@ provisioner:
 
           test_nfs_server_ip: >-
             {{ hostvars[groups.molecule_hosts_nfs_servers.0]
-               .ansible_default_ipv4.address }}
+               .ansible_eth1.ipv4.address }}
 
           test_nfs_directory: /nfsfileshare
           test_nfs_share: "{{ test_nfs_server_ip }}:{{ test_nfs_directory }}"
 
           test_primary_ip: >-
             {{ hostvars[groups.molecule_hosts_amq_primary.0]
-               .ansible_default_ipv4.address }}
+               .ansible_eth1.ipv4.address }}
 
           test_replica_ip: >-
             {{ hostvars[groups.molecule_hosts_amq_replicas.0]
-               .ansible_default_ipv4.address }}
+               .ansible_eth1.ipv4.address }}
 
           test_java_package: java-1.8.0-openjdk
 
@@ -129,17 +107,13 @@ provisioner:
           amq_broker_data_dir: /mnt/share-amqbroker/test_instance
 
           amq_broker_java_options:
-            -
-              param: "-Djava.net.preferIPv4Stack="
+            - param: "-Djava.net.preferIPv4Stack="
               value: "true"
-            -
-              param: "-Xms"
+            - param: "-Xms"
               value: "512M"
-            -
-              param: "-Xmx"
+            - param: "-Xmx"
               value: "2G"
-            -
-              param: '-Dhawtio.roles="'
+            - param: '-Dhawtio.roles="'
               value: '{{ amq_broker_admin_groups | join(",") }}"'
 
           amq_broker_admin:

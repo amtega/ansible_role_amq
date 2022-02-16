@@ -6,7 +6,7 @@
   become: yes
   tasks:
     - name: Setup python
-      raw: "yum install -y {{ ansible_python_interpreter | basename }}"
+      raw: yum install -y python39
       changed_when: no
       when: yes
 
@@ -40,9 +40,7 @@
         - "{{ test_primary_ip }} primary-{{ instance_uuid }}"
         - "{{ test_replica_ip }} replica-{{ instance_uuid }}"
   vars:
-    ansible_python_interpreter: >-
-      {{ (inventory_hostname in groups.molecule_hosts_centos_7)
-         | ternary("/usr/bin/python", "/usr/bin/python3") }}
+    ansible_python_interpreter: /usr/bin/python3
 
 - name: Prepare nfs server
   hosts: molecule_hosts_nfs_servers
@@ -81,17 +79,13 @@
       loop:
         - rpcbind
         - nfs-server
-        - nfs-lock
-        - nfs-idmap
 
     - name: Setup nfs-server service
       systemd:
         name: nfs-server
         state: restarted
   vars:
-    ansible_python_interpreter: >-
-      {{ (inventory_hostname in groups.molecule_hosts_centos_7)
-         | ternary("/usr/bin/python", "/usr/bin/python3") }}
+    ansible_python_interpreter: /usr/bin/python3
 
 - name: Prepare amq cluster hosts
   hosts: molecule_hosts_amq_cluster
@@ -128,6 +122,12 @@
         state: directory
         recurse: yes
 
+    - name: Setup nfs-mountd service
+      service:
+        name: nfs-mountd
+        state: started
+        enabled: yes
+
     - name: Mount shared nfs directory
       mount:
         path: "{{ amq_broker_data_dir }}"
@@ -136,6 +136,4 @@
         opts: rw
         state: mounted
   vars:
-    ansible_python_interpreter: >-
-      {{ (inventory_hostname in groups.molecule_hosts_centos_7)
-         | ternary("/usr/bin/python", "/usr/bin/python3") }}
+    ansible_python_interpreter: /usr/bin/python3

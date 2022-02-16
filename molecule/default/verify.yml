@@ -7,9 +7,7 @@
     - name: Molecule requirements for this scenario
       include_tasks: scenario_requirements.yml
   vars:
-    ansible_python_interpreter: >-
-      {{ (inventory_hostname in groups.molecule_hosts_centos_7)
-         | ternary("/usr/bin/python", "/usr/bin/python3") }}
+    ansible_python_interpreter: /usr/bin/python3
 
 - name: Get historic
   hosts: molecule_hosts_amq_cluster
@@ -22,6 +20,4 @@
     - name: Verify xml
       include_tasks: verify_xml.yml
   vars:
-    ansible_python_interpreter: >-
-      {{ (inventory_hostname in groups.molecule_hosts_centos_7)
-         | ternary("/usr/bin/python", "/usr/bin/python3") }}
+    ansible_python_interpreter: /usr/bin/python3
