@@ -26,6 +26,7 @@ platforms:
     interfaces:
       - network_name: private_network
         type: dhcp
+        auto_config: yes
     groups:
       - molecule_hosts
       - molecule_hosts_nfs_servers
@@ -42,6 +43,7 @@ platforms:
     interfaces:
       - network_name: private_network
         type: dhcp
+        auto_config: yes
     groups:
       - molecule_hosts
       - molecule_hosts_amq_cluster
@@ -57,6 +59,7 @@ platforms:
     interfaces:
       - network_name: private_network
         type: dhcp
+        auto_config: yes
     groups:
       - molecule_hosts
       - molecule_hosts_amq_cluster

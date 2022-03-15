@@ -30,7 +30,14 @@ This is an example playbook:
 
 ## Testing
 
-Tests are based on [molecule with vagrant virtual machines](https://molecule.readthedocs.io/en/latest/installation.html).
+Tests are based on [molecule with vagrant virtual machines](https://molecule.readthedocs.io/en/latest/installation.html).  
+Virtual machines are created with virtualbox dhcp and should need permission to
+create networks. Check it in `/etc/vbox/networks.conf`. An example of overly
+permissive configuration is:
+
+```
+* 0.0.0.0/0 ::/0
+```
 
 To run the tests you have to pass the following variables:
 
