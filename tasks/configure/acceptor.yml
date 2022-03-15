@@ -16,18 +16,26 @@
 - name: Extract artemis acceptor for messaging TLS
   set_fact:
     amq_acceptor: >-
-      {{ amq_acceptor | json_query('matches[*].*') | json_query('[]') | join }}
+      {{ amq_acceptor
+      | json_query('matches[*].*')
+      | json_query('[]')
+      | join
+      | regex_replace(';', '&') }}
+
 
 - name: Parse artemis acceptor URL for messaging TLS
   set_fact:
-    amq_acceptor: "{{ amq_acceptor | urlsplit | urlsplit_splitquery }}"
+    amq_acceptor: >-
+      {{ amq_acceptor
+      | urlsplit
+      | urlsplit_splitquery }}
 
 - name: Incorporate messaging TLS configuration
   set_fact:
     amq_acceptor: >-
       {{ amq_acceptor | combine(acceptor_configuration, recursive=True) }}
 
-- name: Update artemis acceptor URL for messaging TLS 
+- name: Update artemis acceptor URL for messaging TLS
   set_fact:
     amq_acceptor: "{{ amq_acceptor | urlcombine }}"
 
@@ -41,3 +49,4 @@
     namespaces:
       conf: urn:activemq
       core: urn:activemq:core
+    backup: yes
