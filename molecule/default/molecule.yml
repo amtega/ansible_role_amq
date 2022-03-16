@@ -169,6 +169,7 @@ provisioner:
                   - admin
                 manage:
                   - admin
+          amq_broker_enable_destination_autocreate: no
 
           amq_no_log: no
       molecule_hosts_amq_primary:
