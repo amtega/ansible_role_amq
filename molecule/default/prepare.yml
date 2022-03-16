@@ -4,6 +4,8 @@
   hosts: molecule_hosts
   gather_facts: no
   become: yes
+  vars:
+    ansible_python_interpreter: /usr/bin/python3
   tasks:
     - name: Setup python
       raw: yum install -y python39
@@ -12,35 +14,6 @@
 
     - name: Gather facts
       setup:
-
-    - name: Match vagrant vm name to inventory
-      hostname:
-        name: "{{ inventory_hostname }}"
-
-    - name: Remove loopback (/etc/hosts)
-      lineinfile:
-        path: /etc/hosts
-        state: absent
-        regexp: '^127\.0\.0\.1'
-        line:
-        owner: root
-        group: root
-        mode: "0644"
-        backup: yes
-
-    - name: Add primary and replica to DNS (/etc/hosts) HARDCODED
-      lineinfile:
-        path: /etc/hosts
-        line: "{{ item }}"
-        owner: root
-        group: root
-        mode: "0644"
-        backup: yes
-      loop:
-        - "{{ test_primary_ip }} primary-{{ instance_uuid }}"
-        - "{{ test_replica_ip }} replica-{{ instance_uuid }}"
-  vars:
-    ansible_python_interpreter: /usr/bin/python3
 
 - name: Prepare nfs server
   hosts: molecule_hosts_nfs_servers
