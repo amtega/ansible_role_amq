@@ -81,19 +81,19 @@ provisioner:
           test_saved_files_dir: ${MOLECULE_SCENARIO_DIRECTORY}/output
 
           test_nfs_server_ip: >-
-            {{ hostvars[groups.molecule_hosts_nfs_servers.0]
-               .ansible_eth1.ipv4.address }}
+            {{ (hostvars[groups.molecule_hosts_nfs_servers.0]
+               ).ansible_eth1.ipv4.address }}
 
           test_nfs_directory: /nfsfileshare
           test_nfs_share: "{{ test_nfs_server_ip }}:{{ test_nfs_directory }}"
 
           test_primary_ip: >-
-            {{ hostvars[groups.molecule_hosts_amq_primary.0]
-               .ansible_eth1.ipv4.address }}
+            {{ (hostvars[groups.molecule_hosts_amq_primary.0]
+               ).ansible_eth1.ipv4.address }}
 
           test_replica_ip: >-
-            {{ hostvars[groups.molecule_hosts_amq_replicas.0]
-               .ansible_eth1.ipv4.address }}
+            {{ (hostvars[groups.molecule_hosts_amq_replicas.0]
+               ).ansible_eth1.ipv4.address }}
 
           test_java_package: java-1.8.0-openjdk
 
