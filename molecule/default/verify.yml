@@ -3,15 +3,17 @@
 - name: Verify
   hosts: molecule_hosts
   become: yes
+  vars:
+    ansible_python_interpreter: /usr/bin/python3
   tasks:
     - name: Molecule requirements for this scenario
       include_tasks: scenario_requirements.yml
-  vars:
-    ansible_python_interpreter: /usr/bin/python3
 
 - name: Get historic
   hosts: molecule_hosts_amq_cluster
   become: yes
+  vars:
+    ansible_python_interpreter: /usr/bin/python3
   tasks:
     - name: Save created VM files
       when: test_save_files
@@ -19,5 +21,3 @@
 
     - name: Verify xml
       include_tasks: verify_xml.yml
-  vars:
-    ansible_python_interpreter: /usr/bin/python3

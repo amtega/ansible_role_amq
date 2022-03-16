@@ -1,3 +1,5 @@
+{{ ansible_managed | comment('xml') }}
+
 <security-settings xmlns="urn:activemq:core">
 {% for address in amq_broker_security_settings %}
   <security-setting match="{{ address.address }}">
