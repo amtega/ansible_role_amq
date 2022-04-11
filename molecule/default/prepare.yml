@@ -81,6 +81,25 @@
         name: "{{ amq_user }}"
         group: "{{ amq_group }}"
 
+    - name: Ad amq cluster nodes to /etc/hosts
+      loop: "{{ groups['molecule_hosts_amq_cluster'] }}"
+      loop_control:
+        loop_var: amq_hostname
+      vars:
+        amq_hostvars: >-
+          {{ hostvars[amq_hostname] }}
+        amq_ip: >-
+          {{ amq_hostvars.ansible_eth1.ipv4.address }}
+        amq_fqdn: >-
+          {{ amq_hostvars.ansible_facts.fqdn }}
+      ansible.builtin.lineinfile:
+        path: /etc/hosts
+        regexp: '^{{ amq_ip }}'
+        line: "{{ amq_ip }} {{ amq_fqdn }}"
+        owner: root
+        group: root
+        mode: '0644'
+
     - name: Clean amq if installed
       import_tasks: prepare_clean.yml
 
