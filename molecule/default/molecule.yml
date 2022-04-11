@@ -169,6 +169,16 @@ provisioner:
                   - admin
                 manage:
                   - admin
+          amq_jolokia_allowed_origins: >-
+            {{
+              ([ "*://localhost*",
+              "*://" + ansible_facts.fqdn + "*" ]
+              + ansible_all_ipv4_addresses
+              | map('regex_replace', '^(.*)', '*://\1*'))
+              | sort
+              | unique
+            }}
+
           amq_broker_enable_destination_autocreate: no
 
           amq_no_log: no
