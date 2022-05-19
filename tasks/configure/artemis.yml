@@ -5,7 +5,7 @@
   block:
     - name: Get artemis JAVA_ARGS
       command: >-
-        /bin/grep "^JAVA_ARGS=" {{ ini_file }}
+        /bin/grep "^ *JAVA_ARGS=" {{ ini_file }}
       changed_when: no
       register: get_java_args_result
 
@@ -16,7 +16,7 @@
           | merge_java_parameters(amq_broker_java_options) }}
       lineinfile:
         path: "{{ ini_file }}"
-        regexp: '^JAVA_ARGS=.*$'
+        regexp: '^ *JAVA_ARGS=.*$'
         line: "{{ configured_java_args }}"
         backup: yes
   vars:
