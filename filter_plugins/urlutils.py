@@ -122,7 +122,7 @@ def merge_java_parameters(old, new):
         str: Merged JAVA_ARGS config value ready to insert into a
             artemis.profile file.
     """
-    result = old
+    result = old.strip()
 
     if result.startswith('JAVA_ARGS='):
         with_declaration = True
