@@ -97,7 +97,7 @@ provisioner:
 
           test_java_package: java-1.8.0-openjdk
 
-          amq_version: 7.3.0
+          amq_version: 7.8.3
 
           amq_user: amq-broker
           amq_group: amq-broker
