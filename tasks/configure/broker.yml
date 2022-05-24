@@ -261,6 +261,35 @@
         pretty_print: yes
         backup: yes
 
+    - name: Configure metrics node (for Prometheus)
+      xml:
+        path: "{{ amq_brokers_dir }}/{{ amq_broker_name }}/etc/broker.xml"
+        xpath: "/conf:configuration/core:core/core:metrics"
+        namespaces:
+          conf: urn:activemq
+          core: urn:activemq:core
+        state: present
+        pretty_print: yes
+        backup: yes
+
+    - name: Configure metrics content
+      xml:
+        path: "{{ amq_brokers_dir }}/{{ amq_broker_name }}/etc/broker.xml"
+        xpath: "/conf:configuration/core:core/core:metrics"
+        namespaces:
+          conf: urn:activemq
+          core: urn:activemq:core
+        set_children:
+          - "jvm-gc": "true"
+          - "jvm-memory": "true"
+          - "jvm-threads": "true"
+          - plugin:
+              "class-name": >-
+                {{ "org.apache.activemq.artemis.core.server.metrics.plugins"
+                + ".ArtemisPrometheusMetricsPlugin" }}
+        pretty_print: yes
+        backup: yes
+
     - name: Apply thread and credit configuration in artemis acceptor
       when: amq_broker_aio | bool
       include_tasks: acceptor.yml

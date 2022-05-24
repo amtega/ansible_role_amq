@@ -2,7 +2,17 @@
 # Configure artemis tasks
 
 - name: Configure artemis JAVA_ARGS
+  vars:
+    ini_file: "{{ amq_brokers_dir }}/{{ amq_broker_name }}/etc/artemis.profile"
   block:
+    - name: Fix HAWTIO_ROLE
+      lineinfile:
+        path: "{{ ini_file }}"
+        regexp: '^ *HAWTIO_ROLE=.*$'
+        line: "HAWTIO_ROLE='{{ amq_broker_hawtio_groups | join(',') }}'"
+        mode: '0644'
+        backup: yes
+
     - name: Get artemis JAVA_ARGS
       command: >-
         /bin/grep "^ *JAVA_ARGS=" {{ ini_file }}
@@ -19,8 +29,6 @@
         regexp: '^ *JAVA_ARGS=.*$'
         line: "{{ configured_java_args }}"
         backup: yes
-  vars:
-    ini_file: "{{ amq_brokers_dir }}/{{ amq_broker_name }}/etc/artemis.profile"
   tags:
     - role::amq::configure
     - role::amq::configure::artemis
