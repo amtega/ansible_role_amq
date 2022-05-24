@@ -45,6 +45,9 @@ amq_brokers_dir: "{{ amq_base_dir }}/brokers"
 
 amq_broker_data_dir: "{{ amq_brokers_dir }}/data"
 
+# HAWTIO_ROLE in etc/artemis.profile
+amq_broker_hawtio_groups: admin
+
 # Aditional java options
 # etc/artemis.profile → JAVA_ARGS (merged)
 #         amq_broker_java_options:
