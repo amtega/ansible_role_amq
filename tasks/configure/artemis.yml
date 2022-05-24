@@ -6,11 +6,10 @@
     ini_file: "{{ amq_brokers_dir }}/{{ amq_broker_name }}/etc/artemis.profile"
   block:
     - name: Fix HAWTIO_ROLE
-      community.general.ini_file:
+      lineinfile:
         path: "{{ ini_file }}"
-        section:
-        option: HAWTIO_ROLE
-        value: "'{{ amq_broker_hawtio_groups | join(',') }}'"
+        regexp: '^ *HAWTIO_ROLE=.*$'
+        line: "HAWTIO_ROLE='{{ amq_broker_hawtio_groups | join(',') }}'"
         mode: '0644'
         backup: yes
 
