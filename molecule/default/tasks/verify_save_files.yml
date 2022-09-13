@@ -1,8 +1,5 @@
 ---
 
-# test_saved_files_dir
-
-
 - name: Get /etc and amq.service from servers
   vars:
     output_dir: >-
@@ -12,16 +9,16 @@
       }}
     remote_path: "{{ amq_brokers_dir }}/{{ amq_broker_name }}"
   block:
-
     - name: Make output dir
-      file:
+      ansible.builtin.file:
         path: "{{ output_dir }}"
         state: directory
+        mode: 0750
       delegate_to: localhost
       become: no
 
     - name: "Recursively find AMQ etc files in {{ remote_path }}"
-      find:
+      ansible.builtin.find:
         paths: "{{ remote_path }}/"
         recurse: yes
       register: find_result
@@ -31,7 +28,7 @@
         (found_file.path.startswith(remote_path + '/etc/')
         or found_file.path.startswith(remote_path + '/log/'))
         and not found_file.path.endswith('~')
-      fetch:
+      ansible.builtin.fetch:
         src: "{{ found_file.path }}"
         dest: "{{ output_dir }}/"
         flat: yes
@@ -41,7 +38,7 @@
         label: "{{ found_file.path | basename }}"
 
     - name: Copy /usr/lib/systemd/system/amq.service
-      fetch:
+      ansible.builtin.fetch:
         src: /usr/lib/systemd/system/amq.service
         dest: "{{ output_dir }}/"
         flat: yes

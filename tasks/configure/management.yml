@@ -1,5 +1,4 @@
 ---
-# Configure management tasks
 
 - name: Configure default and management role access
   block:

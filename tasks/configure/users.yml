@@ -1,8 +1,7 @@
 ---
-# Setup users
 
 - name: Setup messaging users
-  command: >
+  ansible.builtin.command: >
     {{ amq_brokers_dir }}/{{ amq_broker_name }}/bin/artemis user add
     --user {{ amq_broker_user_item.name }}
     --password {{ amq_broker_user_item.password }}

@@ -1,5 +1,4 @@
 ---
-# Role configure tasks
 
 - import_tasks: broker.yml
 - import_tasks: bootstrap.yml

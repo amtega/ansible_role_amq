@@ -1,9 +1,9 @@
 ---
-# Configure service
 
-- block:
+- name: Configure service
+  block:
     - name: Configure service systemd unit
-      template:
+      ansible.builtin.template:
         src: amq.service.j2
         dest: /usr/lib/systemd/system/amq.service
         owner: root
@@ -13,12 +13,12 @@
       register: amq_configure_systemd_result
 
     - name: Reload systemd
-      systemd:
+      ansible.builtin.systemd:
         daemon_reload: yes
       when: amq_configure_systemd_result is changed
 
     - name: Enable and start amq broker service after configuration
-      systemd:
+      ansible.builtin.systemd:
         name: amq
         enabled: yes
         state: started

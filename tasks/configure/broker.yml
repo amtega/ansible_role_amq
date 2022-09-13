@@ -1,10 +1,9 @@
 ---
-# Configure broker tasks
 
 - name: Configure broker tasks
   block:
     - name: Setup fact with broker cluster node members
-      set_fact:
+      ansible.builtin.set_fact:
         amq_broker_cluster_nodes: >
           {{ amq_broker_cluster_nodes | default([])
              + [
@@ -22,7 +21,7 @@
         loop_var: amq_broker_node_item
 
     - name: Setup broker directory
-      file:
+      ansible.builtin.file:
         path: "{{ amq_brokers_dir }}"
         state: directory
         owner: "{{ amq_user }}"
@@ -31,7 +30,7 @@
 
     - name: Create broker
       when: amq_broker_primary_replica_flag.flag
-      command: >-
+      ansible.builtin.command: >-
         {{ amq_install_dir }}/bin/artemis create
         {{ amq_brokers_dir }}/{{ amq_broker_name }}
         {{ amq_broker_options }}

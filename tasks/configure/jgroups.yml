@@ -1,9 +1,8 @@
 ---
-# Configure jgroups tasks
 
 - name: Configure jgroups file ping
   when: amq_broker_shared_store | bool and amq_jgroups_enabled | bool
-  template:
+  ansible.builtin.template:
     src: jgroups_file_ping.xml.j2
     dest: >-
       {{ amq_brokers_dir }}/{{ amq_broker_name }}/etc/jgroups-file-ping.xml

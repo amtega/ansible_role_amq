@@ -1,8 +1,7 @@
 ---
-# Sanity checks
 
 - name: Config check (amq_broker_aio, amq_broker_nio)
-  assert:
+  ansible.builtin.assert:
     that:
       # amq_broker_aio xor amq_broker_nio (but no xor operator)
       - >-

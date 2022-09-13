@@ -1,5 +1,4 @@
 ---
-# Role dependencies
 
 galaxy_info:
   role_name: amq
@@ -8,12 +7,12 @@ galaxy_info:
   description: Deploy RedHat AMQ Broker cluster
   company: AMTEGA - Xunta de Galicia
   license: GPLv3 or EUPL
-  min_ansible_version: 2.10
+  min_ansible_version: "2.10"
   platforms:
     - name: EL
       versions:
-        - 7
-        - 8
+        - "7"
+        - "8"
   galaxy_tags:
     - redhat
     - amq

@@ -8,36 +8,36 @@
     ansible_python_interpreter: /usr/bin/python3
   tasks:
     - name: Setup python
-      raw: yum install -y python39
+      ansible.builtin.raw: yum install -y python39
       changed_when: no
       when: yes
 
     - name: Gather facts
-      setup:
+      ansible.builtin.setup:
 
 - name: Prepare nfs server
   hosts: molecule_hosts_nfs_servers
   become: yes
   tasks:
     - name: Molecule requirements for this scenario
-      include_tasks: scenario_requirements.yml
+      include_tasks: tasks/scenario_requirements.yml
 
     - name: Setup packages
-      yum:
+      ansible.builtin.yum:
         state: present
         name:
           - nfs-utils
           - rpcbind
 
     - name: Setup /etc/exports
-      lineinfile:
+      ansible.builtin.lineinfile:
         path: /etc/exports
         line: "{{ test_nfs_directory }} *(rw,sync,no_root_squash,no_all_squash)"
         create: yes
         mode: 0644
 
     - name: Setup nfs shared directory
-      file:
+      ansible.builtin.file:
         path: "{{ test_nfs_directory }}"
         state: directory
         mode: "755"
@@ -45,7 +45,7 @@
         group: nobody
 
     - name: Start and enable service
-      systemd:
+      ansible.builtin.systemd:
         name: "{{ item }}"
         state: started
         enabled: yes
@@ -54,7 +54,7 @@
         - nfs-server
 
     - name: Setup nfs-server service
-      systemd:
+      ansible.builtin.systemd:
         name: nfs-server
         state: restarted
   vars:
@@ -65,19 +65,19 @@
   become: yes
   tasks:
     - name: Setup packages
-      yum:
+      ansible.builtin.yum:
         state: present
         name:
           - "{{ test_java_package }}"
           - nfs-utils
 
     - name: "Ensure group {{ amq_group }} exists"
-      group:
+      ansible.builtin.group:
         name: "{{ amq_group }}"
         state: present
 
     - name: "Ensure user {{ amq_user }} exists"
-      user:
+      ansible.builtin.user:
         name: "{{ amq_user }}"
         group: "{{ amq_group }}"
 
@@ -101,12 +101,12 @@
         mode: '0644'
 
     - name: Clean amq if installed
-      import_tasks: prepare_clean.yml
+      import_tasks: tasks/clean.yml
 
     # HACK: Need mount point, made in advance.
     #       Same as tasks/install/data_dir.yml
     - name: Setup data directory
-      file:
+      ansible.builtin.file:
         path: "{{ amq_broker_data_dir }}"
         owner: "{{ amq_user }}"
         group: "{{ amq_group }}"
@@ -115,7 +115,7 @@
         recurse: yes
 
     - name: Setup nfs-mountd service
-      service:
+      ansible.builtin.service:
         name: nfs-mountd
         state: started
         enabled: yes
