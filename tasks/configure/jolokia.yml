@@ -1,8 +1,7 @@
 ---
-# Configure jolokia tasks
 
 - name: Setup jolokia access config
-  template:
+  ansible.builtin.template:
     src: jolokia-access.xml.j2
     dest: "{{ amq_brokers_dir }}/{{ amq_broker_name }}/etc/jolokia-access.xml"
     owner: "{{ amq_user }}"

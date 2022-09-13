@@ -1,5 +1,4 @@
 ---
-# Role install tasks
 
 - import_tasks: download.yml
 - import_tasks: data_dir.yml

@@ -1,8 +1,7 @@
 ---
-# Download artifact tasks
 
 - name: Download artifact
-  include_role:
+  ansible.builtin.include_role:
     name: amtega.artifact
   vars:
     artifact_overrides:

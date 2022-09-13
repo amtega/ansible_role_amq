@@ -1,12 +1,11 @@
 ---
-# Configure artemis tasks
 
 - name: Configure artemis JAVA_ARGS
   vars:
     ini_file: "{{ amq_brokers_dir }}/{{ amq_broker_name }}/etc/artemis.profile"
   block:
     - name: Fix HAWTIO_ROLE
-      lineinfile:
+      ansible.builtin.lineinfile:
         path: "{{ ini_file }}"
         regexp: '^ *HAWTIO_ROLE=.*$'
         line: "HAWTIO_ROLE='{{ amq_broker_hawtio_groups | join(',') }}'"
@@ -14,7 +13,7 @@
         backup: yes
 
     - name: Get artemis JAVA_ARGS
-      command: >-
+      ansible.builtin.command: >-
         /bin/grep "^ *JAVA_ARGS=" {{ ini_file }}
       changed_when: no
       register: get_java_args_result
@@ -24,7 +23,7 @@
         configured_java_args: >-
           {{ get_java_args_result.stdout
           | merge_java_parameters(amq_broker_java_options) }}
-      lineinfile:
+      ansible.builtin.lineinfile:
         path: "{{ ini_file }}"
         regexp: '^ *JAVA_ARGS=.*$'
         line: "{{ configured_java_args }}"
