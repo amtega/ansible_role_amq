@@ -1,17 +1,15 @@
 ---
 
-# test_saved_files_dir
-
 - name: Verify xml
   vars:
     config_dir: "{{ amq_brokers_dir }}/{{ amq_broker_name }}/etc"
   block:
-    - name: pip install lxml
-      pip:
+    - name: Install python lxml
+      ansible.builtin.pip:
         name: lxml
 
     - name: Verify xml node values
-      xml:
+      community.general.xml:
         path: "{{ config_dir }}/{{ node.path }}"
         xpath: "{{ node.xpath }}"
         namespaces:
@@ -56,7 +54,7 @@
       register: xml_node_verification
 
     - name: Check xml node values verificarion
-      assert:
+      ansible.builtin.assert:
         # Fail if anything changes
         that: >-
           not (xml_node_verification.results

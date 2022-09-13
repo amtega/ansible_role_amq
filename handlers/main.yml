@@ -2,7 +2,7 @@
 # Role handlers
 
 - name: Enable and start amq broker service
-  systemd:
+  ansible.builtin.systemd:
     name: amq
     state: restarted
   when: amq_item.flag

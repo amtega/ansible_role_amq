@@ -1,9 +1,9 @@
 ---
-# Configure ports tasks
 
-- block:
+- name: Configure ports
+  block:
     - name: Gather ports acceptor names
-      xml:
+      community.general.xml:
         path: "{{ amq_brokers_dir }}/{{ amq_broker_name }}/etc/broker.xml"
         xpath: /conf:configuration/core:core/core:acceptors/core:acceptor
         content: attribute
@@ -13,9 +13,10 @@
           core: urn:activemq:core
       register: amq_acceptor_names_result
 
-    - block:
+    - name: Configure ports acceptor URL's
+      block:
         - name: Gather ports acceptor URL's
-          xml:
+          community.general.xml:
             path: "{{ amq_brokers_dir }}/{{ amq_broker_name }}/etc/broker.xml"
             xpath: /conf:configuration/core:core/core:acceptors/core:acceptor
             content: text
@@ -33,7 +34,7 @@
               {{ lookup("template", "ports_acceptors.yml.j2")
                  | from_yaml
                  | combine(amq_broker_ports, recursive=True) }}
-          xml:
+          community.general.xml:
             path: "{{ amq_brokers_dir }}/{{ amq_broker_name }}/etc/broker.xml"
             xpath: >-
               /conf:configuration/core:core/core:acceptors/core:acceptor[@name

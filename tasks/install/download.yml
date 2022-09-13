@@ -1,9 +1,9 @@
 ---
-# Download tasks
 
-- block:
+- name: Download amq
+  block:
     - name: Setup install directory
-      file:
+      ansible.builtin.file:
         path: "{{ amq_install_dir | dirname }}"
         state: directory
         owner: "{{ amq_user }}"

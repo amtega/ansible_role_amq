@@ -7,7 +7,7 @@
     ansible_python_interpreter: /usr/bin/python3
   tasks:
     - name: Molecule requirements for this scenario
-      include_tasks: scenario_requirements.yml
+      include_tasks: tasks/scenario_requirements.yml
 
 - name: Get historic
   hosts: molecule_hosts_amq_cluster
@@ -17,7 +17,7 @@
   tasks:
     - name: Save created VM files
       when: test_save_files
-      include_tasks: verify_save_files.yml
+      include_tasks: tasks/verify_save_files.yml
 
     - name: Verify xml
-      include_tasks: verify_xml.yml
+      include_tasks: tasks/verify_xml.yml

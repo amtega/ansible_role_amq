@@ -44,7 +44,7 @@
           core: urn:activemq:core
 
     - name: Template broker_connectors.xml
-      template:
+      ansible.builtin.template:
         src: broker_connectors.xml.j2
         dest: "{{ etc_broker_connectors_path }}"
         owner: "{{ amq_user }}"
@@ -56,7 +56,7 @@
       # When an included file changes, parent file needs to be touched to
       #  trigger service configuration reload
       when: broker_connectors_result is changed
-      file:
+      ansible.builtin.file:
         path: "{{ etc_broker_path }}"
         state: touch
         mode: 0640

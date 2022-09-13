@@ -14,7 +14,7 @@
   register: amq_acceptor
 
 - name: Extract artemis acceptor for messaging TLS
-  set_fact:
+  ansible.builtin.set_fact:
     amq_acceptor: >-
       {{ amq_acceptor
       | json_query('matches[*].*')
@@ -24,19 +24,19 @@
 
 
 - name: Parse artemis acceptor URL for messaging TLS
-  set_fact:
+  ansible.builtin.set_fact:
     amq_acceptor: >-
       {{ amq_acceptor
       | urlsplit
       | urlsplit_splitquery }}
 
 - name: Incorporate messaging TLS configuration
-  set_fact:
+  ansible.builtin.set_fact:
     amq_acceptor: >-
       {{ amq_acceptor | combine(acceptor_configuration, recursive=True) }}
 
 - name: Update artemis acceptor URL for messaging TLS
-  set_fact:
+  ansible.builtin.set_fact:
     amq_acceptor: "{{ amq_acceptor | urlcombine }}"
 
 - name: "Apply configuration in {{ acceptor_name }} acceptor"
