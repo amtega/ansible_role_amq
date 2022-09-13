@@ -121,7 +121,7 @@ provisioner:
 
           amq_broker_admin:
             name: admin
-            password: test_pass
+            password: test_pass       # pragma: allowlist secret
             role: admin
 
           amq_broker_admin_groups:

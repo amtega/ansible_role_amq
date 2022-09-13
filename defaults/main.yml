@@ -66,7 +66,7 @@ amq_broker_java_options: ""
 
 amq_broker_admin:
   name: admin
-  password: password
+  password: password    # pragma: allowlist secret
   role: admin
 
 # List of strings with AMQ borker user and admin groups
@@ -189,7 +189,7 @@ amq_broker_addresses:
 
 amq_broker_cluster: yes
 amq_broker_cluster_user: user_rhamq
-amq_broker_cluster_password: password_rhamq
+amq_broker_cluster_password: password_rhamq   # pragma: allowlist secret
 amq_broker_cluster_maxhops: 0
 amq_broker_cluster_load_balancing_policy: ON_DEMAND
 amq_broker_cluster_discovery: no
@@ -257,10 +257,10 @@ amq_broker_amqp_low_credits: 30
 
 amq_broker_tls: no
 amq_broker_tls_keystore:
-amq_broker_tls_keystore_password:
+amq_broker_tls_keystore_password:             # pragma: allowlist secret
 amq_broker_tls_mutual_authentication: no
 amq_broker_tls_truststore:
-amq_broker_tls_truststore_password:
+amq_broker_tls_truststore_password:           # pragma: allowlist secret
 
 # Protocol settings
 
@@ -295,7 +295,7 @@ amq_broker_login:
   debug: no
   connectionURL: ldap://ldap.example.local:3268
   connectionUsername: cn=amqLdapUser,ou=CorporateUsers,dc=example,dc=local
-  connectionPassword: "*******************"
+  connectionPassword: "*******************"     # pragma: allowlist secret
   connectionProtocol: s
   authentication: simple
   userBase: dc=example,dc=local
@@ -327,7 +327,7 @@ amq_artifact:
   file: "amq-broker-{{ amq_version }}-bin.zip"
   project: ansible/dml
   branch: master
-  password: gitlab_password
+  password: gitlab_password               # pragma: allowlist secret
   username: gitlab_user
   validate_certs: no
 
