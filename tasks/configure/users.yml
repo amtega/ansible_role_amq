@@ -1,5 +1,4 @@
 ---
-# Setup users
 
 - name: Setup messaging users
   ansible.builtin.command: >

@@ -1,5 +1,4 @@
 ---
-# Role dependencies
 
 galaxy_info:
   role_name: amq

@@ -1,5 +1,4 @@
 ---
-# Configure broker tasks
 
 - name: Configure broker tasks
   block:

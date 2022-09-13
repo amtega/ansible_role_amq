@@ -1,5 +1,4 @@
 ---
-# Configure artemis tasks
 
 - name: Configure artemis JAVA_ARGS
   vars:

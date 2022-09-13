@@ -1,6 +1,0 @@
----
-- name: Ensure ANSIBLE_INVENTORY is declared
-  ansible.builtin.assert:
-    that: lookup('env','ANSIBLE_INVENTORY') | length > 0
-    fail_msg: >-
-      'ANSIBLE_INVENTORY' must be a defined environment variable

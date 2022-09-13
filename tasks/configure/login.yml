@@ -1,5 +1,4 @@
 ---
-# Configure login tasks
 
 - name: Configure login
   ansible.builtin.template:

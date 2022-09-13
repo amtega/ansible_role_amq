@@ -1,5 +1,4 @@
 ---
-# Configure jolokia tasks
 
 - name: Setup jolokia access config
   ansible.builtin.template:

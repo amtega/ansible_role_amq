@@ -1,5 +1,4 @@
 ---
-# Setup shared storage tasks
 
 - name: Setup data directory
   ansible.builtin.file:

@@ -1,5 +1,4 @@
 ---
-# Bootstrap tasks
 
 - name: Bootstrap
   block:

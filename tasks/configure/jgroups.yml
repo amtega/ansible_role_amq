@@ -1,5 +1,4 @@
 ---
-# Configure jgroups tasks
 
 - name: Configure jgroups file ping
   when: amq_broker_shared_store | bool and amq_jgroups_enabled | bool

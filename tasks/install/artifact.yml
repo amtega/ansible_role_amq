@@ -1,5 +1,4 @@
 ---
-# Download artifact tasks
 
 - name: Download artifact
   ansible.builtin.include_role:

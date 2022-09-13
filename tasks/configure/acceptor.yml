@@ -1,5 +1,4 @@
 ---
-# Configure acceptor
 
 - name: "Retrieve {{ acceptor_name }} acceptor"
   xml:

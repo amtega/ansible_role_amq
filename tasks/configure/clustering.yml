@@ -1,5 +1,4 @@
 ---
-# Configure clustering tasks
 
 - name: Configure static cluster connectors
   when: >-
