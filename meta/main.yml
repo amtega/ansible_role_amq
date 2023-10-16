@@ -39,3 +39,7 @@ dependencies:
   - role: amtega.artifact
     tags:
       - never
+
+  - role: amtega.ansible_local
+    tags:
+      - never
