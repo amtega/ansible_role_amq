@@ -1,9 +1,11 @@
 ---
-
 - name: Bootstrap
+  tags:
+    - role::amq::configure
+    - role::amq::configure::bootstrap
   block:
     - name: Configure console web binding
-      xml:
+      community.general.xml:
         path: >-
           {{ amq_brokers_dir
              + "/"
@@ -17,8 +19,5 @@
           http://{{ amq_broker_http_host_bindings | string
           }}:{{ amq_http_admin_port | string }}
         state: present
-        pretty_print: yes
-        backup: yes
-  tags:
-    - role::amq::configure
-    - role::amq::configure::bootstrap
+        pretty_print: true
+        backup: true

@@ -1,6 +1,8 @@
 ---
-
 - name: Download amq
+  tags:
+    - role::amq::install
+    - role::amq::install::download
   block:
     - name: Setup install directory
       ansible.builtin.file:
@@ -11,7 +13,4 @@
         mode: u=rwx,g=rwx,o=rx
 
     - name: Download amq artifact
-      include_tasks: artifact.yml
-  tags:
-    - role::amq::install
-    - role::amq::install::download
+      ansible.builtin.include_tasks: artifact.yml

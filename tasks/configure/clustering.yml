@@ -1,5 +1,4 @@
 ---
-
 - name: Configure static cluster connectors
   when: >-
     amq_broker_cluster | bool
@@ -9,19 +8,18 @@
       {{ amq_brokers_dir }}/{{ amq_broker_name }}/etc/broker.xml
     etc_broker_connectors_path: >-
       {{ amq_brokers_dir }}/{{ amq_broker_name }}/etc/broker_connectors.xml
-    backup: yes
+    backup: true
     expected_connectors: >-
       {{ amq_broker_cluster_nodes
-      | json_query('[].{name: name, value: value} | sort_by(@, &name)')
-      | list }}
-
+         | default([])
+         | json_query('[].{name: name, value: value} | sort_by(@, &name)')
+         | list }}
   tags:
     - role::amq::configure
     - role::amq::configure::clustering
   block:
-
     - name: Set cluster-connections
-      xml:
+      community.general.xml:
         path: "{{ etc_broker_path }}"
         xpath: /conf:configuration/core:core/core:cluster-connections
         set_children: >-
@@ -30,11 +28,11 @@
         namespaces:
           conf: urn:activemq
           core: urn:activemq:core
-        pretty_print: yes
+        pretty_print: true
         backup: "{{ backup }}"
 
     - name: Remove connectors node
-      xml:
+      community.general.xml:
         path: "{{ etc_broker_path }}"
         xpath: /conf:configuration/core:core/core:connectors
         state: absent
@@ -48,20 +46,21 @@
         dest: "{{ etc_broker_connectors_path }}"
         owner: "{{ amq_user }}"
         group: "{{ amq_group }}"
-        mode: 0640
+        mode: "0640"
       register: broker_connectors_result
 
     - name: Trigger configuration reload on broker_connectors.xml change
       # When an included file changes, parent file needs to be touched to
       #  trigger service configuration reload
+      # noqa no-handler
       when: broker_connectors_result is changed
       ansible.builtin.file:
         path: "{{ etc_broker_path }}"
         state: touch
-        mode: 0640
+        mode: "0640"
 
     - name: Count broker connectors includes
-      xml:
+      community.general.xml:
         path: "{{ etc_broker_path }}"
         xpath: >-
           /conf:configuration/core:core/xi:include[@href='{{
@@ -69,13 +68,13 @@
         namespaces:
           conf: urn:activemq
           core: urn:activemq:core
-          xi: "http://www.w3.org/2001/XInclude"
-        count: yes
+          xi: http://www.w3.org/2001/XInclude
+        count: true
       register: broker_connectors_include_count_result
 
     - name: Add broker connectors include
       when: broker_connectors_include_count_result.count == 0
-      xml:
+      community.general.xml:
         path: "{{ etc_broker_path }}"
         xpath: >-
           /conf:configuration/core:core/xi:include[@href='{{
@@ -85,12 +84,12 @@
         namespaces:
           conf: urn:activemq
           core: urn:activemq:core
-          xi: "http://www.w3.org/2001/XInclude"
-        pretty_print: yes
+          xi: http://www.w3.org/2001/XInclude
+        pretty_print: true
         backup: "{{ backup }}"
 
     - name: Remove cluster connection discovery group reference
-      xml:
+      community.general.xml:
         path: "{{ etc_broker_path }}"
         xpath: >-
           {{ "/conf:configuration/core:core/core:cluster-connections/"
@@ -102,7 +101,7 @@
         backup: "{{ backup }}"
 
     - name: Remove broadcast groups
-      xml:
+      community.general.xml:
         path: "{{ etc_broker_path }}"
         xpath: /conf:configuration/core:core/core:broadcast-groups
         state: absent
@@ -112,7 +111,7 @@
         backup: "{{ backup }}"
 
     - name: Remove discovery groups
-      xml:
+      community.general.xml:
         path: "{{ etc_broker_path }}"
         xpath: /conf:configuration/core:core/core:discovery-groups
         state: absent

@@ -1,5 +1,4 @@
 ---
-
 - name: Enable and start amq broker service
   ansible.builtin.systemd:
     name: amq

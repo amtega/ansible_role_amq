@@ -1,5 +1,4 @@
 ---
-
 - name: Configure jgroups file ping
   when: amq_broker_shared_store | bool and amq_jgroups_enabled | bool
   ansible.builtin.template:
@@ -8,8 +7,8 @@
       {{ amq_brokers_dir }}/{{ amq_broker_name }}/etc/jgroups-file-ping.xml
     owner: "{{ amq_user }}"
     group: "{{ amq_group }}"
-    mode: 0640
-    backup: yes
+    mode: "0640"
+    backup: true
   tags:
     - role::amq::configure
     - role::amq::configure::jgroups

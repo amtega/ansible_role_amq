@@ -1,7 +1,6 @@
 ---
-
-- name: "Retrieve {{ acceptor_name }} acceptor"
-  xml:
+- name: Retrieve acceptor {{ acceptor_name }}
+  community.general.xml:
     path: "{{ amq_brokers_dir }}/{{ amq_broker_name }}/etc/broker.xml"
     xpath: >-
       /conf:configuration/core:core/core:acceptors/core:acceptor[@name
@@ -38,8 +37,8 @@
   ansible.builtin.set_fact:
     amq_acceptor: "{{ amq_acceptor | urlcombine }}"
 
-- name: "Apply configuration in {{ acceptor_name }} acceptor"
-  xml:
+- name: Apply configuration in acceptor {{ acceptor_name }}
+  community.general.xml:
     path: "{{ amq_brokers_dir }}/{{ amq_broker_name }}/etc/broker.xml"
     xpath: >-
       /conf:configuration/core:core/core:acceptors/core:acceptor[@name
@@ -48,4 +47,4 @@
     namespaces:
       conf: urn:activemq
       core: urn:activemq:core
-    backup: yes
+    backup: true

@@ -1,6 +1,8 @@
 ---
-
 - name: Configure broker tasks
+  tags:
+    - role::amq::configure
+    - role::amq::configure::broker
   block:
     - name: Setup fact with broker cluster node members
       ansible.builtin.set_fact:
@@ -26,7 +28,12 @@
         state: directory
         owner: "{{ amq_user }}"
         group: "{{ amq_group }}"
-        recurse: yes
+        recurse: true
+
+    # Workaround for ansible lint issue locating template files calling loookup
+    - name: Setup fact with amq broker options template file name
+      ansible.builtin.set_fact:
+        __amq_broker_options_template_file: broker_options.j2
 
     - name: Create broker
       when: amq_broker_primary_replica_flag.flag
@@ -46,15 +53,17 @@
         loop_var: amq_broker_primary_replica_flag
         label: "{{ amq_broker_primary_replica_flag.label }}"
         pause: 5
-      become: yes
+      become: true
       no_log: "{{ amq_no_log | bool }}"
       vars:
         ansible_become_user: "{{ amq_user }}"
+
         amq_broker_options: >-
-          {{ lookup('template', 'broker_options.j2').split("\n") | join(' ') }}
+          {{ lookup('template', __amq_broker_options_template_file)
+             .split("\n") | join(' ') }}
 
     - name: Configure addresses node in broker.xml to broker_addresses.xml
-      include_tasks: xml_to_include.yml
+      ansible.builtin.include_tasks: xml_to_include.yml
       vars:
         xml_source: "{{ amq_brokers_dir }}/{{ amq_broker_name }}/etc/broker.xml"
         xml_destination: >-
@@ -70,13 +79,13 @@
           core: urn:activemq:core
         node_content: >-
           {{ lookup("template", "broker_addresses.xml.j2") }}
-        node_backup: yes
-        overwrite_existing_include: no
+        node_backup: true
+        overwrite_existing_include: false
 
     - name: >-
         Configure address-settings node in broker.xml
         to broker_address_settings.xml
-      include_tasks: xml_to_include.yml
+      ansible.builtin.include_tasks: xml_to_include.yml
       vars:
         xml_source: "{{ amq_brokers_dir }}/{{ amq_broker_name }}/etc/broker.xml"
         xml_destination: >-
@@ -91,13 +100,13 @@
           conf: urn:activemq
           core: urn:activemq:core
         node_content: "{{ amq_broker_address_settings_xml }}"
-        node_backup: yes
-        overwrite_existing_include: no
+        node_backup: true
+        overwrite_existing_include: false
 
     - name: >-
         Configure security-settings node in broker.xml
         to broker_security_settings.xml
-      include_tasks: xml_to_include.yml
+      ansible.builtin.include_tasks: xml_to_include.yml
       vars:
         xml_source: "{{ amq_brokers_dir }}/{{ amq_broker_name }}/etc/broker.xml"
         xml_destination: >-
@@ -113,11 +122,11 @@
           core: urn:activemq:core
         node_content: >-
           {{ lookup("template", "broker_security_settings.xml.j2") }}
-        node_backup: yes
-        overwrite_existing_include: no
+        node_backup: true
+        overwrite_existing_include: false
 
     - name: Configure broker global max size
-      xml:
+      community.general.xml:
         path: "{{ amq_brokers_dir }}/{{ amq_broker_name }}/etc/broker.xml"
         xpath: >-
           {{ "/conf:configuration/core:core/core:global-max-size" }}
@@ -126,14 +135,14 @@
           core: urn:activemq:core
         value: >-
           {{ amq_broker_global_max_size | string | upper }}
-        backup: yes
+        backup: true
 
     - name: Configure broker discovery group
       when: amq_broker_cluster_discovery | bool
       block:
         - name: Configure - jgroups - broker.xml - discovery-group-ref
           when: amq_jgroups_enabled | bool
-          xml:
+          community.general.xml:
             path: "{{ amq_brokers_dir }}/{{ amq_broker_name }}/etc/broker.xml"
             xpath: >-
               {{ "/conf:configuration/core:core/core:cluster-connections/"
@@ -143,72 +152,72 @@
               core: urn:activemq:core
             attribute: discovery-group-name
             value: discovery-group-01
-            pretty_print: yes
-            backup: yes
+            pretty_print: true
+            backup: true
 
         - name: Configure broker discovery groups node
           when: amq_jgroups_enabled | bool
-          xml:
+          community.general.xml:
             path: "{{ amq_brokers_dir }}/{{ amq_broker_name }}/etc/broker.xml"
-            xpath: "/conf:configuration/core:core/core:discovery-groups"
+            xpath: /conf:configuration/core:core/core:discovery-groups
             namespaces:
               conf: urn:activemq
               core: urn:activemq:core
             state: present
-            pretty_print: yes
-            backup: yes
+            pretty_print: true
+            backup: true
 
         - name: Configure broker discovery groups content
           when: amq_jgroups_enabled | bool
-          xml:
+          community.general.xml:
             path: "{{ amq_brokers_dir }}/{{ amq_broker_name }}/etc/broker.xml"
-            xpath: "/conf:configuration/core:core/core:discovery-groups"
+            xpath: /conf:configuration/core:core/core:discovery-groups
             namespaces:
               conf: urn:activemq
               core: urn:activemq:core
             set_children:
-              - "discovery-group":
+              - discovery-group:
                   name: discovery-group-01
                   _:
-                    - "jgroups-file": "{{ amq_jgroups_file }}"
-                    - "jgroups-channel": "{{ amq_jgroups_channel }}"
-                    - "refresh-timeout": "{{ amq_jgroups_refresh_timeout }}"
-            pretty_print: yes
-            backup: yes
+                    - jgroups-file: "{{ amq_jgroups_file }}"
+                    - jgroups-channel: "{{ amq_jgroups_channel }}"
+                    - refresh-timeout: "{{ amq_jgroups_refresh_timeout }}"
+            pretty_print: true
+            backup: true
 
         - name: Configure broker broadcast groups node
           when: amq_jgroups_enabled | bool
-          xml:
+          community.general.xml:
             path: "{{ amq_brokers_dir }}/{{ amq_broker_name }}/etc/broker.xml"
-            xpath: "/conf:configuration/core:core/core:broadcast-groups"
+            xpath: /conf:configuration/core:core/core:broadcast-groups
             namespaces:
               conf: urn:activemq
               core: urn:activemq:core
             state: present
-            pretty_print: yes
-            backup: yes
+            pretty_print: true
+            backup: true
 
         - name: Configure broker broadcast groups content
           when: amq_jgroups_enabled | bool
-          xml:
+          community.general.xml:
             path: "{{ amq_brokers_dir }}/{{ amq_broker_name }}/etc/broker.xml"
-            xpath: "/conf:configuration/core:core/core:broadcast-groups"
+            xpath: /conf:configuration/core:core/core:broadcast-groups
             namespaces:
               conf: urn:activemq
               core: urn:activemq:core
             set_children:
-              - "broadcast-group":
+              - broadcast-group:
                   name: broadcast-group-01
                   _:
-                    - "broadcast-period": "5000"
-                    - "jgroups-file": "{{ amq_jgroups_file }}"
-                    - "jgroups-channel": "{{ amq_jgroups_channel }}"
-                    - "connector-ref": "{{ amq_jgroups_connector_ref }}"
-            pretty_print: yes
-            backup: yes
+                    - broadcast-period: "5000"
+                    - jgroups-file: "{{ amq_jgroups_file }}"
+                    - jgroups-channel: "{{ amq_jgroups_channel }}"
+                    - connector-ref: "{{ amq_jgroups_connector_ref }}"
+            pretty_print: true
+            backup: true
 
     - name: Configure broker security invalidation interval node
-      xml:
+      community.general.xml:
         path: "{{ amq_brokers_dir }}/{{ amq_broker_name }}/etc/broker.xml"
         xpath: >-
           /conf:configuration/core:core/core:security-invalidation-interval
@@ -217,12 +226,12 @@
           core: urn:activemq:core
         value: "{{ amq_broker_security_invalidation_interval | string }}"
         state: present
-        pretty_print: yes
-        backup: yes
+        pretty_print: true
+        backup: true
 
     - name: Configure broker queue depth for libaio
       when: amq_broker_aio
-      xml:
+      community.general.xml:
         path: "{{ amq_brokers_dir }}/{{ amq_broker_name }}/etc/broker.xml"
         xpath: >-
           /conf:configuration/core:core/core:journal-max-io
@@ -231,11 +240,11 @@
           core: urn:activemq:core
         value: "{{ amq_broker_journal_max_io | string }}"
         state: present
-        pretty_print: yes
-        backup: yes
+        pretty_print: true
+        backup: true
 
     - name: Configure maximum number of thread used by the general thread pool
-      xml:
+      community.general.xml:
         path: "{{ amq_brokers_dir }}/{{ amq_broker_name }}/etc/broker.xml"
         xpath: >-
           /conf:configuration/core:core/core:thread-pool-max-size
@@ -244,11 +253,11 @@
           core: urn:activemq:core
         value: "{{ amq_broker_thread_pool_max_size | string }}"
         state: present
-        pretty_print: yes
-        backup: yes
+        pretty_print: true
+        backup: true
 
     - name: Configure maximum number of thread used by the scheduled thread pool
-      xml:
+      community.general.xml:
         path: "{{ amq_brokers_dir }}/{{ amq_broker_name }}/etc/broker.xml"
         xpath: >-
           /conf:configuration/core:core/core:scheduled-thread-pool-max-size
@@ -257,47 +266,44 @@
           core: urn:activemq:core
         value: "{{ amq_broker_scheduled_thread_pool_max_size | string }}"
         state: present
-        pretty_print: yes
-        backup: yes
+        pretty_print: true
+        backup: true
 
     - name: Configure metrics node (for Prometheus)
-      xml:
+      community.general.xml:
         path: "{{ amq_brokers_dir }}/{{ amq_broker_name }}/etc/broker.xml"
-        xpath: "/conf:configuration/core:core/core:metrics"
+        xpath: /conf:configuration/core:core/core:metrics
         namespaces:
           conf: urn:activemq
           core: urn:activemq:core
         state: present
-        pretty_print: yes
-        backup: yes
+        pretty_print: true
+        backup: true
 
     - name: Configure metrics content
-      xml:
+      community.general.xml:
         path: "{{ amq_brokers_dir }}/{{ amq_broker_name }}/etc/broker.xml"
-        xpath: "/conf:configuration/core:core/core:metrics"
+        xpath: /conf:configuration/core:core/core:metrics
         namespaces:
           conf: urn:activemq
           core: urn:activemq:core
         set_children:
-          - "jvm-gc": "true"
-          - "jvm-memory": "true"
-          - "jvm-threads": "true"
+          - jvm-gc: "true"
+          - jvm-memory: "true"
+          - jvm-threads: "true"
           - plugin:
-              "class-name": >-
+              class-name: >-
                 {{ "org.apache.activemq.artemis.core.server.metrics.plugins"
                 + ".ArtemisPrometheusMetricsPlugin" }}
-        pretty_print: yes
-        backup: yes
+        pretty_print: true
+        backup: true
 
     - name: Apply thread and credit configuration in artemis acceptor
       when: amq_broker_aio | bool
-      include_tasks: acceptor.yml
+      ansible.builtin.include_tasks: acceptor.yml
       vars:
         acceptor_name: artemis
         acceptor_configuration:
           query:
             nioRemotingThreads: "{{ amq_broker_nio_remoting_threads }}"
             amqpLowCredits: "{{ amq_broker_amqp_low_credits }}"
-  tags:
-    - role::amq::configure
-    - role::amq::configure::broker

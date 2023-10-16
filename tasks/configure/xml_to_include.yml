@@ -1,20 +1,23 @@
 ---
-
 - name: Move xml node to include
+  vars:
+    namespaces: >-
+      {{ node_namespaces
+         | combine({ "xi": "http://www.w3.org/2001/XInclude" }) }}
   block:
-    - name: "Remove {{ node_name }} node"
-      xml:
+    - name: Remove node {{ node_name }}
+      community.general.xml:
         path: "{{ xml_source }}"
         xpath: "{{ node_xpath }}"
         state: absent
         namespaces: "{{ node_namespaces }}"
 
-    - name: "Check {{ xml_destination }} existence"
+    - name: Check existence of {{ xml_destination }}
       ansible.builtin.stat:
         path: /path/to/something
       register: destination_check_result
 
-    - name: "Populate {{ xml_destination }}"
+    - name: Populate {{ xml_destination }}
       vars:
         include_exists: >-
           {{ destination_check_result.stat.isreg is defined
@@ -22,42 +25,43 @@
       when: overwrite_existing_include or not include_exists
       ansible.builtin.copy:
         dest: "{{ xml_destination }}"
-        content: "{{ node_content }}"  # Must contain main node namespace
+        content: "{{ node_content }}" # Must contain main node namespace
         owner: "{{ xml_destination_owner }}"
         group: "{{ xml_destination_group }}"
-        mode: 0640
+        mode: "0640"
       register: include_copy_result
 
-    - name: "Trigger configuration reload on {{ xml_destination }} change"
+    - name: Trigger configuration reload on change on {{ xml_destination }}
       # When an included file changes, parent file needs to be touched to
       #  trigger service configuration reload
+      # noqa no-handler
       when: include_copy_result is changed
       ansible.builtin.file:
         path: "{{ xml_source }}"
         state: touch
-        mode: 0640
+        mode: "0640"
 
-    - name: "Count {{ xml_source }} {{ node_name }} includes"
-      xml:
+    - name: Count includes  includes {{ msg }}
+      community.general.xml:
         path: "{{ xml_source }}"
         xpath: >-
           {{ node_parent_xpath }}/xi:include[@href='{{ xml_destination }}']
         namespaces: "{{ namespaces }}"
-        count: yes
+        count: true
       register: include_count_result
+      vars:
+        msg: "{{ xml_source }} {{ node_name }}"
 
-    - name: "Add {{ xml_source }} {{ node_name }} include"
+    - name: Add include {{ msg }}
       when: include_count_result.count == 0
-      xml:
+      community.general.xml:
         path: "{{ xml_source }}"
         xpath: >-
           {{ node_parent_xpath }}/xi:include[@href='{{ xml_destination }}']
         attribute: href
         value: "{{ xml_destination }}"
         namespaces: "{{ namespaces }}"
-        pretty_print: yes
+        pretty_print: true
         backup: "{{ node_backup }}"
-  vars:
-    namespaces: >-
-      {{ node_namespaces
-         | combine({ "xi": "http://www.w3.org/2001/XInclude" }) }}
+      vars:
+        msg: "{{ xml_source }} {{ node_name }}"
