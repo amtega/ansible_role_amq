@@ -1,21 +1,37 @@
 ---
-
 - name: Configure default and management role access
+  vars:
+    amq_broker_all_groups: >-
+      {{ (amq_broker_admin_groups + amq_broker_user_groups) | list }}
+    config:
+      - method: list*
+        groups: "{{ amq_broker_all_groups }}"
+      - method: get*
+        groups: "{{ amq_broker_all_groups }}"
+      - method: is*
+        groups: "{{ amq_broker_all_groups }}"
+      - method: set*
+        groups: "{{ amq_broker_admin_groups }}"
+      - method: "*"
+        groups: "{{ amq_broker_admin_groups }}"
+  tags:
+    - role::amq::configure
+    - role::amq::configure::management
   block:
     - name: Configure management role access
-      xml:
+      community.general.xml:
         path: "{{ amq_brokers_dir }}/{{ amq_broker_name }}/etc/management.xml"
         xpath: >-
           {{ "/activemq:management-context/activemq:authorisation/"
           + "activemq:role-access/activemq:match/"
           + "activemq:access[@method='" + element.method + "']" }}
         namespaces:
-          activemq: "http://activemq.org/schema"
-        pretty_print: yes
+          activemq: http://activemq.org/schema
+        pretty_print: true
         input_type: xml
         attribute: roles
         value: "{{ element.groups | list | join(',') }}"
-        backup: yes
+        backup: true
       loop: "{{ config }}"
       loop_control:
         loop_var: element
@@ -24,39 +40,22 @@
           {{ element.groups }}
 
     - name: Configure management default access
-      xml:
+      community.general.xml:
         path: "{{ amq_brokers_dir }}/{{ amq_broker_name }}/etc/management.xml"
         xpath: >-
           {{ "/activemq:management-context/activemq:authorisation/"
           + "activemq:default-access/"
           + "activemq:access[@method='" + element.method + "']" }}
         namespaces:
-          activemq: "http://activemq.org/schema"
-        pretty_print: yes
+          activemq: http://activemq.org/schema
+        pretty_print: true
         input_type: xml
         attribute: roles
         value: "{{ element.groups | join(',') }}"
-        backup: yes
+        backup: true
       loop: "{{ config }}"
       loop_control:
         loop_var: element
         label: >-
           {{ element.method }}
           {{ element.groups }}
-  vars:
-    amq_broker_all_groups: >-
-      {{ (amq_broker_admin_groups + amq_broker_user_groups) | list }}
-    config:
-      - method: "list*"
-        groups: "{{ amq_broker_all_groups }}"
-      - method: "get*"
-        groups: "{{ amq_broker_all_groups }}"
-      - method: "is*"
-        groups: "{{ amq_broker_all_groups }}"
-      - method: "set*"
-        groups: "{{ amq_broker_admin_groups }}"
-      - method: "*"
-        groups: "{{ amq_broker_admin_groups }}"
-  tags:
-    - role::amq::configure
-    - role::amq::configure::management

@@ -1,4 +1,6 @@
 ---
+- name: Download amq
+  ansible.builtin.import_tasks: download.yml
 
-- import_tasks: download.yml
-- import_tasks: data_dir.yml
+- name: Setup amq data directory
+  ansible.builtin.import_tasks: data_dir.yml

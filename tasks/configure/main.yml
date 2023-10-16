@@ -1,13 +1,33 @@
 ---
+- name: Setup amq broker
+  ansible.builtin.import_tasks: broker.yml
 
-- import_tasks: broker.yml
-- import_tasks: bootstrap.yml
-- import_tasks: clustering.yml
-- import_tasks: ports.yml
-- import_tasks: users.yml
-- import_tasks: jolokia.yml
-- import_tasks: jgroups.yml
-- import_tasks: management.yml
-- import_tasks: artemis.yml
-- import_tasks: login.yml
-- import_tasks: service.yml
+- name: Bootstrap amq
+  ansible.builtin.import_tasks: bootstrap.yml
+
+- name: Setup amq clustering
+  ansible.builtin.import_tasks: clustering.yml
+
+- name: Setup amq ports
+  ansible.builtin.import_tasks: ports.yml
+
+- name: Setup amq ports
+  ansible.builtin.import_tasks: users.yml
+
+- name: Setup amq jolokia
+  ansible.builtin.import_tasks: jolokia.yml
+
+- name: Setup amq jgroups
+  ansible.builtin.import_tasks: jgroups.yml
+
+- name: Setup amq management
+  ansible.builtin.import_tasks: management.yml
+
+- name: Setup amq artemis
+  ansible.builtin.import_tasks: artemis.yml
+
+- name: Setup amq login
+  ansible.builtin.import_tasks: login.yml
+
+- name: Setup amq service
+  ansible.builtin.import_tasks: service.yml

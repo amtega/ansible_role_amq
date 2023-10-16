@@ -1,5 +1,4 @@
 ---
-
 - name: Setup data directory
   ansible.builtin.file:
     path: "{{ amq_broker_data_dir }}"

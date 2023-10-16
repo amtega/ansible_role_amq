@@ -1,5 +1,4 @@
 ---
-
 - name: Verify xml
   vars:
     config_dir: "{{ amq_brokers_dir }}/{{ amq_broker_name }}/etc"
@@ -18,8 +17,8 @@
         value: >-
           {{ node.value
           | ternary("true", "false") }}
-        backup: yes
-      check_mode: yes
+        backup: true
+      check_mode: true
       loop_control:
         loop_var: node
         label: "{{ node.label }}"
@@ -61,4 +60,4 @@
           | json_query('[].changed')
           | max )
         # max == (any true → 1 ; all false → 0)
-        msg: "Verifications should not change values"
+        msg: Verifications should not change values

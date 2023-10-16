@@ -1,6 +1,8 @@
 ---
-
 - name: Configure service
+  tags:
+    - role::amq::configure
+    - role::amq::configure::service
   block:
     - name: Configure service systemd unit
       ansible.builtin.template:
@@ -8,19 +10,19 @@
         dest: /usr/lib/systemd/system/amq.service
         owner: root
         group: root
-        mode: 0644
-        backup: yes
+        mode: "0644"
+        backup: true
       register: amq_configure_systemd_result
 
-    - name: Reload systemd
+    - name: Reload systemd # noqa no-handler
       ansible.builtin.systemd:
-        daemon_reload: yes
+        daemon_reload: true
       when: amq_configure_systemd_result is changed
 
     - name: Enable and start amq broker service after configuration
       ansible.builtin.systemd:
         name: amq
-        enabled: yes
+        enabled: true
         state: started
       when: amq_item.flag
       loop:
@@ -32,6 +34,3 @@
         loop_var: amq_item
         label: "{{ amq_item.label }}"
         pause: 10
-  tags:
-    - role::amq::configure
-    - role::amq::configure::service

@@ -2,64 +2,64 @@
 
 dependency:
   name: galaxy
-  enabled: yes
+  enabled: true
   options:
-    ignore-certs: yes
-    ignore-errors: yes
-    role-file: "${MOLECULE_SCENARIO_DIRECTORY}/requirements.yml"
-    requirements-file: "${MOLECULE_SCENARIO_DIRECTORY}/requirements.yml"
+    ignore-certs: true
+    ignore-errors: true
+    role-file: ${MOLECULE_SCENARIO_DIRECTORY}/requirements.yml
+    requirements-file: ${MOLECULE_SCENARIO_DIRECTORY}/requirements.yml
 driver:
   name: vagrant
   provider:
     name: virtualbox
-lint: "${MOLECULE_SCENARIO_DIRECTORY}/linters.sh"
+lint: ${MOLECULE_SCENARIO_DIRECTORY}/linters.sh
 platforms:
-  - name: "nfs-${INSTANCE_UUID:-1}"
+  - name: nfs-${INSTANCE_UUID:-1}
     box: ${VAGRANT_BOX:-centos/stream8}
     provider_options:
-      gui: no
+      gui: false
     provider_raw_config_args:
-      - 'customize ["modifyvm", :id, "--graphicscontroller", "none"]'
-      - 'customize ["modifyvm", :id, "--vram", "0"]'
+      - customize ["modifyvm", :id, "--graphicscontroller", "none"]
+      - customize ["modifyvm", :id, "--vram", "0"]
       # Disable audio
-      - 'customize ["modifyvm", :id, "--audio", "none"]'
+      - customize ["modifyvm", :id, "--audio", "none"]
     interfaces:
       - network_name: private_network
         type: dhcp
-        auto_config: yes
+        auto_config: true
     groups:
       - molecule_hosts
       - molecule_hosts_nfs_servers
-  - name: "primary-${INSTANCE_UUID:-1}"
+  - name: primary-${INSTANCE_UUID:-1}
     box: ${VAGRANT_BOX:-centos/stream8}
     provider_options:
-      gui: no
+      gui: false
     provider_raw_config_args:
       # Disable video
-      - 'customize ["modifyvm", :id, "--graphicscontroller", "none"]'
-      - 'customize ["modifyvm", :id, "--vram", "0"]'
+      - customize ["modifyvm", :id, "--graphicscontroller", "none"]
+      - customize ["modifyvm", :id, "--vram", "0"]
       # Disable audio
-      - 'customize ["modifyvm", :id, "--audio", "none"]'
+      - customize ["modifyvm", :id, "--audio", "none"]
     interfaces:
       - network_name: private_network
         type: dhcp
-        auto_config: yes
+        auto_config: true
     groups:
       - molecule_hosts
       - molecule_hosts_amq_cluster
       - molecule_hosts_amq_primary
-  - name: "replica-${INSTANCE_UUID:-1}"
+  - name: replica-${INSTANCE_UUID:-1}
     box: ${VAGRANT_BOX:-centos/stream8}
     provider_options:
-      gui: no
+      gui: false
     provider_raw_config_args:
-      - 'customize ["modifyvm", :id, "--graphicscontroller", "none"]'
-      - 'customize ["modifyvm", :id, "--vram", "0"]'
-      - 'customize ["modifyvm", :id, "--audio", "none"]'
+      - customize ["modifyvm", :id, "--graphicscontroller", "none"]
+      - customize ["modifyvm", :id, "--vram", "0"]
+      - customize ["modifyvm", :id, "--audio", "none"]
     interfaces:
       - network_name: private_network
         type: dhcp
-        auto_config: yes
+        auto_config: true
     groups:
       - molecule_hosts
       - molecule_hosts_amq_cluster
@@ -73,11 +73,11 @@ provisioner:
     hosts:
       molecule_hosts:
         vars:
-          instance_uuid: "${INSTANCE_UUID:-1}"
+          instance_uuid: ${INSTANCE_UUID:-1}
           ansible_user: root
 
           # Save created files for further study
-          test_save_files: no
+          test_save_files: false
           test_saved_files_dir: ${MOLECULE_SCENARIO_DIRECTORY}/output
 
           test_nfs_server_ip: >-
@@ -110,25 +110,25 @@ provisioner:
           amq_broker_data_dir: /mnt/share-amqbroker/test_instance
 
           amq_broker_java_options:
-            - param: "-Djava.net.preferIPv4Stack="
+            - param: -Djava.net.preferIPv4Stack=
               value: "true"
-            - param: "-Xms"
-              value: "512M"
-            - param: "-Xmx"
-              value: "2G"
-            - param: '-Dhawtio.roles="'
+            - param: -Xms
+              value: 512M
+            - param: -Xmx
+              value: 2G
+            - param: -Dhawtio.roles="
               value: '{{ amq_broker_admin_groups | join(",") }}"'
 
           amq_broker_admin:
             name: admin
-            password: test_pass       # pragma: allowlist secret
+            password: test_pass # pragma: allowlist secret
             role: admin
 
           amq_broker_admin_groups:
             - admin
 
-          amq_broker_cluster_discovery: no
-          amq_broker_shared_store: yes
+          amq_broker_cluster_discovery: false
+          amq_broker_shared_store: true
           amq_broker_cluster_maxhops: 1
           amq_broker_cluster_load_balancing_policy: STRICT
           amq_broker_address_setting_redelivery_delay: 500
@@ -137,13 +137,13 @@ provisioner:
           amq_broker_global_max_size: 512M
           amq_broker_security_invalidation_interval: 3600000
 
-          amq_broker_http_host_bindings: 0.0.0.0
+          amq_broker_http_host_bindings: "0.0.0.0"
 
-          amq_broker_nio: no
+          amq_broker_nio: false
           amq_broker_nio_remoting_threads: -1
           amq_broker_amqp_low_credits: 30
 
-          amq_broker_aio: yes
+          amq_broker_aio: true
           amq_broker_journal_max_io: 500
 
           amq_broker_security_settings:
@@ -179,14 +179,14 @@ provisioner:
               | unique
             }}
 
-          amq_broker_enable_destination_autocreate: no
+          amq_broker_enable_destination_autocreate: false
 
-          amq_no_log: no
+          amq_no_log: false
       molecule_hosts_amq_primary:
         vars:
-          amq_broker_is_replica: no
+          amq_broker_is_replica: false
       molecule_hosts_amq_replicas:
         vars:
-          amq_broker_is_replica: yes
+          amq_broker_is_replica: true
 verifier:
   name: ansible

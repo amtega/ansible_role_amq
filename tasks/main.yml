@@ -1,5 +1,9 @@
 ---
+- name: Check amq
+  ansible.builtin.import_tasks: check.yml
 
-- ansible.builtin.import_tasks: check.yml
-- ansible.builtin.import_tasks: install/main.yml
-- ansible.builtin.import_tasks: configure/main.yml
+- name: Install amq
+  ansible.builtin.import_tasks: install/main.yml
+
+- name: Configure amq
+  ansible.builtin.import_tasks: configure/main.yml

@@ -1,5 +1,4 @@
 ---
-
 - name: Ensure ANSIBLE_INVENTORY is declared
   ansible.builtin.assert:
     that: lookup('env','ANSIBLE_INVENTORY') | length > 0

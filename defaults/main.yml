@@ -46,6 +46,7 @@ amq_brokers_dir: "{{ amq_base_dir }}/brokers"
 amq_broker_data_dir: "{{ amq_brokers_dir }}/data"
 
 # HAWTIO_ROLE in etc/artemis.profile
+
 amq_broker_hawtio_groups: admin
 
 # Aditional java options
@@ -66,7 +67,7 @@ amq_broker_java_options: ""
 
 amq_broker_admin:
   name: admin
-  password: password    # pragma: allowlist secret
+  password: password # pragma: allowlist secret
   role: admin
 
 # List of strings with AMQ borker user and admin groups
@@ -76,7 +77,6 @@ amq_broker_admin:
 # etc/artemis.profile →  JAVA_ARGS -Dawtio.roles
 
 amq_broker_admin_groups: []
-
 amq_broker_user_groups: []
 
 # List of dicts with the AMQ broker users. The format of the dicts is the
@@ -92,44 +92,45 @@ amq_broker_users: []
 
 # yamllint disable rule:line-length
 amq_broker_address_settings_xml: |-
-      <address-settings xmlns="urn:activemq:core">
-        <!-- if you define auto-create on certain queues, management has to be auto-create -->
-        <address-setting match="activemq.management#">
-          <dead-letter-address>DLQ</dead-letter-address>
-          <expiry-address>ExpiryQueue</expiry-address>
-          <redelivery-delay>{{ amq_broker_address_setting_redelivery_delay | string | lower }}</redelivery-delay>
-          <!-- with -1 only the global-max-size is in use for limiting -->
-          <max-size-bytes>-1</max-size-bytes>
-          <message-counter-history-day-limit>10</message-counter-history-day-limit>
-          <address-full-policy>PAGE</address-full-policy>
-          <auto-create-queues>{{ amq_broker_enable_destination_autocreate
-          | ternary("true", "false") }}</auto-create-queues>
-          <auto-create-addresses>{{ amq_broker_enable_destination_autocreate
-          | ternary("true", "false") }}</auto-create-addresses>
-          <auto-create-jms-queues>{{ amq_broker_enable_destination_autocreate
-          | ternary("true", "false") }}</auto-create-jms-queues>
-          <auto-create-jms-topics>{{ amq_broker_enable_destination_autocreate
-          | ternary("true", "false") }}</auto-create-jms-topics>
-        </address-setting>
-        <!--default for catch all-->
-        <address-setting match="#">
-          <dead-letter-address>DLQ</dead-letter-address>
-          <expiry-address>ExpiryQueue</expiry-address>
-          <redelivery-delay>{{ amq_broker_address_setting_redelivery_delay | string | lower }}</redelivery-delay>
-          <!-- with -1 only the global-max-size is in use for limiting -->
-          <max-size-bytes>-1</max-size-bytes>
-          <message-counter-history-day-limit>10</message-counter-history-day-limit>
-          <address-full-policy>PAGE</address-full-policy>
-          <auto-create-queues>{{ amq_broker_enable_destination_autocreate
-          | ternary("true", "false") }}</auto-create-queues>
-          <auto-create-addresses>{{ amq_broker_enable_destination_autocreate
-          | ternary("true", "false") }}</auto-create-addresses>
-          <auto-create-jms-queues>{{ amq_broker_enable_destination_autocreate
-          | ternary("true", "false") }}</auto-create-jms-queues>
-          <auto-create-jms-topics>{{ amq_broker_enable_destination_autocreate
-          | ternary("true", "false") }}</auto-create-jms-topics>
-        </address-setting>
-      </address-settings>
+  <address-settings xmlns="urn:activemq:core">
+    <!-- if you define auto-create on certain queues, management has to be auto-create -->
+    <address-setting match="activemq.management#">
+      <dead-letter-address>DLQ</dead-letter-address>
+      <expiry-address>ExpiryQueue</expiry-address>
+      <redelivery-delay>{{ amq_broker_address_setting_redelivery_delay | string | lower }}</redelivery-delay>
+      <!-- with -1 only the global-max-size is in use for limiting -->
+      <max-size-bytes>-1</max-size-bytes>
+      <message-counter-history-day-limit>10</message-counter-history-day-limit>
+      <address-full-policy>PAGE</address-full-policy>
+      <auto-create-queues>{{ amq_broker_enable_destination_autocreate
+      | ternary("true", "false") }}</auto-create-queues>
+      <auto-create-addresses>{{ amq_broker_enable_destination_autocreate
+      | ternary("true", "false") }}</auto-create-addresses>
+      <auto-create-jms-queues>{{ amq_broker_enable_destination_autocreate
+      | ternary("true", "false") }}</auto-create-jms-queues>
+      <auto-create-jms-topics>{{ amq_broker_enable_destination_autocreate
+      | ternary("true", "false") }}</auto-create-jms-topics>
+    </address-setting>
+    <!--default for catch all-->
+    <address-setting match="#">
+      <dead-letter-address>DLQ</dead-letter-address>
+      <expiry-address>ExpiryQueue</expiry-address>
+      <redelivery-delay>{{ amq_broker_address_setting_redelivery_delay | string | lower }}</redelivery-delay>
+      <!-- with -1 only the global-max-size is in use for limiting -->
+      <max-size-bytes>-1</max-size-bytes>
+      <message-counter-history-day-limit>10</message-counter-history-day-limit>
+      <address-full-policy>PAGE</address-full-policy>
+      <auto-create-queues>{{ amq_broker_enable_destination_autocreate
+      | ternary("true", "false") }}</auto-create-queues>
+      <auto-create-addresses>{{ amq_broker_enable_destination_autocreate
+      | ternary("true", "false") }}</auto-create-addresses>
+      <auto-create-jms-queues>{{ amq_broker_enable_destination_autocreate
+      | ternary("true", "false") }}</auto-create-jms-queues>
+      <auto-create-jms-topics>{{ amq_broker_enable_destination_autocreate
+      | ternary("true", "false") }}</auto-create-jms-topics>
+    </address-setting>
+  </address-settings>
+
 # yamllint enable
 
 # Related to etc/broker.xml in xpath /configuration/core/security-settings
@@ -187,15 +188,15 @@ amq_broker_addresses:
 
 # Clustering settings
 
-amq_broker_cluster: yes
+amq_broker_cluster: true
 amq_broker_cluster_user: user_rhamq
-amq_broker_cluster_password: password_rhamq   # pragma: allowlist secret
+amq_broker_cluster_password: password_rhamq # pragma: allowlist secret
 amq_broker_cluster_maxhops: 0
 amq_broker_cluster_load_balancing_policy: ON_DEMAND
-amq_broker_cluster_discovery: no
-amq_broker_replication_enabled: no
-amq_broker_is_replica: no
-amq_broker_shared_store: yes
+amq_broker_cluster_discovery: false
+amq_broker_replication_enabled: false
+amq_broker_is_replica: false
+amq_broker_shared_store: true
 amq_cluster_name: my-cluster
 # amq_cluster_retry_interval: 500
 # amq_cluster_use_duplicate_detection: yes
@@ -209,37 +210,39 @@ amq_jolokia_allowed_origins:
   - "*://{{ ansible_facts.fqdn }}*"
   - "*://{{ ansible_default_ipv4.address }}*"
 
-amq_jolokia_strict_checking: yes
+amq_jolokia_strict_checking: true
 
 # Web
 
 # With artemis create --http-host configurates web bindings in
 # etc/bootstrap.xml → xpath:/broker/web/@bind= ...
+
 amq_broker_http_host_bindings: "{{ ansible_facts.hostname }}"
 
 # Jgroups settings
-amq_jgroups_enabled: no
+
+amq_jgroups_enabled: false
 amq_jgroups_channel: active_broadcast_channel
 amq_jgroups_connector_ref: artemis
 amq_jgroups_refresh_timeout: "10000"
 
 # Queues settings
 
-amq_broker_paging: yes
+amq_broker_paging: true
 
 # Related to etc/broker.xml in xpath:
 # /configuration/core/address-settings/address-setting[@match="#"]/auto-create-queues=true
 # /configuration/core/address-settings/address-setting[@match="#"]/auto-create-addresses=true
 # /configuration/core/address-settings/address-setting[@match="#"]/auto-create-jms-queues=true
 # /configuration/core/address-settings/address-setting[@match="#"]/auto-create-jms-topics=true
-amq_broker_enable_destination_autocreate: no
+
+amq_broker_enable_destination_autocreate: false
 
 amq_broker_queues: []
 
-
 # ASYNCIO settings
 
-amq_broker_aio: yes
+amq_broker_aio: true
 amq_broker_journal_max_io: 500
 
 # Thread settings
@@ -249,25 +252,25 @@ amq_broker_scheduled_thread_pool_max_size: 5
 
 # Nio settings
 
-amq_broker_nio: no
+amq_broker_nio: false
 amq_broker_nio_remoting_threads: -1
 amq_broker_amqp_low_credits: 30
 
 # TLS settings
 
-amq_broker_tls: no
+amq_broker_tls: false
 amq_broker_tls_keystore:
-amq_broker_tls_keystore_password:             # pragma: allowlist secret
-amq_broker_tls_mutual_authentication: no
+amq_broker_tls_keystore_password: # pragma: allowlist secret
+amq_broker_tls_mutual_authentication: false
 amq_broker_tls_truststore:
-amq_broker_tls_truststore_password:           # pragma: allowlist secret
+amq_broker_tls_truststore_password: # pragma: allowlist secret
 
 # Protocol settings
 
-amq_broker_disable_amqp_protocol: no
-amq_broker_disable_hornetq_protocol: yes
-amq_broker_disable_mqtt_protocol: yes
-amq_broker_disable_stomp_protocol: yes
+amq_broker_disable_amqp_protocol: false
+amq_broker_disable_hornetq_protocol: true
+amq_broker_disable_mqtt_protocol: true
+amq_broker_disable_stomp_protocol: true
 
 # Port assignments
 
@@ -277,36 +280,39 @@ amq_stomp_port: 61613
 amq_hornetq_port: 5445
 amq_mqtt_port: 1833
 amq_http_admin_port: 8161
-  # HTTP Server http://hostname:8161
-  # Artemis Jolokia http://hostname:8161/console/jolokia
-  # Artemis Console http://hostname:8161/console
+
+# HTTP Server http://hostname:8161
+# Artemis Jolokia http://hostname:8161/console/jolokia
+# Artemis Console http://hostname:8161/console
 
 # Additional broker settings
 
 amq_broker_address_setting_redelivery_delay: 500
+
 # broker.xml:/configuration/core/global-max-size=2GB
 # amq_broker_global_max_size = amq_broker_java_options.param Xmx / 4
+
 amq_broker_global_max_size: 2G
 amq_broker_security_invalidation_interval: 3600000
 
 # Login settings
 
 amq_broker_login:
-  debug: no
+  debug: false
   connectionURL: ldap://ldap.example.local:3268
   connectionUsername: cn=amqLdapUser,ou=CorporateUsers,dc=example,dc=local
-  connectionPassword: "*******************"     # pragma: allowlist secret
+  connectionPassword: "*******************" # pragma: allowlist secret
   connectionProtocol: s
   authentication: simple
   userBase: dc=example,dc=local
-  userSearchMatching: "(&(sAMAccountName={0})(objectclass=user))"
-  userSearchSubtree: yes
+  userSearchMatching: (&(sAMAccountName={0})(objectclass=user))
+  userSearchSubtree: true
   roleBase: dc=example,dc=local
   roleName: cn
-  roleSearchMatching: "(&(member={0})(objectclass=group))"
-  roleSearchSubtree: yes
+  roleSearchMatching: (&(member={0})(objectclass=group))
+  roleSearchSubtree: true
   referral: follow
-  reload: yes
+  reload: true
 
 # Install artifact
 #
@@ -324,13 +330,13 @@ amq_artifact:
   type: gitlab
   host: https://gitlab.example.local
   path: /redhat/amq
-  file: "amq-broker-{{ amq_version }}-bin.zip"
+  file: amq-broker-{{ amq_version }}-bin.zip
   project: ansible/dml
   branch: master
-  password: gitlab_password               # pragma: allowlist secret
+  password: gitlab_password # pragma: allowlist secret
   username: gitlab_user
-  validate_certs: no
+  validate_certs: false
 
 # Hide sensitive information
 
-amq_no_log: yes
+amq_no_log: true

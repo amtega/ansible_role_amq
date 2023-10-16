@@ -1,12 +1,11 @@
 ---
-
 - name: Setup jolokia access config
   ansible.builtin.template:
     src: jolokia-access.xml.j2
     dest: "{{ amq_brokers_dir }}/{{ amq_broker_name }}/etc/jolokia-access.xml"
     owner: "{{ amq_user }}"
     group: "{{ amq_group }}"
-    mode: 0644
+    mode: "0644"
   notify: restart amq broker
   tags:
     - role::amq::configure

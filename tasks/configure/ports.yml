@@ -1,37 +1,50 @@
 ---
-
 - name: Configure ports
+  tags:
+    - role::amq::configure
+    - role::amq::configure::ports
   block:
     - name: Gather ports acceptor names
       community.general.xml:
         path: "{{ amq_brokers_dir }}/{{ amq_broker_name }}/etc/broker.xml"
         xpath: /conf:configuration/core:core/core:acceptors/core:acceptor
         content: attribute
-        backup: yes
+        backup: true
         namespaces:
           conf: urn:activemq
           core: urn:activemq:core
       register: amq_acceptor_names_result
 
     - name: Configure ports acceptor URL's
+      vars:
+        acceptor_names: >-
+          {{ amq_acceptor_names_result
+          | json_query('matches[*].*')
+          | json_query('[]') }}
       block:
         - name: Gather ports acceptor URL's
           community.general.xml:
             path: "{{ amq_brokers_dir }}/{{ amq_broker_name }}/etc/broker.xml"
             xpath: /conf:configuration/core:core/core:acceptors/core:acceptor
             content: text
-            backup: yes
+            backup: true
             namespaces:
               conf: urn:activemq
               core: urn:activemq:core
           register: acceptors_urls_result
+
+        # Workaround for ansible lint issue locating template files calling
+        # loookup
+        - name: Setup fact with amq broker options template file name
+          ansible.builtin.set_fact:
+            __amq_acceptors_template_file: ports_acceptors.yml.j2"
 
         - name: Update ports acceptors
           vars:
             amq_acceptor_parsed_urls: >-
               {{ lookup('template', 'ports_parsed_urls.yml.j2') | from_yaml }}
             amq_acceptors: >-
-              {{ lookup("template", "ports_acceptors.yml.j2")
+              {{ lookup("template", __amq_acceptors_template_file)
                  | from_yaml
                  | combine(amq_broker_ports, recursive=True) }}
           community.general.xml:
@@ -43,7 +56,7 @@
               {{ amq_acceptors[amq_acceptor_name_item.name]
                  | urlcombine
                  | string }}
-            backup: yes
+            backup: true
             namespaces:
               conf: urn:activemq
               core: urn:activemq:core
@@ -51,11 +64,3 @@
           loop_control:
             loop_var: amq_acceptor_name_item
             label: "{{ amq_acceptor_name_item.name }}"
-      vars:
-        acceptor_names: >-
-          {{ amq_acceptor_names_result
-          | json_query('matches[*].*')
-          | json_query('[]') }}
-  tags:
-    - role::amq::configure
-    - role::amq::configure::ports

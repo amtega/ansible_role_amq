@@ -1,5 +1,4 @@
 ---
-
 - name: Download artifact
   ansible.builtin.include_role:
     name: amtega.artifact
@@ -8,7 +7,7 @@
       owner: "{{ amq_user }}"
       group: "{{ amq_group }}"
       dest: "{{ amq_install_dir | dirname }}"
-      unarchive: yes
+      unarchive: true
       unarchive_creates: "{{ amq_install_dir | basename }}"
       version: "{{ amq_version }}"
       state: present

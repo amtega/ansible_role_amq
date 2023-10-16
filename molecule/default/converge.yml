@@ -1,16 +1,15 @@
 ---
-
 - name: Pre - Converge
   hosts: molecule_hosts_amq_cluster
   tasks:
     - name: Molecule requirements for this scenario
-      include_tasks: tasks/scenario_requirements.yml
+      ansible.builtin.include_tasks: tasks/scenario_requirements.yml
   vars:
     ansible_python_interpreter: /usr/bin/python3
 
 - name: Converge
   hosts: molecule_hosts_amq_cluster
-  become: yes
+  become: true
   become_user: root
   roles:
     - amtega.amq
