@@ -1,0 +1,21 @@
+---
+- name: Check platform
+  ansible.builtin.include_role:
+    name: amtega.check_platform
+  vars:
+    check_platform_distributions:
+      centos: 7
+      redhat: 7
+
+- name: Setup packages
+  ansible.builtin.include_role:
+    name: amtega.packages
+  vars:
+    packages_os:
+      all:
+        all:
+          libaio: present
+    packages_python:
+      all:
+        all:
+          lxml: present

@@ -1,43 +1,75 @@
 ---
-
-ignore: |
-  .cz.yaml
+ignore:
+  - .cz.yaml
+  - .git
 
 extends: default
 
 rules:
   braces:
-    max-spaces-inside: 1
+    forbid: false
+    min-spaces-inside: 0
+    max-spaces-inside: 0
+    min-spaces-inside-empty: -1
+    max-spaces-inside-empty: -1
     level: error
   brackets:
-    max-spaces-inside: 1
+    forbid: false
+    min-spaces-inside: 0
+    max-spaces-inside: 0
+    min-spaces-inside-empty: -1
+    max-spaces-inside-empty: -1
     level: error
   colons:
     max-spaces-after: -1
     level: error
   commas:
-    max-spaces-after: -1
+    max-spaces-before: 0
+    min-spaces-after: 1
+    max-spaces-after: 1
     level: error
-  comments: disable
-  comments-indentation: disable
-  document-start: disable
+  comments:
+    require-starting-space: false
+    ignore-shebangs: true
+    min-spaces-from-content: 1
+    level: warning
+  comments-indentation: {}
+  document-end:
+    present: false
+    level: error
+  document-start:
+    present: true
+    level: error
   empty-lines:
     max: 3
+    max-start: 0
+    max-end: 0
     level: error
   hyphens:
+    max-spaces-after: 1
     level: error
   indentation:
     spaces: 2
     indent-sequences: true
     check-multi-line-strings: false
     level: warning
-  key-duplicates: enable
+  key-duplicates: {}
   line-length:
-    max: 80
+    max: 120
     allow-non-breakable-words: true
     allow-non-breakable-inline-mappings: true
     level: warning
-  new-line-at-end-of-file: disable
   new-lines:
     type: unix
-  trailing-spaces: disable
+  quoted-strings:
+    quote-type: any
+    required: only-when-needed
+    extra-required: []
+    extra-allowed: []
+    allow-quoted-quotes: false
+  trailing-spaces: {}
+  truthy:
+    allowed-values:
+      - 'true'
+      - 'false'
+    check-keys: false

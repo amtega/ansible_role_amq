@@ -1,0 +1,5 @@
+---
+- name: amtega.check_platform
+- name: amtega.packages
+- name: amtega.artifact
+- name: amtega.ansible_local

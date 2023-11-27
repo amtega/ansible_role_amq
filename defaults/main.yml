@@ -1,6 +1,4 @@
 ---
-# Role default lower priority variables
-
 # AMQ version to install
 
 amq_version: 7.8.3
@@ -170,7 +168,7 @@ amq_broker_security_settings:
 #     routing: anycast
 #     queues:
 #       - name: EjemploQueue
-#         durable: yes
+#         durable: true
 #         max_consumers: 10
 #
 #   - name: EjemploTopic
@@ -199,7 +197,7 @@ amq_broker_is_replica: false
 amq_broker_shared_store: true
 amq_cluster_name: my-cluster
 # amq_cluster_retry_interval: 500
-# amq_cluster_use_duplicate_detection: yes
+# amq_cluster_use_duplicate_detection: true
 amq_cluster_message_load_balancing: STRICT
 amq_cluster_max_hops: 1
 
@@ -340,3 +338,7 @@ amq_artifact:
 # Hide sensitive information
 
 amq_no_log: true
+
+# Enable or disable unsafe writes
+
+amq_unsafe_writes: true

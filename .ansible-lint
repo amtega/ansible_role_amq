@@ -1,9 +1,10 @@
 ---
-
 exclude_paths:
   - .cz.yaml
+  - .git
 
 kinds:
-  - yaml: "**/molecule/**/requirements.yml"
+  - yaml: '**/molecule/**/requirements.yml'
+  - yaml: '**/meta/**/requirements.yml'
 
 offline: true

@@ -13,10 +13,12 @@
         line: HAWTIO_ROLE='{{ amq_broker_hawtio_groups | join(',') }}'
         mode: "0644"
         backup: true
+        unsafe_writes: "{{ amq_unsafe_writes | bool }}"
 
     - name: Get artemis JAVA_ARGS
-      ansible.builtin.command: >-
-        /bin/grep "^ *JAVA_ARGS=" {{ ini_file }}
+      ansible.builtin.command:
+        cmd: >-
+          /bin/grep "^ *JAVA_ARGS=" {{ ini_file }}
       changed_when: false
       register: get_java_args_result
 
@@ -30,3 +32,4 @@
         regexp: ^ *JAVA_ARGS=.*$
         line: "{{ configured_java_args }}"
         backup: true
+        unsafe_writes: "{{ amq_unsafe_writes | bool }}"
