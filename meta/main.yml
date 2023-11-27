@@ -1,5 +1,4 @@
 ---
-
 galaxy_info:
   role_name: amq
   namespace: amtega
@@ -17,29 +16,3 @@ galaxy_info:
     - redhat
     - amq
     - broker
-
-dependencies:
-  - role: amtega.check_platform
-    vars:
-      check_platform_distributions:
-        centos: 7
-        redhat: 7
-
-  - role: amtega.packages
-    vars:
-      packages_os:
-        all:
-          all:
-            libaio: present
-      packages_python:
-        all:
-          all:
-            lxml: present
-
-  - role: amtega.artifact
-    tags:
-      - never
-
-  - role: amtega.ansible_local
-    tags:
-      - never

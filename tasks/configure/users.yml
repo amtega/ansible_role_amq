@@ -1,10 +1,11 @@
 ---
 - name: Setup messaging users
-  ansible.builtin.command: >
-    {{ amq_brokers_dir }}/{{ amq_broker_name }}/bin/artemis user add
-    --user {{ amq_broker_user_item.name }}
-    --password {{ amq_broker_user_item.password }}
-    --role {{ amq_broker_user_item.role }}
+  ansible.builtin.command:
+    cmd: >-
+      {{ amq_brokers_dir }}/{{ amq_broker_name }}/bin/artemis user add
+      --user {{ amq_broker_user_item.name }}
+      --password {{ amq_broker_user_item.password }}
+      --role {{ amq_broker_user_item.role }}
   changed_when: false
   notify: restart amq broker
   loop: "{{ amq_broker_users }}"

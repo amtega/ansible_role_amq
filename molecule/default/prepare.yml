@@ -33,6 +33,7 @@
         line: "{{ test_nfs_directory }} *(rw,sync,no_root_squash,no_all_squash)"
         create: true
         mode: "0644"
+        unsafe_writes: true
 
     - name: Setup nfs shared directory
       ansible.builtin.file:
@@ -97,6 +98,7 @@
         owner: root
         group: root
         mode: "0644"
+        unsafe_writes: true
 
     - name: Clean amq if installed
       ansible.builtin.import_tasks: tasks/clean.yml

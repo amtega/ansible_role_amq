@@ -34,8 +34,8 @@ This is an example playbook:
 
 ## Testing
 
-Tests are based on [molecule with vagrant virtual
-machines](https://molecule.readthedocs.io/en/latest/installation.html).
+Tests are based on
+[molecule with vagrant virtual machines](https://molecule.readthedocs.io/en/latest/installation.html).
 Virtual machines are created with virtualbox dhcp and should need permission to
 create networks. Check it in `/etc/vbox/networks.conf`. An example of overly
 permissive configuration is:
@@ -72,7 +72,7 @@ approved by the European Commission ­subsequent versions of the EUPL.
 
 This role is distributed in the hope that it will be useful, but WITHOUT ANY
 WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
-PARTICULAR PURPOSE.  See the GNU General Public License for more details or
+PARTICULAR PURPOSE. See the GNU General Public License for more details or
 European Union Public License for more details.
 
 ## Author Information

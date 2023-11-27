@@ -1,9 +1,16 @@
 ---
+- name: Setup prerequisites
+  ansible.builtin.include_tasks:
+    file: prerequisites.yml
+
 - name: Check amq
-  ansible.builtin.import_tasks: check.yml
+  ansible.builtin.include_tasks:
+    file: check.yml
 
 - name: Install amq
-  ansible.builtin.import_tasks: install/main.yml
+  ansible.builtin.include_tasks:
+    file: install/main.yml
 
 - name: Configure amq
-  ansible.builtin.import_tasks: configure/main.yml
+  ansible.builtin.include_tasks:
+    file: configure/main.yml

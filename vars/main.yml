@@ -1,6 +1,4 @@
 ---
-# Role variables
-
 # Jgroups file
 
 amq_jgroups_file: jgroups-file-ping.xml

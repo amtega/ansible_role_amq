@@ -1,12 +1,13 @@
 ---
-
 default_stages:
   - commit
   - push
+
 exclude: LICENSE|CHANGELOG.md|\.gitlab/
+
 repos:
   - repo: https://github.com/commitizen-tools/commitizen
-    rev: 3.10.1
+    rev: 3.12.0
     hooks:
       - id: commitizen
         stages:
@@ -14,32 +15,38 @@ repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.5.0
     hooks:
-      # Identify invalid files
       - id: check-ast
       - id: check-yaml
       - id: check-json
       - id: check-toml
-
-      # Git checks
       - id: check-merge-conflict
       - id: check-added-large-files
       - id: detect-private-key
       - id: check-case-conflict
-
-      # Python checks
       - id: check-docstring-first
       - id: debug-statements
       - id: requirements-txt-fixer
       - id: fix-byte-order-marker
-
-      # General quality checks
       - id: mixed-line-ending
       - id: trailing-whitespace
-        args: [--markdown-linebreak-ext=md]
+        args:
+          - --markdown-linebreak-ext=md
       - id: check-executables-have-shebangs
       - id: end-of-file-fixer
+  - repo: https://github.com/Yelp/detect-secrets
+    rev: v1.4.0
+    hooks:
+      - id: detect-secrets
+        args:
+          - --baseline
+          - .secrets.baseline
+  - repo: https://github.com/executablebooks/mdformat
+    rev: 0.7.17
+    hooks:
+      - id: mdformat
   - repo: https://github.com/ansible/ansible-lint
-    rev: v6.20.3
+    rev: v6.22.0
     hooks:
       - id: ansible-lint
-        additional_dependencies: ['jmespath']
+        additional_dependencies:
+          - jmespath
