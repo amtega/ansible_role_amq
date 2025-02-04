@@ -1,19 +1,23 @@
 ---
+default_install_hook_types:
+  - pre-commit
+  - pre-push
+
 default_stages:
-  - commit
-  - push
+  - pre-commit
+  - pre-push
 
 exclude: LICENSE|CHANGELOG.md|\.gitlab/
 
 repos:
   - repo: https://github.com/commitizen-tools/commitizen
-    rev: 3.12.0
+    rev: v4.1.1
     hooks:
       - id: commitizen
         stages:
           - commit-msg
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.5.0
+    rev: v5.0.0
     hooks:
       - id: check-ast
       - id: check-yaml
@@ -34,19 +38,19 @@ repos:
       - id: check-executables-have-shebangs
       - id: end-of-file-fixer
   - repo: https://github.com/Yelp/detect-secrets
-    rev: v1.4.0
+    rev: v1.5.0
     hooks:
       - id: detect-secrets
         args:
           - --baseline
           - .secrets.baseline
   - repo: https://github.com/executablebooks/mdformat
-    rev: 0.7.17
+    rev: 0.7.22
     hooks:
       - id: mdformat
   - repo: https://github.com/ansible/ansible-lint
-    rev: v6.22.0
+    rev: v25.1.1
     hooks:
       - id: ansible-lint
-        additional_dependencies:
-          - jmespath
+        stages:
+          - pre-push

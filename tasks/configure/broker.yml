@@ -42,7 +42,6 @@
           {{ amq_install_dir }}/bin/artemis create
           {{ amq_brokers_dir }}/{{ amq_broker_name }}
           {{ amq_broker_options }}
-      args: # FIXME: Migrate args section to direct module args
         creates: "{{ amq_brokers_dir }}/{{ amq_broker_name }}"
       notify: restart amq broker
       loop:

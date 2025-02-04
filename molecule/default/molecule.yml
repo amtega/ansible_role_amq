@@ -16,8 +16,22 @@ driver:
 lint: ${MOLECULE_SCENARIO_DIRECTORY}/linters.sh
 
 platforms:
+  - name: el9-${INSTANCE_UUID:-1}
+    box: generic/rocky9
+    memory: 1536
+    instance_raw_config_args:
+      - 'vm.provision "shell", path: "${MOLECULE_SCENARIO_DIRECTORY}/vagrant.sh"'
+    provision: true
+    groups:
+      - molecule_hosts
+      - molecule_hosts_el
+      - molecule_hosts_el_9
   - name: nfs-${INSTANCE_UUID:-1}
     box: ${VAGRANT_BOX:-centos/stream8}
+    memory: 1024
+    instance_raw_config_args:
+      - 'vm.provision "shell", path: "${MOLECULE_SCENARIO_DIRECTORY}/vagrant.sh"'
+    provision: true
     provider_options:
       gui: false
     provider_raw_config_args:
@@ -34,6 +48,10 @@ platforms:
       - molecule_hosts_nfs_servers
   - name: primary-${INSTANCE_UUID:-1}
     box: ${VAGRANT_BOX:-centos/stream8}
+    memory: 1024
+    instance_raw_config_args:
+      - 'vm.provision "shell", path: "${MOLECULE_SCENARIO_DIRECTORY}/vagrant.sh"'
+    provision: true
     provider_options:
       gui: false
     provider_raw_config_args:
@@ -52,6 +70,10 @@ platforms:
       - molecule_hosts_amq_primary
   - name: replica-${INSTANCE_UUID:-1}
     box: ${VAGRANT_BOX:-centos/stream8}
+    memory: 1024
+    instance_raw_config_args:
+      - 'vm.provision "shell", path: "${MOLECULE_SCENARIO_DIRECTORY}/vagrant.sh"'
+    provision: true
     provider_options:
       gui: false
     provider_raw_config_args:
@@ -88,7 +110,7 @@ provisioner:
                ).ansible_eth1.ipv4.address }}
 
           test_nfs_directory: /nfsfileshare
-          test_nfs_share: '{{ test_nfs_server_ip }}:{{ test_nfs_directory }}'
+          test_nfs_share: "{{ test_nfs_server_ip }}:{{ test_nfs_directory }}"
 
           test_primary_ip: >-
             {{ (hostvars[groups.molecule_hosts_amq_primary.0]
@@ -105,16 +127,16 @@ provisioner:
           amq_user: amq-broker
           amq_group: amq-broker
 
-          amq_broker_name: '{{ inventory_hostname }}'
+          amq_broker_name: "{{ inventory_hostname }}"
           amq_base_dir: /opt/redhat/amq-broker
           amq_install_dir: >-
             {{ amq_base_dir }}/install/amq-broker-{{ amq_version }}
-          amq_brokers_dir: '{{ amq_base_dir }}/brokers'
+          amq_brokers_dir: "{{ amq_base_dir }}/brokers"
           amq_broker_data_dir: /mnt/share-amqbroker/test_instance
 
           amq_broker_java_options:
             - param: -Djava.net.preferIPv4Stack=
-              value: 'true'
+              value: "true"
             - param: -Xms
               value: 512M
             - param: -Xmx
@@ -140,7 +162,7 @@ provisioner:
           amq_broker_global_max_size: 512M
           amq_broker_security_invalidation_interval: 3600000
 
-          amq_broker_http_host_bindings: 0.0.0.0
+          amq_broker_http_host_bindings: "0.0.0.0"
 
           amq_broker_nio: false
           amq_broker_nio_remoting_threads: -1
@@ -150,7 +172,7 @@ provisioner:
           amq_broker_journal_max_io: 500
 
           amq_broker_security_settings:
-            - address: '#'
+            - address: "#"
               permissions:
                 createNonDurableQueue:
                   - admin
@@ -191,6 +213,10 @@ provisioner:
       molecule_hosts_amq_replicas:
         vars:
           amq_broker_is_replica: true
+
+      molecule_hosts_el_9:
+        vars:
+          ansible_become_method: sudo
 
 verifier:
   name: ansible

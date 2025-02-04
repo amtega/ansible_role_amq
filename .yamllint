@@ -9,7 +9,7 @@ rules:
   braces:
     forbid: false
     min-spaces-inside: 0
-    max-spaces-inside: 0
+    max-spaces-inside: 1
     min-spaces-inside-empty: -1
     max-spaces-inside-empty: -1
     level: error
@@ -33,7 +33,7 @@ rules:
     ignore-shebangs: true
     min-spaces-from-content: 1
     level: warning
-  comments-indentation: {}
+  comments-indentation: false
   document-end:
     present: false
     level: error
@@ -61,6 +61,9 @@ rules:
     level: warning
   new-lines:
     type: unix
+  octal-values:
+    forbid-implicit-octal: true
+    forbid-explicit-octal: true
   quoted-strings:
     quote-type: any
     required: only-when-needed
@@ -70,6 +73,6 @@ rules:
   trailing-spaces: {}
   truthy:
     allowed-values:
-      - 'true'
-      - 'false'
+      - "true"
+      - "false"
     check-keys: false

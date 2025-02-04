@@ -4,7 +4,7 @@ exclude_paths:
   - .git
 
 kinds:
-  - yaml: '**/molecule/**/requirements.yml'
-  - yaml: '**/meta/**/requirements.yml'
+  - yaml: "**/molecule/**/requirements.yml"
+  - yaml: "**/meta/**/requirements.yml"
 
 offline: true
