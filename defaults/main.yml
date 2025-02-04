@@ -76,7 +76,6 @@ amq_broker_admin:
 
 amq_broker_admin_groups: []
 amq_broker_user_groups: []
-
 # List of dicts with the AMQ broker users. The format of the dicts is the
 # following:
 #
@@ -85,7 +84,6 @@ amq_broker_user_groups: []
 #   role: <role>
 
 amq_broker_users: []
-
 # Related to etc/broker.xml in xpath /configuration/core/address-settings
 
 # yamllint disable rule:line-length
@@ -237,7 +235,6 @@ amq_broker_paging: true
 amq_broker_enable_destination_autocreate: false
 
 amq_broker_queues: []
-
 # ASYNCIO settings
 
 amq_broker_aio: true

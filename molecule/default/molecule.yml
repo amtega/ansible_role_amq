@@ -162,7 +162,7 @@ provisioner:
           amq_broker_global_max_size: 512M
           amq_broker_security_invalidation_interval: 3600000
 
-          amq_broker_http_host_bindings: "0.0.0.0"
+          amq_broker_http_host_bindings: 0.0.0.0
 
           amq_broker_nio: false
           amq_broker_nio_remoting_threads: -1

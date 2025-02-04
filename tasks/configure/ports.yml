@@ -60,7 +60,7 @@
             namespaces:
               conf: urn:activemq
               core: urn:activemq:core
-          loop: "{{ acceptor_names }}"
+          loop: "{{ acceptor_names }}" # noqa jinja[invalid]
           loop_control:
             loop_var: amq_acceptor_name_item
             label: "{{ amq_acceptor_name_item.name }}"

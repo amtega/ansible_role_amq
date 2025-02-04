@@ -12,7 +12,7 @@
   register: amq_acceptor
 
 - name: Extract artemis acceptor for messaging TLS
-  ansible.builtin.set_fact:
+  ansible.builtin.set_fact: # noqa jinja[invalid]
     amq_acceptor: >-
       {{ amq_acceptor
       | json_query('matches[*].*')

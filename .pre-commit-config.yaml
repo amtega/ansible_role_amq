@@ -52,5 +52,7 @@ repos:
     rev: v25.1.1
     hooks:
       - id: ansible-lint
+        # args:
+        #   - --fix
         stages:
           - pre-push

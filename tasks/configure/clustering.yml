@@ -19,7 +19,7 @@
     - role::amq::configure::clustering
   block:
     - name: Set cluster-connections
-      community.general.xml:
+      community.general.xml: # noqa jinja[invalid]
         path: "{{ etc_broker_path }}"
         xpath: /conf:configuration/core:core/core:cluster-connections
         set_children: >-
@@ -41,7 +41,7 @@
           core: urn:activemq:core
 
     - name: Template broker_connectors.xml
-      ansible.builtin.template:
+      ansible.builtin.template: # noqa jinja[invalid]
         src: broker_connectors.xml.j2
         dest: "{{ etc_broker_connectors_path }}"
         owner: "{{ amq_user }}"

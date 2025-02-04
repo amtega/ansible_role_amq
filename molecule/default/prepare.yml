@@ -21,7 +21,7 @@
     - name: Molecule requirements for this scenario
       ansible.builtin.include_tasks: tasks/scenario_requirements.yml
     - name: Setup packages
-      ansible.builtin.yum:
+      ansible.builtin.yum: # noqa fqcn[action-core]
         state: present
         name:
           - nfs-utils
@@ -64,7 +64,7 @@
   become: true
   tasks:
     - name: Setup packages
-      ansible.builtin.yum:
+      ansible.builtin.yum: # noqa fqcn[action-core]
         state: present
         name:
           - "{{ test_java_package }}"
