@@ -7,3 +7,5 @@ molecule/*/output
 
 .cache
 
+.ansible/
+.vscode/
